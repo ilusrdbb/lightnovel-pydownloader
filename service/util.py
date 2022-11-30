@@ -207,6 +207,15 @@ async def http_login(site_type, token, session, login_hash=''):
         print('请输入验证码：')
         code = input()
         param_data['seccodeverify'] = code
+    if site_type == 'oldmasiro':
+        param_data = {
+            'username': LOGIN_INFO['username'],
+            'password': LOGIN_INFO['password'],
+            'fastloginfield': 'username',
+            'cookietime': '2592000',
+            'quickforward': 'yes',
+            'handlekey': 'ls'
+        }
     # 请求头
     headers = {
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',

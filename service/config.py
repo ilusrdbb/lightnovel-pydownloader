@@ -5,7 +5,7 @@
 
 # 保存目录
 SAVE_DIR = './books/'
-# 抓取站点 masiro 真白萌，esj esj，oldlightnovel 轻国旧站，oldmasiro 真白萌旧站（未适配），lightnovel 轻国新站（未适配）
+# 抓取站点 masiro 真白萌，esj esj，oldlightnovel 轻国旧站，oldmasiro 真白萌旧站，lightnovel 轻国新站（未适配）
 DEFULT_SITE = 'masiro'
 # 最大线程数 不要设置的过大 小心被ban
 MAX_THREAD = 10
@@ -24,7 +24,7 @@ LOGIN_INFO = {
 # 连接失败的重试次数
 RETRY_TIME = 3
 # 下载超时时间
-TIME_OUT = 20
+TIME_OUT = 10
 # 防ban手段 比如设置2则每次抓章节前睡随机0~2秒 设置0不生效
 SLEEP_TIME = 0
 # 代理地址 eg http://127.0.0.1:1081 不支持https代理 注意esj只能挂非中日韩节点的代理
@@ -61,6 +61,11 @@ URL_CONFIG = {
     'oldlightnovel_illustration': 'https://obsolete.lightnovel.us/%s',
     'oldlightnovel_varify': 'https://obsolete.lightnovel.us/member.php?mod=logging&action=login',
     'oldlightnovel_login': 'https://obsolete.lightnovel.us/%s&inajax=1',
+    'oldmasiro_page': 'https://masiro.moe/forum.php?mod=forumdisplay&fid=%d',
+    'oldmasiro_book': '%s',
+    'oldmasiro_content': '%s',
+    'oldmasiro_illustration': 'https://masiro.moe/%s',
+    'oldmasiro_login': 'https://masiro.moe/member.php?mod=logging&action=login&loginsubmit=yes&infloat=yes&lssubmit=yes%s',
 }
 # xpath
 XPATH_DICT = {
@@ -90,6 +95,15 @@ XPATH_DICT = {
     'oldlightnovel_content': '//text()',
     'oldlightnovel_illustration': '//img/@file',
     'tieba_content': '//div[contains(@id,\'post_content_\')]//text()',
+    'oldmasiro_page': '//td[@class=\'fl_g\']//dl//a[1]/@href',
+    'oldmasiro_title': '//h1[@class=\'xs2\']/a/text()',
+    'oldmasiro_num': '//div[@class=\'pg\']//span/@title',
+    'oldmasiro_chapter': '//tbody[contains(@id,\'normalthread_\')]',
+    'oldmasiro_chapter_name': '//a[contains(@class,\'xst\')]/text()',
+    'oldmasiro_chapter_url': '//a[contains(@class,\'xst\')]/@href',
+    'oldmasiro_follow': '//a[@rel=\'nofollow\']/@href',
+    'oldmasiro_content': '//td[@class=\'t_f\']//text()',
+    'oldmasiro_illustration': '//td[@class=\'t_f\']//img/@src',
 }
 # 请求头user-agent 一般不需要动
 USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36'
