@@ -9,17 +9,13 @@ import asyncio
 
 
 import service.base
-from service.config import *
-
-"""
-爬虫入口
-开始前建议阅读config.py下的配置项
-爬取失败的图片会写入至missing.txt中
-
-"""
+from config import *
+from service import glo
 
 
 def start(site_type = DEFULT_SITE):
+    # 全局变量初始化
+    glo._init()
     loop = asyncio.get_event_loop()
     # 全量
     if not WHITE_LIST:

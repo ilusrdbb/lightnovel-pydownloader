@@ -5,11 +5,11 @@
 
 # 保存目录
 SAVE_DIR = './books/'
-# 抓取站点 masiro 真白萌，esj esj，oldlightnovel 轻国旧站，oldmasiro 真白萌旧站，lightnovel 轻国新站（未适配）
+# 抓取站点 masiro 真白萌，esj esj，oldlightnovel 轻国旧站，oldmasiro 真白萌旧站，lightnovel 轻国新站
 DEFULT_SITE = 'masiro'
 # 最大线程数 不要设置的过大 小心被ban
 MAX_THREAD = 10
-# 真白萌是否花金币购买 因为手里的号都大几万的金币没测试金币不够的情况 注意剩余金币
+# 轻国花轻币或真白萌花金币购买 因为手里的号都大几万的金币没测试金币不够的情况 注意剩余金币
 IS_PURCHASE = True
 # 当章节内容少于两张图片时 字数小于此值的章节不抓取 0无限制 轻国旧站建议设置的大一点其余站可以设置的小一些
 LEAST_WORDS = 100
@@ -29,9 +29,9 @@ TIME_OUT = 10
 SLEEP_TIME = 0
 # 代理地址 eg http://127.0.0.1:1081 不支持https代理 注意esj只能挂非中日韩节点的代理
 PROXIES_URL = ''
-# 白名单
+# 白名单，轻国不支持该模式
 WHITE_LIST = []
-# 黑名单
+# 黑名单，轻国不支持该模式
 BLACK_LIST = []
 # 开始页
 START_PAGE = 1
@@ -41,6 +41,10 @@ MAX_PAGE = 1
 ALWAYS_UPDATE_COVER = False
 # 是否总是更新章节内容 比如轻国的一些小说在一楼更新就需要打开
 ALWAYS_UPDATE_CHAPTER = False
+# 轻国屏蔽aid，比如置顶公告
+BLACK_AID_LIST = [1113228, 969547, 1099310, 1048596]
+# 旧真白萌大板块id，全量抓取会循环板块抓取
+OLD_MASIRO_FIDS = [36, 316, 321, 317, 162, 324, 164, 165]
 # 地址配置
 URL_CONFIG = {
     'masiro_page': 'https://masiro.me/admin/loadMoreNovels?ori=0&page=%d',
@@ -48,24 +52,31 @@ URL_CONFIG = {
     'masiro_cover': 'https://masiro.me%s',
     'masiro_content': 'https://masiro.me%s',
     'masiro_illustration': '%s',
-    'masiro_login': 'https://masiro.me/admin/auth/login%s',
+    'masiro_login': 'https://masiro.me/admin/auth/login',
+    'masiro_pay': 'https://masiro.me/admin/pay',
     'esj_page': 'https://www.esjzone.cc/list-11/%d.html',
     'esj_book': 'https://www.esjzone.cc%s',
     'esj_cover': '%s',
     'esj_content': '%s',
     'esj_illustration': '%s',
-    'esj_login': 'https://www.esjzone.cc/inc/mem_login.php%s',
+    'esj_login': 'https://www.esjzone.cc/inc/mem_login.php',
     'oldlightnovel_page': 'https://obsolete.lightnovel.us/forum-173-%d.html',
     'oldlightnovel_book': 'https://obsolete.lightnovel.us/%s',
     'oldlightnovel_chapter': '%s&page=%s',
     'oldlightnovel_illustration': 'https://obsolete.lightnovel.us/%s',
+    'oldlightnovel_js': 'https://obsolete.lightnovel.us/misc.php?mod=seccode&action=update&idhash=cS&%s&modid=undefined',
     'oldlightnovel_varify': 'https://obsolete.lightnovel.us/member.php?mod=logging&action=login',
     'oldlightnovel_login': 'https://obsolete.lightnovel.us/%s&inajax=1',
     'oldmasiro_page': 'https://masiro.moe/forum.php?mod=forumdisplay&fid=%d',
     'oldmasiro_book': '%s',
     'oldmasiro_content': '%s',
     'oldmasiro_illustration': 'https://masiro.moe/%s',
-    'oldmasiro_login': 'https://masiro.moe/member.php?mod=logging&action=login&loginsubmit=yes&infloat=yes&lssubmit=yes%s',
+    'oldmasiro_login': 'https://masiro.moe/member.php?mod=logging&action=login&loginsubmit=yes&infloat=yes&lssubmit=yes',
+    'lightnovel_login': 'https://www.lightnovel.us/proxy/api/user/login',
+    'lightnovel_page': 'https://www.lightnovel.us/proxy/api/category/get-article-by-cate',
+    'lightnovel_chapter': 'https://www.lightnovel.us/cn/detail/%d',
+    'lightnovel_book': 'https://www.lightnovel.us/cn/series/%d',
+    'lightnovel_pay': 'https://www.lightnovel.us/proxy/api/coin/use',
 }
 # xpath
 XPATH_DICT = {
@@ -94,6 +105,8 @@ XPATH_DICT = {
     'oldlightnovel_chapter': '//td[@class=\'t_f\']',
     'oldlightnovel_content': '//text()',
     'oldlightnovel_illustration': '//img/@file',
+    'oldlightnovel_formhash': '//input[@name=\'formhash\']/@value',
+    'oldlightnovel_loginhash': '//form[@name=\'login\']/@action',
     'tieba_content': '//div[contains(@id,\'post_content_\')]//text()',
     'oldmasiro_page': '//td[@class=\'fl_g\']//dl//a[1]/@href',
     'oldmasiro_title': '//h1[@class=\'xs2\']/a/text()',
@@ -104,6 +117,13 @@ XPATH_DICT = {
     'oldmasiro_follow': '//a[@rel=\'nofollow\']/@href',
     'oldmasiro_content': '//td[@class=\'t_f\']//text()',
     'oldmasiro_illustration': '//td[@class=\'t_f\']//img/@src',
+    'lightnovel_content': '//article[@id=\'article-main-contents\']//text()',
+    'lightnovel_illustration': '//article[@id=\'article-main-contents\']//img/@src',
 }
-# 请求头user-agent 一般不需要动
-USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36'
+# 通用请求头 一般不需要动
+HEADERS = {
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+    'Accept-Encoding': 'gzip, deflate, br',
+    'Accept-Language': 'zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36'
+}
