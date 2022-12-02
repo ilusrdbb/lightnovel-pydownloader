@@ -38,9 +38,10 @@ def get_split_str_list(start, end, str):
 
 
 def format_text(str):
-    return str.replace('/', '_').replace('.', '').replace('?', '').replace('\n', '')\
+    return str.replace('/', '_').replace('.', '_').replace('?', '_').replace('\n', '')\
             .replace('\xa0', '').replace('\r', '').replace('\t', '')\
-            .replace('\u3000', ' ').replace('\\u002F', '_')
+            .replace('\u3000', ' ').replace('\\u002F', '_').replace(':', '_').replace('*', '_')\
+            .replace('<', '').replace('>', '').replace('"', '').replace('|', '')
 
 
 def get_cost(str):
@@ -52,7 +53,7 @@ async def save_pic_list(site_type, path, pic_list, session):
         for pic_url in pic_list:
             if not pic_url.startswith('http'):
                 pic_url = URL_CONFIG[site_type + '_illustration'] % pic_url
-            pic_name = pic_url.split('/')[-1]
+            pic_name = pic_url.split('/')[-1].replace(':', '_').replace('*', '_')
             if '?' in pic_name:
                 pic_name = pic_name.replace('?' + pic_url.split('?')[-1], '')
             pic_path = path + '_' + pic_name

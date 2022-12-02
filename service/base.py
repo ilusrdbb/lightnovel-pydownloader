@@ -109,6 +109,7 @@ async def _async_get_book_data(book_url, site_type, session, thread_count):
 
 
 async def save_book(site_type, book_data, session):
+    book_data['_title'][0] = format_text(book_data['_title'][0])
     # 创建目录
     book_path = SAVE_DIR + site_type + '/' + book_data['_title'][0]
     await mkdir(book_path)
@@ -151,18 +152,41 @@ async def save_chapter_data(site_type, chapter_data, book_path, session):
                 else:
                     continue
             # esj考虑贴吧，做的比较粗糙因为我觉得抓贴吧的意义不大，贴吧的吞楼太厉害了，大概率啥也看不到
-            if 'https://tieba.baidu.com' in chapter_dict['_url'][0]:
-                # 只看楼主的第一页
-                text = await http_get_text('', chapter_dict['_url'][0] + '?see_lz=1', session)
-                page_body = html.fromstring(text)
-                # 文字内容
-                content_list = page_body.xpath(XPATH_DICT['tieba_content'])
-                content = '\n'.join(content_list)
-                if LEAST_WORDS > 0 and len(content) < LEAST_WORDS:
-                    continue
-                else:
-                    # 保存内容
-                    write_str_data(chapter_path, content)
+            if 'tieba.baidu.com' in chapter_dict['_url'][0]:
+                # 贴吧有验证码，暂不考虑
+                await write_miss_data('不合法的地址：%s %s' % (chapter_dict['_url'][0], '\n'))
+                # # 只看楼主的第一页
+                # text = await http_get_text('', chapter_dict['_url'][0] + '?see_lz=1', session)
+                # page_body = html.fromstring(text)
+                # # 文字内容
+                # content_list = page_body.xpath(XPATH_DICT['tieba_content'])
+                # content = '\n'.join(content_list)
+                # if LEAST_WORDS > 0 and len(content) < LEAST_WORDS:
+                #     continue
+                # else:
+                #     # 保存内容
+                #     write_str_data(chapter_path, content)
+            elif 'www.ptt.cc' in chapter_dict['_url'][0]:
+                # TODO https://www.ptt.cc/bbs/C_Chat/M.1596037853.A.5EB.html
+                await write_miss_data('不合法的地址：%s %s' % (chapter_dict['_url'][0], '\n'))
+            elif 'www.ptt.cc' in chapter_dict['_url'][0]:
+                # TODO https://www.ptt.cc/bbs/C_Chat/M.1596037853.A.5EB.html
+                await write_miss_data('不合法的地址：%s %s' % (chapter_dict['_url'][0], '\n'))
+            elif 'gitlab.com' in chapter_dict['_url'][0]:
+                # TODO https://gitlab.com/novel-group/txt-source/blob/master/wenku8_out/%E4%B8%AD%E4%BA%8640%E5%84%84%E5%9C%93%E6%A8%82%E9%80%8F%E7%9A%84%E6%88%91%E8%A6%81%E6%90%AC%E5%88%B0%E7%95%B0%E4%B8%96%E7%95%8C%E5%8E%BB%E4%BD%8F%E4%BA%86/00010_%E6%96%87%E5%BA%AB/00000_%E7%AC%AC%E4%B8%80%E5%8D%B7/00010_%E7%99%BB%E5%A0%B4%E4%BA%BA%E7%89%A9%E4%BB%8B%E7%B4%B9.txt
+                await write_miss_data('不合法的地址：%s %s' % (chapter_dict['_url'][0], '\n'))
+            elif 'www.bilibili.com' in chapter_dict['_url'][0]:
+                # TODO https://www.bilibili.com/read/cv15388751?spm_id_from=333.999.0.0
+                await write_miss_data('不合法的地址：%s %s' % (chapter_dict['_url'][0], '\n'))
+            elif 'anonymousfiles.cc' in chapter_dict['_url'][0]:
+                # TODO https://anonymousfiles.cc/7mRrtD5V
+                await write_miss_data('不合法的地址：%s %s' % (chapter_dict['_url'][0], '\n'))
+            elif 'twitter.com' in chapter_dict['_url'][0]:
+                pass
+            elif 'ncode.syosetu.com' in chapter_dict['_url'][0]:
+                pass
+            elif 'www.qinxiaoshuo.com' in chapter_dict['_url'][0]:
+                pass
             else:
                 text = await http_get_text('', URL_CONFIG[site_type + '_content'] % chapter_dict['_url'][0], session)
                 page_body = html.fromstring(text)

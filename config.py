@@ -28,7 +28,7 @@ TIME_OUT = 10
 # 防ban手段 比如设置2则每次抓章节前睡随机0~2秒 设置0不生效
 SLEEP_TIME = 0
 # 代理地址 eg http://127.0.0.1:1081 不支持https代理 注意esj只能挂非中日韩节点的代理
-PROXIES_URL = ''
+PROXIES_URL = 'http://127.0.0.1:1081'
 # 白名单，轻国不支持该模式
 WHITE_LIST = []
 # 黑名单，轻国不支持该模式
@@ -94,7 +94,7 @@ XPATH_DICT = {
     'esj_title': '//div[contains(@class,\'book-detail\')]//h2/text()',
     'esj_describe': '//div[@class=\'description\']//text()',
     'esj_chapter': '//div[@id=\'chapterList\']/a',
-    'esj_chapter_name': '//p/text()',
+    'esj_chapter_name': '//p//text()',
     'esj_chapter_url': '//a/@href',
     'esj_content': '//div[contains(@class,\'forum-content\')]/p//text()',
     'esj_illustration': '//div[contains(@class,\'forum-content\')]//img/@src',

@@ -7,6 +7,7 @@ import random
 
 from lxml import html
 
+from service import glo
 from service.util import *
 
 
