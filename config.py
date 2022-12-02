@@ -7,7 +7,7 @@
 SAVE_DIR = './books/'
 # 抓取站点 masiro 真白萌，esj esj，oldlightnovel 轻国旧站，oldmasiro 真白萌旧站，lightnovel 轻国新站
 DEFULT_SITE = 'masiro'
-# 最大线程数 不要设置的过大 小心被ban
+# 最大线程数 不要设置的过大 小心被ban 注意真白萌旧站由于有反采集只能单线程爬取
 MAX_THREAD = 10
 # 轻国花轻币或真白萌花金币购买 因为手里的号都大几万的金币没测试金币不够的情况 注意剩余金币
 IS_PURCHASE = True
@@ -26,7 +26,7 @@ RETRY_TIME = 3
 # 下载超时时间
 TIME_OUT = 10
 # 防ban手段 比如设置2则每次抓章节前睡随机0~2秒 设置0不生效
-SLEEP_TIME = 0
+SLEEP_TIME = 1
 # 代理地址 eg http://127.0.0.1:1081 不支持https代理 注意esj只能挂非中日韩节点的代理
 PROXIES_URL = ''
 # 白名单，轻国不支持该模式
@@ -43,8 +43,8 @@ ALWAYS_UPDATE_COVER = False
 ALWAYS_UPDATE_CHAPTER = False
 # 轻国屏蔽aid，比如置顶公告
 BLACK_AID_LIST = [1113228, 969547, 1099310, 1048596]
-# 旧真白萌大板块id，全量抓取会循环板块抓取
-OLD_MASIRO_FIDS = [36, 316, 321, 317, 162, 324, 164, 165]
+# 旧真白萌大板块id，全量抓取会循环板块抓取 [36, 316, 321, 317, 162, 324, 164, 165]
+OLD_MASIRO_FIDS = [324]
 # 地址配置
 URL_CONFIG = {
     'masiro_page': 'https://masiro.me/admin/loadMoreNovels?ori=0&page=%d',
@@ -70,7 +70,6 @@ URL_CONFIG = {
     'oldmasiro_page': 'https://masiro.moe/forum.php?mod=forumdisplay&fid=%d',
     'oldmasiro_book': '%s',
     'oldmasiro_content': '%s',
-    'oldmasiro_illustration': 'https://masiro.moe/%s',
     'oldmasiro_login': 'https://masiro.moe/member.php?mod=logging&action=login&loginsubmit=yes&infloat=yes&lssubmit=yes',
     'lightnovel_login': 'https://www.lightnovel.us/proxy/api/user/login',
     'lightnovel_page': 'https://www.lightnovel.us/proxy/api/category/get-article-by-cate',
@@ -116,7 +115,6 @@ XPATH_DICT = {
     'oldmasiro_chapter_url': '//a[contains(@class,\'xst\')]/@href',
     'oldmasiro_follow': '//a[@rel=\'nofollow\']/@href',
     'oldmasiro_content': '//td[@class=\'t_f\']//text()',
-    'oldmasiro_illustration': '//td[@class=\'t_f\']//img/@src',
     'lightnovel_content': '//article[@id=\'article-main-contents\']//text()',
     'lightnovel_illustration': '//article[@id=\'article-main-contents\']//img/@src',
 }

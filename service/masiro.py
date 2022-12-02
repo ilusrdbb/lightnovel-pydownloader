@@ -71,7 +71,6 @@ async def save_oldmasiro_book(book_data, session):
             if '抱歉，本帖要求阅读权限' not in text:
                 page_body = html.fromstring(text)
                 content_list = []
-                pic_list = []
                 # 只看楼主
                 follow_url = page_body.xpath(XPATH_DICT['oldmasiro_follow'])[0]
                 follow_text = await http_get_text('', follow_url, session)
@@ -80,24 +79,20 @@ async def save_oldmasiro_book(book_data, session):
                     # 获取页数
                     if follow_page_body.xpath(XPATH_DICT['oldmasiro_num']):
                         page_num = get_cost(str(follow_page_body.xpath(XPATH_DICT['oldmasiro_num'])[0]))
+                        for num in range(1, page_num + 1):
+                            content_url = follow_url + '&page=' + str(num)
+                            content_text = await http_get_text('', content_url, session)
+                            content_body = html.fromstring(content_text)
+                            # 文字内容
+                            content_in_list = content_body.xpath(XPATH_DICT['oldmasiro_content'])
+                            content_list += content_in_list
                     else:
-                        page_num = 1
-                    for num in range(1, page_num + 1):
-                        content_url = follow_url + '&page=' + str(num)
-                        content_text = await http_get_text('', content_url, session)
-                        content_body = html.fromstring(content_text)
-                        # 文字内容
-                        content_in_list = content_body.xpath(XPATH_DICT['oldmasiro_content'])
-                        content_list += content_in_list
-                        # 插图
-                        pic_in_list = content_body.xpath(XPATH_DICT['oldmasiro_illustration'])
-                        pic_list += pic_in_list
+                        # 一页的情况只爬当前页
+                        content_list = follow_page_body.xpath(XPATH_DICT['oldmasiro_content'])
                 if content_list:
                     content = '\n'.join(content_list)
                     # 保存内容
                     write_str_data(chapter_path, content)
-                    # 保存插画
-                    await save_pic_list('oldmasiro', book_path + '/' + chapter_dict['_index'][0], pic_list, session)
 
 
 async def masiro_pay(cost, object_id, session):
