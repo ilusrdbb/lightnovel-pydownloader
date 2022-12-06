@@ -155,39 +155,45 @@ async def save_chapter_data(site_type, chapter_data, book_path, session):
             # esj考虑贴吧，做的比较粗糙因为我觉得抓贴吧的意义不大，贴吧的吞楼太厉害了，大概率啥也看不到
             if 'tieba.baidu.com' in chapter_dict['_url'][0]:
                 # 贴吧有验证码，暂不考虑
-                await write_miss_data('不合法的地址：%s %s' % (chapter_dict['_url'][0], '\n'))
-                # # 只看楼主的第一页
-                # text = await http_get_text('', chapter_dict['_url'][0] + '?see_lz=1', session)
-                # page_body = html.fromstring(text)
-                # # 文字内容
-                # content_list = page_body.xpath(XPATH_DICT['tieba_content'])
-                # content = '\n'.join(content_list)
-                # if LEAST_WORDS > 0 and len(content) < LEAST_WORDS:
-                #     continue
-                # else:
-                #     # 保存内容
-                #     write_str_data(chapter_path, content)
+                write_str_data(chapter_path, chapter_dict['_url'][0])
             elif 'www.ptt.cc' in chapter_dict['_url'][0]:
-                # TODO https://www.ptt.cc/bbs/C_Chat/M.1596037853.A.5EB.html
-                await write_miss_data('不合法的地址：%s %s' % (chapter_dict['_url'][0], '\n'))
-            elif 'www.ptt.cc' in chapter_dict['_url'][0]:
-                # TODO https://www.ptt.cc/bbs/C_Chat/M.1596037853.A.5EB.html
-                await write_miss_data('不合法的地址：%s %s' % (chapter_dict['_url'][0], '\n'))
+                text = await http_get_text('', chapter_dict['_url'][0], session)
+                page_body = html.fromstring(text)
+                # 文字内容
+                content_list = page_body.xpath(XPATH_DICT['ptt_content'])
+                content = '\n'.join(content_list)
+                if LEAST_WORDS > 0 and len(content) < LEAST_WORDS:
+                    continue
+                else:
+                    write_str_data(chapter_path, content)
             elif 'gitlab.com' in chapter_dict['_url'][0]:
-                # TODO https://gitlab.com/novel-group/txt-source/blob/master/wenku8_out/%E4%B8%AD%E4%BA%8640%E5%84%84%E5%9C%93%E6%A8%82%E9%80%8F%E7%9A%84%E6%88%91%E8%A6%81%E6%90%AC%E5%88%B0%E7%95%B0%E4%B8%96%E7%95%8C%E5%8E%BB%E4%BD%8F%E4%BA%86/00010_%E6%96%87%E5%BA%AB/00000_%E7%AC%AC%E4%B8%80%E5%8D%B7/00010_%E7%99%BB%E5%A0%B4%E4%BA%BA%E7%89%A9%E4%BB%8B%E7%B4%B9.txt
-                await write_miss_data('不合法的地址：%s %s' % (chapter_dict['_url'][0], '\n'))
+                write_str_data(chapter_path, chapter_dict['_url'][0])
             elif 'www.bilibili.com' in chapter_dict['_url'][0]:
-                # TODO https://www.bilibili.com/read/cv15388751?spm_id_from=333.999.0.0
-                await write_miss_data('不合法的地址：%s %s' % (chapter_dict['_url'][0], '\n'))
+                text = await http_get_text('', chapter_dict['_url'][0], session)
+                page_body = html.fromstring(text)
+                # 文字内容
+                content_list = page_body.xpath(XPATH_DICT['bilibili_content'])
+                content = '\n'.join(content_list)
+                if LEAST_WORDS > 0 and len(content) < LEAST_WORDS:
+                    continue
+                else:
+                    write_str_data(chapter_path, content)
             elif 'anonymousfiles.cc' in chapter_dict['_url'][0]:
-                # TODO https://anonymousfiles.cc/7mRrtD5V
-                await write_miss_data('不合法的地址：%s %s' % (chapter_dict['_url'][0], '\n'))
+                text = await http_get_text('', chapter_dict['_url'][0], session)
+                page_body = html.fromstring(text)
+                # 文字内容
+                content_list = page_body.xpath(XPATH_DICT['anonymousfiles_content'])
+                content = '\n'.join(content_list)
+                if LEAST_WORDS > 0 and len(content) < LEAST_WORDS:
+                    continue
+                else:
+                    write_str_data(chapter_path, content)
             elif 'twitter.com' in chapter_dict['_url'][0]:
-                pass
+                write_str_data(chapter_path, chapter_dict['_url'][0])
             elif 'ncode.syosetu.com' in chapter_dict['_url'][0]:
-                pass
+                write_str_data(chapter_path, chapter_dict['_url'][0])
             elif 'www.qinxiaoshuo.com' in chapter_dict['_url'][0]:
-                pass
+                write_str_data(chapter_path, chapter_dict['_url'][0])
             else:
                 text = await http_get_text('', URL_CONFIG[site_type + '_content'] % chapter_dict['_url'][0], session)
                 page_body = html.fromstring(text)
