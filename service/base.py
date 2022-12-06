@@ -146,9 +146,10 @@ async def save_chapter_data(site_type, chapter_data, book_path, session):
             # 真白萌先考虑打钱
             if site_type == 'masiro' and int(chapter_dict['_cost'][0]) > 0 and chapter_dict['_payed'][0] == '0':
                 if IS_PURCHASE:
-                    pay_rep = await masiro_pay(chapter_dict['_cost'][0], chapter_dict['_id'][0], session)
-                    if not pay_rep:
-                        continue
+                    if int(chapter_dict['_cost'][0]) < MAX_PURCHASE:
+                        pay_rep = await masiro_pay(chapter_dict['_cost'][0], chapter_dict['_id'][0], session)
+                        if not pay_rep:
+                            continue
                 else:
                     continue
             # esj考虑贴吧，做的比较粗糙因为我觉得抓贴吧的意义不大，贴吧的吞楼太厉害了，大概率啥也看不到

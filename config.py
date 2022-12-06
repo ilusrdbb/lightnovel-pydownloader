@@ -7,10 +7,12 @@
 SAVE_DIR = './books/'
 # 抓取站点 masiro 真白萌，esj esj，oldlightnovel 轻国旧站，oldmasiro 真白萌旧站，lightnovel 轻国新站
 DEFULT_SITE = 'masiro'
-# 最大线程数 不要设置的过大 小心被ban 注意真白萌旧站由于有反采集只能单线程爬取
+# 最大线程数 不要设置的过大 小心被ban
 MAX_THREAD = 10
 # 轻国花轻币或真白萌花金币购买 因为手里的号都大几万的金币没测试金币不够的情况 注意剩余金币
 IS_PURCHASE = True
+# 花费上限，花费高于此值的帖子不花费，请根据自身账号情况修改
+MAX_PURCHASE = 101
 # 当章节内容少于两张图片时 字数小于此值的章节不抓取 0无限制 轻国旧站建议设置的大一点其余站可以设置的小一些
 LEAST_WORDS = 100
 # 是否需要登录 有的网站比如真白萌只允许登录查看 请确保自己账号的权限充足
@@ -44,7 +46,7 @@ ALWAYS_UPDATE_CHAPTER = False
 # 轻国屏蔽aid，比如置顶公告
 BLACK_AID_LIST = [1113228, 969547, 1099310, 1048596]
 # 旧真白萌大板块id，全量抓取会循环板块抓取 [36, 316, 321, 317, 162, 324, 164, 165]
-OLD_MASIRO_FIDS = [324]
+OLD_MASIRO_FIDS = [36, 316, 321, 317, 162, 324, 164, 165]
 # 地址配置
 URL_CONFIG = {
     'masiro_page': 'https://masiro.me/admin/loadMoreNovels?ori=0&page=%d',
@@ -69,8 +71,8 @@ URL_CONFIG = {
     'oldlightnovel_login': 'https://obsolete.lightnovel.us/%s&inajax=1',
     'oldmasiro_page': 'https://masiro.moe/forum.php?mod=forumdisplay&fid=%d',
     'oldmasiro_book': '%s',
-    'oldmasiro_content': '%s',
     'oldmasiro_login': 'https://masiro.moe/member.php?mod=logging&action=login&loginsubmit=yes&infloat=yes&lssubmit=yes',
+    'oldmasiro_pay': 'https://masiro.moe/forum.php?mod=misc&action=pay&paysubmit=yes&infloat=yes&inajax=1',
     'lightnovel_login': 'https://www.lightnovel.us/proxy/api/user/login',
     'lightnovel_page': 'https://www.lightnovel.us/proxy/api/category/get-article-by-cate',
     'lightnovel_chapter': 'https://www.lightnovel.us/cn/detail/%d',
@@ -107,7 +109,7 @@ XPATH_DICT = {
     'oldlightnovel_formhash': '//input[@name=\'formhash\']/@value',
     'oldlightnovel_loginhash': '//form[@name=\'login\']/@action',
     'tieba_content': '//div[contains(@id,\'post_content_\')]//text()',
-    'oldmasiro_page': '//td[@class=\'fl_g\']//dl//a[1]/@href',
+    'oldmasiro_page': '//td[@class=\'fl_g\']/dl/dt[1]/a/@href',
     'oldmasiro_title': '//h1[@class=\'xs2\']/a/text()',
     'oldmasiro_num': '//div[@class=\'pg\']//span/@title',
     'oldmasiro_chapter': '//tbody[contains(@id,\'normalthread_\')]',
@@ -115,6 +117,7 @@ XPATH_DICT = {
     'oldmasiro_chapter_url': '//a[contains(@class,\'xst\')]/@href',
     'oldmasiro_follow': '//a[@rel=\'nofollow\']/@href',
     'oldmasiro_content': '//td[@class=\'t_f\']//text()',
+    'oldmasiro_formhash': '//input[@name=\'formhash\']/@value',
     'lightnovel_content': '//article[@id=\'article-main-contents\']//text()',
     'lightnovel_illustration': '//article[@id=\'article-main-contents\']//img/@src',
 }

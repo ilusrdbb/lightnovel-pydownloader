@@ -7,7 +7,6 @@ from __future__ import annotations
 
 import asyncio
 
-
 import service.base
 from config import *
 from service import glo

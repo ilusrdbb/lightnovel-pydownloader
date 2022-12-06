@@ -41,7 +41,7 @@ def format_text(str):
     return str.replace('/', '_').replace('.', '_').replace('?', '_').replace('\n', '')\
             .replace('\xa0', '').replace('\r', '').replace('\t', '')\
             .replace('\u3000', ' ').replace('\\u002F', '_').replace(':', '_').replace('*', '_')\
-            .replace('<', '').replace('>', '').replace('"', '').replace('|', '')
+            .replace('<', '').replace('>', '').replace('"', '').replace('|', '').replace('\\', '')
 
 
 def get_cost(str):

@@ -71,8 +71,9 @@ async def get_lightnovel_content(book_path, chapter_list, session, is_purchase=I
                     content_body = html.fromstring(content_text)
                     cost_text = content_body.xpath('//button[contains(@class,\'unlock\')]/text()')[0]
                     cost = get_cost(cost_text)
-                    await http_post_pay(chapter['aid'], cost, session)
-                    await get_lightnovel_content(book_path, chapter_list, session, False)
+                    if cost < MAX_PURCHASE:
+                        await http_post_pay(chapter['aid'], cost, session)
+                        await get_lightnovel_content(book_path, chapter_list, session, False)
             # 排除仅app
             elif '您可能没有访问权限' not in content_text:
                 content_body = html.fromstring(content_text)
@@ -104,8 +105,9 @@ async def get_lightnovel_single(book_path, book, session, is_purchase=IS_PURCHAS
                 content_body = html.fromstring(content_text)
                 cost_text = content_body.xpath('//button[contains(@class,\'unlock\')]/text()')[0]
                 cost = get_cost(cost_text)
-                await http_post_pay(book['aid'], cost, session)
-                await get_lightnovel_single(book_path, book, session, False)
+                if cost < MAX_PURCHASE:
+                    await http_post_pay(book['aid'], cost, session)
+                    await get_lightnovel_single(book_path, book, session, False)
         # 排除仅app
         elif '您可能没有访问权限' not in content_text:
             content_body = html.fromstring(content_text)
