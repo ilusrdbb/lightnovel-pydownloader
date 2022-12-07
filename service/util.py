@@ -58,7 +58,7 @@ async def save_pic_list(site_type, path, pic_list, session):
                 pic_name = pic_name.replace('?' + pic_url.split('?')[-1], '')
             pic_name = pic_name.replace('?', '_')
             pic_path = path + '_' + pic_name
-            pic_res = await http_get_pic(pic_url, session)
+            pic_res = await http_get_pic(pic_url, session, 'https://www.lightnovel.us/')
             if pic_res:
                 write_byte_data(pic_path, pic_res)
 
