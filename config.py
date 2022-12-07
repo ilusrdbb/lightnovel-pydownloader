@@ -6,13 +6,13 @@
 # 保存目录
 SAVE_DIR = './books/'
 # 抓取站点 masiro 真白萌，esj esj，oldlightnovel 轻国旧站，oldmasiro 真白萌旧站，lightnovel 轻国新站
-DEFULT_SITE = 'masiro'
+DEFULT_SITE = 'lightnovel'
 # 最大线程数 不要设置的过大 小心被ban
 MAX_THREAD = 10
 # 轻国花轻币或真白萌花金币购买 因为手里的号都大几万的金币没测试金币不够的情况 注意剩余金币
 IS_PURCHASE = True
 # 花费上限，花费高于此值的帖子不花费，请根据自身账号情况修改
-MAX_PURCHASE = 101
+MAX_PURCHASE = 21
 # 当章节内容少于两张图片时 字数小于此值的章节不抓取 0无限制 轻国旧站建议设置的大一点其余站可以设置的小一些
 LEAST_WORDS = 100
 # 是否需要登录 有的网站比如真白萌只允许登录查看 请确保自己账号的权限充足
@@ -38,7 +38,7 @@ BLACK_LIST = []
 # 开始页
 START_PAGE = 1
 # 结束页
-MAX_PAGE = 1
+MAX_PAGE = 10
 # 是否总是更新封面和描述信息
 ALWAYS_UPDATE_COVER = False
 # 是否总是更新章节内容 比如轻国的一些小说在一楼更新就需要打开
@@ -78,6 +78,7 @@ URL_CONFIG = {
     'lightnovel_chapter': 'https://www.lightnovel.us/cn/detail/%d',
     'lightnovel_book': 'https://www.lightnovel.us/cn/series/%d',
     'lightnovel_pay': 'https://www.lightnovel.us/proxy/api/coin/use',
+    'lightnovel_illustration': 'https://www.lightnovel.us%s',
 }
 # xpath
 XPATH_DICT = {

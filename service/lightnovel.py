@@ -7,24 +7,28 @@ import random
 
 from lxml import html
 
+from js.runjs import get_series
 from service import glo
 from service.util import *
 
 
 async def _build_lightnovel_book(session):
+    book_list = []
     # 通过接口获取页
     for page in range(START_PAGE, MAX_PAGE + 1):
+        print('开始获取第%d页' % page)
         page_json = await http_post_page(page, session)
         if page_json:
-            book_list = page_json['data']['list']
-            # 指定线程数
-            thread_count = asyncio.Semaphore(MAX_THREAD)
-            tasks = []
-            for book in book_list:
-                # 排除置顶
-                if book['aid'] not in BLACK_AID_LIST:
-                    tasks.append(_async_get_lightnovel_book(book, session, thread_count))
-            await asyncio.wait(tasks)
+            book_list += page_json['data']['list']
+    if book_list:
+        # 指定线程数
+        thread_count = asyncio.Semaphore(MAX_THREAD)
+        tasks = []
+        for book in book_list:
+            # 排除置顶
+            if book['aid'] not in BLACK_AID_LIST:
+                tasks.append(_async_get_lightnovel_book(book, session, thread_count))
+        await asyncio.wait(tasks)
 
 
 async def _async_get_lightnovel_book(book, session, thread_count):
@@ -32,14 +36,17 @@ async def _async_get_lightnovel_book(book, session, thread_count):
         # 创建目录
         # 处理下换行符等特殊符号
         book['title'] = format_text(book['title'])
-        book_path = SAVE_DIR + 'lightnovel/' + book['title'] + '_' + str(book['aid'])
-        # 轻国的标题会变，根据aid判断是否存在同一目录，存在则重命名
-        await lightnovel_mkdir(book_path, book)
         # 轻国分合集、非合集，非合集相当于只有一章的合集
         if book['sid'] == 0:
+            book_path = SAVE_DIR + 'lightnovel/' + book['title'] + '_' + str(book['aid'])
+            # 轻国的标题会变，根据aid判断是否存在同一目录，存在则重命名
+            await lightnovel_mkdir(book_path, book)
             # 非合集处理，直接跳转到目标页面
             await get_lightnovel_single(book_path, book, session)
         else:
+            book_path = SAVE_DIR + 'lightnovel/' + book['title'] + '_' + str(book['sid'])
+            # 轻国的标题会变，根据sid判断是否存在同一目录，存在则重命名
+            await lightnovel_mkdir(book_path, book)
             # 合集处理，先从合集获取章节再获取内容
             await get_lightnovel_chapter(book_path, book, session)
 
@@ -54,10 +61,10 @@ async def get_lightnovel_chapter(book_path, book, session):
     await get_lightnovel_content(book_path, chapter_list, session)
 
 
-async def get_lightnovel_content(book_path, chapter_list, session, is_purchase=IS_PURCHASE):
+async def get_lightnovel_content(book_path, chapter_list, session):
     for chapter in chapter_list:
         # 处理下换行符等特殊符号
-        chapter['title'] = format_text(chapter['title'])
+        chapter['title'] = format_text(str(chapter['title']))
         content_path = book_path + '/' + chapter['title'] + '.txt'
         if not os.path.exists(content_path) or ALWAYS_UPDATE_CHAPTER:
             # 睡眠
@@ -67,15 +74,17 @@ async def get_lightnovel_content(book_path, chapter_list, session, is_purchase=I
             content_text = await http_get_text('lightnovel', chapter['url'], session)
             # 轻币打钱
             if '以下内容需要解锁观看' in content_text:
-                if is_purchase:
+                if IS_PURCHASE:
                     content_body = html.fromstring(content_text)
                     cost_text = content_body.xpath('//button[contains(@class,\'unlock\')]/text()')[0]
                     cost = get_cost(cost_text)
                     if cost < MAX_PURCHASE:
                         await http_post_pay(chapter['aid'], cost, session)
-                        await get_lightnovel_content(book_path, chapter_list, session, False)
-            # 排除仅app
-            elif '您可能没有访问权限' not in content_text:
+                        content_text = await http_get_text('lightnovel', chapter['url'], session)
+            if '您可能没有访问权限' in content_text:
+                # 仅app就没办法了
+                write_str_data(content_path, '仅app')
+            else:
                 content_body = html.fromstring(content_text)
                 # 文字内容
                 content_list = content_body.xpath(XPATH_DICT['lightnovel_content'])
@@ -195,14 +204,25 @@ async def http_post_pay(aid, cost, session):
 
 
 async def lightnovel_mkdir(book_path, book):
+    if not os.path.exists(SAVE_DIR + 'lightnovel/'):
+        os.makedirs(SAVE_DIR + 'lightnovel/')
     dir_list = os.listdir(SAVE_DIR + 'lightnovel/')
     if dir_list:
         rename_flag = False
         for dir in dir_list:
-            if str(book['aid']) in dir:
-                dir = SAVE_DIR + 'lightnovel/' + dir
-                os.rename(dir, book_path)
-                rename_flag = True
+            if book['sid'] == 0:
+                if '_' + str(book['aid']) in dir:
+                    dir = SAVE_DIR + 'lightnovel/' + dir
+                    os.rename(dir, book_path)
+                    rename_flag = True
+                    break
+            else:
+                if '_' + str(book['sid']) in dir:
+                    dir = SAVE_DIR + 'lightnovel/' + dir
+                    os.rename(dir, book_path)
+                    rename_flag = True
+                    break
+
         if not rename_flag:
             os.makedirs(book_path)
     else:
@@ -211,33 +231,14 @@ async def lightnovel_mkdir(book_path, book):
 
 async def get_chapter_list(chapter_script_text, book):
     chapter_list = []
-    # 有两种类型，正则尝试两次
-    chapter_re = format_text('.aid=', '";', chapter_script_text)
-    if chapter_re:
-        for chapter_text in chapter_re:
-            try:
-                chapter = {'title': chapter_text.split('title="')[1],
-                           'url': URL_CONFIG['lightnovel_chapter'] % int(chapter_text.split(';')[0]),
-                           'aid': int(chapter_text.split(';')[0])}
-                chapter_list.append(chapter)
-            except Exception as e:
-                continue
-    else:
-        chapter_re2 = format_text(',aid:', '",banner', chapter_script_text)
-        if chapter_re2:
-            for chapter_text in chapter_re2:
-                try:
-                    chapter = {'title': chapter_text.split('title:"')[1],
-                               'url': URL_CONFIG['lightnovel_chapter'] % int(chapter_text.split(',title')[0]),
-                               'aid': int(chapter_text.split(',title')[0])}
-                    chapter_list.append(chapter)
-                except Exception as e:
-                    continue
-    # 把自己加进去
-    chapter_self = {'title': book['title'],
-                    'url': URL_CONFIG['lightnovel_chapter'] % book['aid'],
-                    'aid': book['aid']}
-    chapter_list.append(chapter_self)
+    chapter_text = await get_series(chapter_script_text)
+    chapter_text_list = chapter_text['data'][0]['series']['articles']
+    for _chapter in chapter_text_list:
+        chapter = {'title': _chapter['title'],
+                  'url': URL_CONFIG['lightnovel_chapter'] % _chapter['aid'],
+                  'aid': _chapter['aid']}
+        chapter_list.append(chapter)
+    return chapter_list
 
 
 async def oldlightnovel_get_book_data(page_body, session):
@@ -257,7 +258,7 @@ async def oldlightnovel_get_book_data(page_body, session):
             page_num = get_cost(str(follow_page_body.xpath(XPATH_DICT['oldlightnovel_num'])[0]))
             # 从第二页开始抓
             if page_num > 1:
-                for num in range(2, page_num+1):
+                for num in range(2, page_num + 1):
                     # 循环获取剩余页的内容
                     loop_url = URL_CONFIG['oldlightnovel_chapter'] % (follow_url, str(num))
                     loop_text = await http_get_text('', loop_url, session)
