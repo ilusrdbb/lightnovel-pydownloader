@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # @Time : 2022/11/30 09:00
 # @Author : chaocai
+
 import subprocess
 from functools import partial
 subprocess.Popen = partial(subprocess.Popen, encoding='utf-8')

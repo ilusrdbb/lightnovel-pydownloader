@@ -1,3 +1,8 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# @Time : 2022/12/09 10:00
+# @Author : chaocai
+
 import os
 
 if __name__ == '__main__':
@@ -14,7 +19,6 @@ if __name__ == '__main__':
     with open(out_path, 'w', encoding='utf-8') as f:
         for filename in new_file_list:
             filepath = book_path + '/' + filename
-            # 遍历单个文件，读取行数
             with open(filepath, encoding='utf-8') as ff:
                 txt = ff.read()
                 f.write(txt)

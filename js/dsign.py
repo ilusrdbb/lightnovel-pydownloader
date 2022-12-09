@@ -1,5 +1,9 @@
-import re
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# @Time : 2022/11/30 09:00
+# @Author : chaocai
 
+import re
 
 async def js_dsign(js):
     js = js[31:-9]
