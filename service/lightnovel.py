@@ -38,13 +38,13 @@ async def _async_get_lightnovel_book(book, session, thread_count):
         book['title'] = format_text(book['title'])
         # 轻国分合集、非合集，非合集相当于只有一章的合集
         if book['sid'] == 0:
-            book_path = SAVE_DIR + 'lightnovel/' + book['title'] + '_' + str(book['aid'])
+            book_path = SAVE_DIR + 'lightnovel/' + book['title'] + '_' + str(book['aid']) + '_'
             # 轻国的标题会变，根据aid判断是否存在同一目录，存在则重命名
             await lightnovel_mkdir(book_path, book)
             # 非合集处理，直接跳转到目标页面
             await get_lightnovel_single(book_path, book, session)
         else:
-            book_path = SAVE_DIR + 'lightnovel/' + book['title'] + '_' + str(book['sid'])
+            book_path = SAVE_DIR + 'lightnovel/' + book['title'] + '_' + str(book['sid']) + '_'
             # 轻国的标题会变，根据sid判断是否存在同一目录，存在则重命名
             await lightnovel_mkdir(book_path, book)
             # 合集处理，先从合集获取章节再获取内容
@@ -211,13 +211,13 @@ async def lightnovel_mkdir(book_path, book):
         rename_flag = False
         for dir in dir_list:
             if book['sid'] == 0:
-                if '_' + str(book['aid']) in dir:
+                if '_' + str(book['aid']) + '_' in dir:
                     dir = SAVE_DIR + 'lightnovel/' + dir
                     os.rename(dir, book_path)
                     rename_flag = True
                     break
             else:
-                if '_' + str(book['sid']) in dir:
+                if '_' + str(book['sid']) + '_' in dir:
                     dir = SAVE_DIR + 'lightnovel/' + dir
                     os.rename(dir, book_path)
                     rename_flag = True

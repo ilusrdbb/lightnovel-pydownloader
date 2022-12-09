@@ -57,6 +57,8 @@ async def save_pic_list(site_type, path, pic_list, session):
             if '?' in pic_name:
                 pic_name = pic_name.replace('?' + pic_url.split('?')[-1], '')
             pic_name = pic_name.replace('?', '_')
+            if len(pic_name) > 100:
+                pic_name = pic_name[0:100]
             pic_path = path + '_' + pic_name
             pic_res = await http_get_pic(pic_url, session, 'https://www.lightnovel.us/')
             if pic_res:
@@ -70,7 +72,7 @@ async def http_get_text(site_type, url, session):
     if site_type == 'oldlightnovel':
         headers['Referer'] = URL_CONFIG['oldlightnovel_varify']
     if site_type == 'lightnovel':
-        headers['Cookie'] = '_ga=GA1.2.621722507.1669624080; token={%22security_key%22:%' \
+        headers['Cookie'] = 'token={%22security_key%22:%22' \
                             + glo.get_value('gl_lightnovel_token') + '%22}'
     # 代理
     proxy = PROXIES_URL if PROXIES_URL else None
