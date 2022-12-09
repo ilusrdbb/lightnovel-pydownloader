@@ -117,8 +117,10 @@ async def get_lightnovel_single(book_path, book, session, is_purchase=IS_PURCHAS
                 if cost < MAX_PURCHASE:
                     await http_post_pay(book['aid'], cost, session)
                     await get_lightnovel_single(book_path, book, session, False)
-        # 排除仅app
-        elif '您可能没有访问权限' not in content_text:
+        if '您可能没有访问权限' in content_text:
+            # 仅app就没办法了
+            write_str_data(content_path, '仅app')
+        else:
             content_body = html.fromstring(content_text)
             # 文字内容
             content_list = content_body.xpath(XPATH_DICT['lightnovel_content'])
