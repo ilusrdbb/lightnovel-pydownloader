@@ -67,7 +67,7 @@ async def get_lightnovel_content(book_path, chapter_list, session):
         # 处理下换行符等特殊符号
         chapter['title'] = format_text(str(chapter['title']))
         content_path = book_path + '/' + chapter['title'] + '.txt'
-        if not os.path.exists(content_path) or ALWAYS_UPDATE_CHAPTER:
+        if not os.path.exists(content_path):
             # 睡眠
             if SLEEP_TIME > 0:
                 await asyncio.sleep(random.random() * SLEEP_TIME)
