@@ -65,7 +65,7 @@ async def get_lightnovel_chapter(book_path, book, session):
 async def get_lightnovel_content(book_path, chapter_list, session):
     for chapter in chapter_list:
         # 处理下换行符等特殊符号
-        chapter['title'] = format_text(str(chapter['title']))
+        chapter['title'] = format_text(str(chapter['title'])).lstrip()
         content_path = book_path + '/' + chapter['title'] + '.txt'
         if not os.path.exists(content_path):
             # 睡眠
