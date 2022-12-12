@@ -137,7 +137,7 @@ async def save_chapter_data(site_type, chapter_data, book_path, session):
         if not chapter_dict['_index'] or not chapter_dict['_url']:
             continue
         # 处理下换行符等特殊符号
-        chapter_dict['_index'][0] = format_text(chapter_dict['_index'][0])
+        chapter_dict['_index'][0] = format_text(chapter_dict['_index'][0]).lstrip()
         chapter_path = book_path + '/' + chapter_dict['_index'][0] + '.txt'
         if not os.path.exists(chapter_path) or ALWAYS_UPDATE_CHAPTER:
             # 睡眠
