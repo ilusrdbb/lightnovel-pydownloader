@@ -77,6 +77,8 @@ async def get_lightnovel_content(book_path, chapter_list, session):
             if '以下内容需要解锁观看' in content_text:
                 if IS_PURCHASE:
                     content_body = html.fromstring(content_text)
+                    if not content_body.xpath('//button[contains(@class,\'unlock\')]/text()'):
+                        continue
                     cost_text = content_body.xpath('//button[contains(@class,\'unlock\')]/text()')[0]
                     cost = get_cost(cost_text)
                     if cost < MAX_PURCHASE:
@@ -113,11 +115,12 @@ async def get_lightnovel_single(book_path, book, session, is_purchase=IS_PURCHAS
         if '以下内容需要解锁观看' in content_text:
             if is_purchase:
                 content_body = html.fromstring(content_text)
-                cost_text = content_body.xpath('//button[contains(@class,\'unlock\')]/text()')[0]
-                cost = get_cost(cost_text)
-                if cost < MAX_PURCHASE:
-                    await http_post_pay(book['aid'], cost, session)
-                    await get_lightnovel_single(book_path, book, session, False)
+                if content_body.xpath('//button[contains(@class,\'unlock\')]/text()'):
+                    cost_text = content_body.xpath('//button[contains(@class,\'unlock\')]/text()')[0]
+                    cost = get_cost(cost_text)
+                    if cost < MAX_PURCHASE:
+                        await http_post_pay(book['aid'], cost, session)
+                        await get_lightnovel_single(book_path, book, session, False)
         if '您可能没有访问权限' in content_text:
             # 仅app就没办法了
             write_str_data(content_path, '仅app')
