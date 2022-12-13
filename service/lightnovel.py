@@ -4,13 +4,15 @@
 # @Author : chaocai
 
 import asyncio
+import os
 import random
 
 from lxml import html
+from tenacity import *
 
 from js.runjs import get_series
-from service import glo
-from service.util import *
+from service import glo, util
+from config import *
 
 
 async def _build_lightnovel_book(session):
@@ -36,7 +38,7 @@ async def _async_get_lightnovel_book(book, session, thread_count):
     async with thread_count:
         # 创建目录
         # 处理下换行符等特殊符号
-        book['title'] = format_text(book['title'])
+        book['title'] = util.format_text(book['title'])
         # 轻国分合集、非合集，非合集相当于只有一章的合集
         if book['sid'] == 0:
             book_path = SAVE_DIR + 'lightnovel/' + book['title'] + '_' + str(book['aid']) + '_'
@@ -54,7 +56,7 @@ async def _async_get_lightnovel_book(book, session, thread_count):
 
 async def get_lightnovel_chapter(book_path, book, session):
     chapter_url = URL_CONFIG['lightnovel_book'] % book['sid']
-    chapter_text = await http_get_text('lightnovel', chapter_url, session)
+    chapter_text = await util.http_get_text('lightnovel', chapter_url, session)
     chapter_body = html.fromstring(chapter_text)
     chapter_script_text = chapter_body.xpath('//script/text()')[0]
     # 正则获取章节地址和章节名
@@ -65,14 +67,14 @@ async def get_lightnovel_chapter(book_path, book, session):
 async def get_lightnovel_content(book_path, chapter_list, session):
     for chapter in chapter_list:
         # 处理下换行符等特殊符号
-        chapter['title'] = format_text(str(chapter['title']))
+        chapter['title'] = util.format_text(str(chapter['title']))
         content_path = book_path + '/' + chapter['title'] + '.txt'
         if not os.path.exists(content_path):
             # 睡眠
             if SLEEP_TIME > 0:
                 await asyncio.sleep(random.random() * SLEEP_TIME)
             print('开始获取章节：%s 地址：%s' % (chapter['title'], chapter['url']))
-            content_text = await http_get_text('lightnovel', chapter['url'], session)
+            content_text = await util.http_get_text('lightnovel', chapter['url'], session)
             # 轻币打钱
             if '以下内容需要解锁观看' in content_text:
                 if IS_PURCHASE:
@@ -80,13 +82,13 @@ async def get_lightnovel_content(book_path, chapter_list, session):
                     if not content_body.xpath('//button[contains(@class,\'unlock\')]/text()'):
                         continue
                     cost_text = content_body.xpath('//button[contains(@class,\'unlock\')]/text()')[0]
-                    cost = get_cost(cost_text)
+                    cost = util.get_cost(cost_text)
                     if cost < MAX_PURCHASE:
                         await http_post_pay(chapter['aid'], cost, session)
-                        content_text = await http_get_text('lightnovel', chapter['url'], session)
+                        content_text = await util.http_get_text('lightnovel', chapter['url'], session)
             if '您可能没有访问权限' in content_text:
                 # 仅app就没办法了
-                write_str_data(content_path, '仅app')
+                util.write_str_data(content_path, '仅app')
             else:
                 content_body = html.fromstring(content_text)
                 # 文字内容
@@ -95,14 +97,14 @@ async def get_lightnovel_content(book_path, chapter_list, session):
                 # 插画
                 pic_list = content_body.xpath(XPATH_DICT['lightnovel_illustration'])
                 # 保存内容
-                write_str_data(content_path, content)
+                util.write_str_data(content_path, content)
                 # 保存插画
-                await save_pic_list('lightnovel', book_path + '/' + chapter['title'], pic_list, session)
+                await util.save_pic_list('lightnovel', book_path + '/' + chapter['title'], pic_list, session)
 
 
 async def get_lightnovel_single(book_path, book, session, is_purchase=IS_PURCHASE):
     # 处理下换行符等特殊符号
-    book['title'] = format_text(book['title'])
+    book['title'] = util.format_text(book['title'])
     content_path = book_path + '/' + book['title'] + '.txt'
     if not os.path.exists(content_path) or ALWAYS_UPDATE_CHAPTER:
         # 睡眠
@@ -110,20 +112,20 @@ async def get_lightnovel_single(book_path, book, session, is_purchase=IS_PURCHAS
             await asyncio.sleep(random.random() * SLEEP_TIME)
         content_url = URL_CONFIG['lightnovel_chapter'] % book['aid']
         print('开始获取章节：%s 地址：%s' % (book['title'], content_url))
-        content_text = await http_get_text('lightnovel', content_url, session)
+        content_text = await util.http_get_text('lightnovel', content_url, session)
         # 轻币打钱
         if '以下内容需要解锁观看' in content_text:
             if is_purchase:
                 content_body = html.fromstring(content_text)
                 if content_body.xpath('//button[contains(@class,\'unlock\')]/text()'):
                     cost_text = content_body.xpath('//button[contains(@class,\'unlock\')]/text()')[0]
-                    cost = get_cost(cost_text)
+                    cost = util.get_cost(cost_text)
                     if cost < MAX_PURCHASE:
                         await http_post_pay(book['aid'], cost, session)
                         await get_lightnovel_single(book_path, book, session, False)
         if '您可能没有访问权限' in content_text:
             # 仅app就没办法了
-            write_str_data(content_path, '仅app')
+            util.write_str_data(content_path, '仅app')
         else:
             content_body = html.fromstring(content_text)
             # 文字内容
@@ -132,9 +134,9 @@ async def get_lightnovel_single(book_path, book, session, is_purchase=IS_PURCHAS
             # 插画
             pic_list = content_body.xpath(XPATH_DICT['lightnovel_illustration'])
             # 保存内容
-            write_str_data(content_path, content)
+            util.write_str_data(content_path, content)
             # 保存插画
-            await save_pic_list('lightnovel', book_path + '/' + book['title'], pic_list, session)
+            await util.save_pic_list('lightnovel', book_path + '/' + book['title'], pic_list, session)
 
 
 @retry(stop=stop_after_attempt(RETRY_TIME))
@@ -254,20 +256,20 @@ async def oldlightnovel_get_book_data(page_body, session):
     print('开始抓取：%s' % book_data['_title'])
     # 只看楼主
     follow_url = URL_CONFIG['oldlightnovel_book'] % page_body.xpath(XPATH_DICT['oldlightnovel_follow'])[0]
-    follow_text = await http_get_text('', follow_url, session)
+    follow_text = await util.http_get_text('', follow_url, session)
     if follow_text:
         follow_page_body = html.fromstring(follow_text)
         # 第一页的全部内容
         chapter_list = follow_page_body.xpath(XPATH_DICT['oldlightnovel_chapter'])
         # 获取页数
         if follow_page_body.xpath(XPATH_DICT['oldlightnovel_num']):
-            page_num = get_cost(str(follow_page_body.xpath(XPATH_DICT['oldlightnovel_num'])[0]))
+            page_num = util.get_cost(str(follow_page_body.xpath(XPATH_DICT['oldlightnovel_num'])[0]))
             # 从第二页开始抓
             if page_num > 1:
                 for num in range(2, page_num + 1):
                     # 循环获取剩余页的内容
                     loop_url = URL_CONFIG['oldlightnovel_chapter'] % (follow_url, str(num))
-                    loop_text = await http_get_text('', loop_url, session)
+                    loop_text = await util.http_get_text('', loop_url, session)
                     if loop_text:
                         loop_page_body = html.fromstring(loop_text)
                         chapter_list += loop_page_body.xpath(XPATH_DICT['oldlightnovel_chapter'])
@@ -277,10 +279,10 @@ async def oldlightnovel_get_book_data(page_body, session):
 
 async def save_oldlightnovel_book(book_data, session):
     # 处理下换行符等特殊符号
-    book_data['_title'][0] = format_text(book_data['_title'][0])
+    book_data['_title'][0] = util.format_text(book_data['_title'][0])
     # 创建目录
     book_path = SAVE_DIR + 'oldlightnovel/' + book_data['_title'][0]
-    await mkdir(book_path)
+    await util.mkdir(book_path)
     # 保存章节
     chapter_index = 1
     for chapter_text in book_data['_chapter']:
@@ -297,7 +299,7 @@ async def save_oldlightnovel_book(book_data, session):
                 continue
             else:
                 # 保存内容
-                write_str_data(chapter_path, content)
+                util.write_str_data(chapter_path, content)
                 # 保存插画
-                await save_pic_list('oldlightnovel', book_path + '/' + str(chapter_index), pic_list, session)
+                await util.save_pic_list('oldlightnovel', book_path + '/' + str(chapter_index), pic_list, session)
         chapter_index += 1

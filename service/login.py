@@ -2,14 +2,13 @@
 # -*- coding: utf-8 -*-
 # @Time : 2022/11/30 09:00
 # @Author : chaocai
-
+import json
 import random
 
 from lxml import html
 
 from js.runjs import js_md5
-from service import glo
-from service.util import *
+from service import glo, util
 from config import *
 
 
@@ -57,12 +56,12 @@ async def oldlightnovel_get_code(url, session):
         # 调用接口获取js
         js = await oldlightnovel_get_js(session)
         # 分析js获取验证码地址
-        pic_url = URL_CONFIG['oldlightnovel_book'] % get_split_str_list('height="30" src="', '" class="vm"', js)[0]
-        pic_res = await http_get_pic(pic_url, session, URL_CONFIG['oldlightnovel_varify'])
+        pic_url = URL_CONFIG['oldlightnovel_book'] % util.get_split_str_list('height="30" src="', '" class="vm"', js)[0]
+        pic_res = await util.http_get_pic(pic_url, session, URL_CONFIG['oldlightnovel_varify'])
         if pic_res:
             # 图片写入
             pic_path = SAVE_DIR + 'code.jpg'
-            write_byte_data(pic_path, pic_res)
+            util.write_byte_data(pic_path, pic_res)
             print('已获取验证码，图片存放位置%s' % pic_path)
     except Exception as e:
         print('获取验证码失败！')

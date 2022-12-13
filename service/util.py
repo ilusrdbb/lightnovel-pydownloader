@@ -7,10 +7,9 @@ import json
 import os
 import re
 
-from tenacity import retry, stop_after_attempt
-
+from tenacity import *
+from service import glo
 from config import *
-from service.login import *
 
 
 async def mkdir(path):
@@ -38,10 +37,10 @@ def get_split_str_list(start, end, str):
 
 
 def format_text(str):
-    return str.replace('/', '_').replace('.', '_').replace('?', '_').replace('\n', '')\
-            .replace('\xa0', '').replace('\r', '').replace('\t', '')\
-            .replace('\u3000', '').replace('\\u002F', '_').replace(':', '_').replace('*', '_')\
-            .replace('<', '').replace('>', '').replace('"', '').replace('|', '').replace('\\', '')
+    return str.replace('/', '_').replace('.', '_').replace('?', '_').replace('\n', '') \
+        .replace('\xa0', '').replace('\r', '').replace('\t', '') \
+        .replace('\u3000', '').replace('\\u002F', '_').replace(':', '_').replace('*', '_') \
+        .replace('<', '').replace('>', '').replace('"', '').replace('|', '').replace('\\', '')
 
 
 def get_cost(str):
