@@ -5,7 +5,7 @@
 
 import asyncio
 import os
-from random import random
+import random
 
 import aiohttp
 from lxml import html
