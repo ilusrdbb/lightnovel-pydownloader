@@ -3,3 +3,4 @@ lxml~=4.9.1
 tenacity~=8.1.0
 Brotli~=1.0.9
 PyExecJS~=1.5.1
+zhconv~=1.4.3

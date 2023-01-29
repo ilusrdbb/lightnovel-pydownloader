@@ -6,6 +6,7 @@
 import json
 import os
 import re
+import zhconv
 
 from tenacity import *
 from service import glo
@@ -23,6 +24,8 @@ def write_byte_data(path, byte):
 
 
 def write_str_data(path, str):
+    if IS_CONVERT_HANS:
+        str = zhconv.convert(str, 'zh-hans')
     with open(path, 'w', encoding='utf-8') as f:
         f.write(str)
 

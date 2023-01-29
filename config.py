@@ -38,11 +38,13 @@ BLACK_LIST = []
 # 开始页
 START_PAGE = 1
 # 结束页
-MAX_PAGE = 10
+MAX_PAGE = 1
 # 是否总是更新封面和描述信息
 ALWAYS_UPDATE_COVER = False
 # 是否总是更新章节内容 比如轻国的一些小说在一楼更新就需要打开
 ALWAYS_UPDATE_CHAPTER = False
+# 是否自动繁转简
+IS_CONVERT_HANS = True
 # 轻国屏蔽aid，比如置顶公告
 BLACK_AID_LIST = [1113228, 969547, 1099310, 1048596]
 # 旧真白萌大板块id，全量抓取会循环板块抓取 [36, 316, 321, 317, 162, 324, 164, 165]
