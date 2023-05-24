@@ -1,0 +1,107 @@
+# 抓取站点 masiro 真白萌，esj esj，oldlightnovel 某站旧站，lightnovel 某站新站
+site: 'esj'
+# 白名单，填入书籍地址，某站不支持该模式
+white_list: []
+# 黑名单，填入书籍地址，某站不支持该模式
+black_list: []
+# 最大线程数 不要设置的过大 小心被ban 某站和真白萌建议设置为3以下
+max_thread: 3
+# 是否需要登录 有的网站比如真白萌只允许登录查看 请确保自己账号的权限充足
+is_login: true
+# 登录账号密码
+login_info:
+  username: ''
+  password: ''
+# 开始页
+start_page: 1
+# 结束页
+end_page: 1
+# 代理地址 不支持https代理 注意esj日轻只能挂非中日韩节点的代理
+proxy_url: ''
+# 某站或真白萌花金币购买 注意剩余金币
+is_purchase: true
+# 花费上限，花费高于此值的帖子不花费，请根据自身账号情况修改
+max_purchase: 20
+# 请求超时时间 单位秒
+time_out: 10
+# 抓取间隔时间 比如设置2则每次抓章节前睡随机0~2秒 设置0不生效
+sleep_time: 2
+# 字数小于此值且无图片的章节不生成epub章节 避免epub生成公告这种章节 设置0无限制
+least_words: 200
+# 大小小于此值的图片不下载 设置0无限制 单位byte
+least_pic: 100000
+# 是否抓取图片
+get_pic: true
+# 是否全局繁转简
+convert_hans: true
+# 是否强制更新 关闭时检测到目录下存在章节会跳过读取 开启时不论如何都会覆盖刷新
+always_update: false
+# txt保存目录 目录/站点/各章节.txt
+txt_dir: './books/'
+# 是否生成epub
+generate_epub: true
+# epub保存目录 目录/站点/书名.epub
+epub_dir: './epub/'
+# 是否开启签到 该功能暂未开发
+is_sign: true
+# 定时抓取 cron表达式 该功能暂未开发
+cron: '0 0 10 * * ?'
+
+# 下面的设置请谨慎更改 除非你对源码有足够的了解
+# 通用请求头
+headers:
+  Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9'
+  Accept-Encoding: 'gzip, deflate, br'
+  Accept-Language: 'zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7'
+  User-Agent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36'
+# 地址配置
+url_config:
+  esj:
+    login: 'https://www.esjzone.cc/inc/mem_login.php'
+    page: 'https://www.esjzone.cc/list-11/%d.html'
+    book: 'https://www.esjzone.cc%s'
+    pic: 'https://www.esjzone.cc%s'
+  masiro:
+    login: 'https://masiro.me/admin/auth/login'
+    page: 'https://masiro.me/admin/loadMoreNovels?ori=0&page=%d'
+    book: 'https://masiro.me%s'
+    pic: 'https://masiro.me%s'
+  oldlightnovel:
+    login: 'https://obsolete.lightnovel.us/%s&inajax=1'
+    page: 'https://obsolete.lightnovel.us/forum-173-%d.html'
+    pic: 'https://obsolete.lightnovel.us/%s'
+  lightnovel:
+    login: 'https://www.lightnovel.us/proxy/api/user/login'
+# xpath配置
+xpath_config:
+  esj:
+    page: '//a[@class=''card-img-tiles'']/@href'
+    title: '//div[contains(@class,''book-detail'')]/h2/text()'
+    author: '//div[contains(@class,''book-detail'')]/ul/li[2]/a/text()'
+    tags: '//section[contains(@class,''widget-tags'')]/a/text()'
+    introduction: '//div[@class=''description'']//text()'
+    cover: '//div[contains(@class,''product-gallery'')]/a/@href'
+    chapter: '//div[@id=''chapterList'']/a/@href'
+    chapter_title: '//section[@class=''container'']//h2/text()'
+    content: '//div[contains(@class,''forum-content'')]/p//text()'
+    pic: '//div[contains(@class,''forum-content'')]//img/@src'
+  masiro:
+    page: '//div[@class=''layui-card'']/a[1]/@href'
+    title: '//div[@class=''novel-title'']/text()'
+    author: '//div[@class=''author'']/a/text()'
+    tags: '//div[@class=''tags'']//a/span/text()'
+    introduction: '//div[@class=''brief'']/text()'
+    cover: '//img[@class=''img img-thumbnail'']/@src'
+    chapter: '//ul[@class=''episode-ul'']//a/@href'
+    chapter_title: '//span[@class=''novel-title'']/div/text()'
+    content: '//div[@class=''box-body nvl-content'']//text()'
+    pic: '//div[@class=''box-body nvl-content'']//img/@src'
+  oldlightnovel:
+    page: '//div[@class=''layui-card'']/a[1]/@href'
+    title: '//span[@id=''thread_subject'']/text()'
+    chapter: '//div[@class=''114514'']'
+
+
+
+
+
