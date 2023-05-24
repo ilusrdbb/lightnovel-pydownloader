@@ -7,8 +7,6 @@ import json
 import os
 import random
 import re
-from PIL import Image
-import pillow_avif
 
 from lxml import html
 from zhconv import zhconv
@@ -236,22 +234,10 @@ async def download_pic(login_info, book_data, chapter_data, session):
             util.write_byte_data(path, pic)
             if pic_name.endswith('.avif'):
                 # 轻国avif转png
-                path = convert_avif_png(path)
+                path = util.convert_avif_png(path)
             pics_path.append(path)
             pic_count += 1
     chapter_data.pic = pics_path
-
-
-# avif转png
-def convert_avif_png(path):
-    avif_image = Image.open(path)
-    png_image = avif_image.convert('RGB')
-    output_path = os.path.splitext(path)[0] + '.png'
-    png_image.save(output_path, 'PNG')
-    avif_image.close()
-    png_image.close()
-    os.remove(path)
-    return output_path
 
 
 # 插图文件名规范

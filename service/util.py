@@ -7,6 +7,8 @@ import json
 import os
 import re
 import zlib
+from PIL import Image
+import pillow_avif
 
 from tenacity import retry, stop_after_attempt
 from zhconv import zhconv
@@ -59,6 +61,7 @@ async def http_post(url, headers, param, success_info, fail_info, is_json, sessi
 
 
 # 获取图片流
+@retry(stop=stop_after_attempt(3))
 async def http_get_pic(url, headers, session, log=''):
     proxy = config.read('proxy_url') if config.read('proxy_url') else None
     pic = None
@@ -136,3 +139,15 @@ def unzip(str):
     b = base64.b64decode(str)
     s = zlib.decompress(b).decode()
     return json.loads(s)
+
+
+# avif转png
+def convert_avif_png(path):
+    avif_image = Image.open(path)
+    png_image = avif_image.convert('RGB')
+    output_path = os.path.splitext(path)[0] + '.png'
+    png_image.save(output_path, 'PNG')
+    avif_image.close()
+    png_image.close()
+    os.remove(path)
+    return output_path
