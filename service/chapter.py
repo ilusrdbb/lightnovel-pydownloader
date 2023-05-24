@@ -8,6 +8,7 @@ import os
 import random
 import re
 from PIL import Image
+import pillow_avif
 
 from lxml import html
 from zhconv import zhconv
@@ -224,6 +225,8 @@ async def download_pic(login_info, book_data, chapter_data, session):
         pic_name = format_pic_name(pic_url)
         if login_info.site == 'oldlightnovel':
             pic_name = str(pic_count) + '.jpg'
+        if pic_name.endswith('.i'):
+            pic_name = pic_name.replace('.i', '.avif')
         path = book_data.path + '/#' + str(chapter_data.order) + '_' + chapter_data.id + '_' + pic_name
         pic = await util.http_get_pic(pic_url, util.build_headers(login_info, True, False), session,
                                       book_data.title + '_' + chapter_data.title)
@@ -231,7 +234,7 @@ async def download_pic(login_info, book_data, chapter_data, session):
             if config.read('least_pic') > 0 and len(pic) < config.read('least_pic'):
                 continue
             util.write_byte_data(path, pic)
-            if pic_name.endswith('.i'):
+            if pic_name.endswith('.avif'):
                 # 轻国avif转png
                 path = convert_avif_png(path)
             pics_path.append(path)
@@ -242,9 +245,9 @@ async def download_pic(login_info, book_data, chapter_data, session):
 # avif转png
 def convert_avif_png(path):
     avif_image = Image.open(path)
-    png_image = avif_image.convert("RGB")
-    output_path = os.path.splitext(path)[0] + ".png"
-    png_image.save(output_path, "PNG")
+    png_image = avif_image.convert('RGB')
+    output_path = os.path.splitext(path)[0] + '.png'
+    png_image.save(output_path, 'PNG')
     avif_image.close()
     png_image.close()
     os.remove(path)
