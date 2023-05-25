@@ -87,7 +87,6 @@ async def build_chapter(login_info, book_data, chapter_data, session):
 
 # 轻国抓取章节内容
 async def lightnovel_build_chapter(login_info, book_data, chapter_data, session):
-    # TODO 轻国打钱
     page_url = 'https://api.lightnovel.us/api/article/get-detail'
     param_str = '{"platform":"android","client":"app","sign":"","ver_name":"0.11.50","ver_code":190,' \
                 '"d":{"aid":' + chapter_data.id + ',"simple":0,"security_key":"' + login_info.token + '"},"gz":1}'
@@ -95,6 +94,12 @@ async def lightnovel_build_chapter(login_info, book_data, chapter_data, session)
                                 '%s已获取章节 %s' % (book_data.title, chapter_data.title),
                                 '%s章节连接已断开，重试中... %s' % (book_data.title, chapter_data.title), True, session)
     text_data = util.unzip(text)['data']
+    # 轻国打钱
+    if text_data.get('pay_info'):
+        if text_data.get('pay_info')['is_paid'] == 0 and config.read('is_purchase'):
+            cost = text_data.get('pay_info')['price']
+            if cost > config.read('max_purchase'):
+                text_data = await lightnovel_pay(login_info, cost, book_data, chapter_data, text_data, session)
     # 正则从文本里提取插图
     pic_pattern = r'\[img\](.*?)\[/img\]'
     chapter_data.pic = re.findall(pic_pattern, text_data['content'])
@@ -110,6 +115,28 @@ async def lightnovel_build_chapter(login_info, book_data, chapter_data, session)
         await download_pic(login_info, book_data, chapter_data, session)
 
 
+# 轻国打钱
+async def lightnovel_pay(login_info, cost, book_data, chapter_data, text_data, session):
+    print('%s开始打钱..花费:%s' % (book_data.title, str(cost)))
+    cost_url = 'https://api.lightnovel.us/api/coin/use'
+    cost_param = '{"platform":"android","client":"app","sign":"","ver_name":"0.11.50","ver_code":190,' \
+                 '"d":{"goods_id":1,"params":' + chapter_data.id + ',"price":' + str(cost) + \
+                 ',"number":1,"totla_price":' + str(cost) + ',' \
+                 '"security_key":"' + login_info.token + '"},"gz":1}'
+    cost_res = await util.http_post(cost_url, util.build_headers(login_info), json.loads(cost_param), None,
+                                    '%s打钱失败... %s' % (book_data.title, chapter_data.title), True, session)
+    if util.unzip(cost_res)['code'] == 0:
+        # 刷新章节内容
+        page_url = 'https://api.lightnovel.us/api/article/get-detail'
+        param_str = '{"platform":"android","client":"app","sign":"","ver_name":"0.11.50","ver_code":190,' \
+                    '"d":{"aid":' + chapter_data.id + ',"simple":0,"security_key":"' + login_info.token + '"},"gz":1}'
+        text = await util.http_post(page_url, util.build_headers(login_info), json.loads(param_str), None,
+                                    '%s章节连接已断开，重试中... %s' % (book_data.title, chapter_data.title), True, session)
+        return util.unzip(text)['data']
+    else:
+        return text_data
+
+
 # 构造章节标题、图片、内容
 async def _set_chapter(login_info, book_data, chapter_data, session):
     # esj不考虑外链
@@ -118,8 +145,8 @@ async def _set_chapter(login_info, book_data, chapter_data, session):
         chapter_data.title = chapter_data.url
         return
     text = await util.http_get(chapter_data.url, util.build_headers(login_info),
-                                '%s已获取章节 地址：%s' % (book_data.title, chapter_data.url),
-                                '章节连接已断开，重试中... %s' % chapter_data.url, session)
+                               '%s已获取章节 地址：%s' % (book_data.title, chapter_data.url),
+                               '章节连接已断开，重试中... %s' % chapter_data.url, session)
     page_body = html.fromstring(text)
     chapter_data.content = page_body.xpath(config.read('xpath_config')[login_info.site]['content'])
     chapter_data.pic = page_body.xpath(config.read('xpath_config')[login_info.site]['pic'])
@@ -137,17 +164,18 @@ async def chapter_purchase(login_info, book_data, chapter_data, page_body, sessi
         if not chapter_data.title and config.read('is_purchase'):
             cost = int(page_body.xpath('//input[@class=\'cost\']/@value')[0])
             if cost <= config.read('max_purchase'):
+                print('%s开始打钱..花费:%s' % (book_data.title, str(cost)))
                 res = await util.http_post('https://masiro.me/admin/pay', util.build_headers(login_info, False, True),
                                            {'type': '2', 'object_id': chapter_data.id, 'cost': cost}, None,
-                                            '%s %s 打钱失败！' % (book_data.title, chapter_data.id), False, session)
+                                           '%s %s 打钱失败！' % (book_data.title, chapter_data.id), False, session)
                 if res and json.loads(res)['code'] == 1:
-                    text = await util.http_get(chapter_data.url, util.build_headers(login_info),
-                                                '%s已获取章节 地址：%s' % (book_data.title, chapter_data.url),
-                                                '章节连接已断开，重试中... %s' % chapter_data.url, session)
+                    text = await util.http_get(chapter_data.url, util.build_headers(login_info), None,
+                                               '章节连接已断开，重试中... %s' % chapter_data.url, session)
                     page_body = html.fromstring(text)
                     chapter_data.content = page_body.xpath(config.read('xpath_config')[login_info.site]['content'])
                     chapter_data.pic = page_body.xpath(config.read('xpath_config')[login_info.site]['pic'])
-                    chapter_data.title = page_body.xpath(config.read('xpath_config')[login_info.site]['chapter_title'])[0]
+                    chapter_data.title = page_body.xpath(config.read('xpath_config')[login_info.site]['chapter_title'])[
+                        0]
 
 
 # 写入章节信息
@@ -170,11 +198,11 @@ async def _build_chapter(login_info, book_data, chapter_data, session):
 # 旧轻国抓取页面
 async def build_oldlightnovel_chapter(login_info, book_data, session):
     # 只看楼主
-    book_data.url = 'https://obsolete.lightnovel.us/forum.php?mod=viewthread&tid=%s&page=1&authorid=%s'\
+    book_data.url = 'https://obsolete.lightnovel.us/forum.php?mod=viewthread&tid=%s&page=1&authorid=%s' \
                     % (book_data.id, book_data.author_id)
     text = await util.http_get(book_data.url, util.build_headers(login_info),
-                                '%s已获取书籍 地址：%s' % (book_data.title, book_data.url),
-                                '书籍连接已断开，重试中... %s' % book_data.url, session)
+                               '%s已获取书籍 地址：%s' % (book_data.title, book_data.url),
+                               '书籍连接已断开，重试中... %s' % book_data.url, session)
     page_body = html.fromstring(text)
     await oldlightnovel_set_chapter(login_info, page_body, book_data, session)
     # 获取页数
@@ -183,10 +211,10 @@ async def build_oldlightnovel_chapter(login_info, book_data, session):
         page_num = int(re.findall('\d+', pages[0])[0])
         if page_num > 1:
             for num in range(2, page_num + 1):
-                page_url = 'https://obsolete.lightnovel.us/forum.php?mod=viewthread&tid=%s&page=%s&authorid=%s'\
-                        % (book_data.id, str(num), book_data.author_id)
+                page_url = 'https://obsolete.lightnovel.us/forum.php?mod=viewthread&tid=%s&page=%s&authorid=%s' \
+                           % (book_data.id, str(num), book_data.author_id)
                 text = await util.http_get(page_url, util.build_headers(login_info), None,
-                                            '书籍连接已断开，重试中... %s' % book_data.url, session)
+                                           '书籍连接已断开，重试中... %s' % book_data.url, session)
                 page_body = html.fromstring(text)
                 await oldlightnovel_set_chapter(login_info, page_body, book_data, session)
 
