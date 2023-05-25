@@ -67,6 +67,12 @@ async def masiro_get_token(login_info, session):
 
 # 登录入口
 async def login(login_info, session):
+    if login_info.site == 'masiro':
+        # 真白萌设置token
+        await login.masiro_get_token(login_info, session)
+    if login_info.site == 'oldlightnovel':
+        # 旧轻国获取hash
+        await login.oldlightnovel_get_hash(login_info, session)
     login_param = build_login_param(login_info)
     login_headers = build_login_headers(login_info)
     if login_info.site == 'oldlightnovel':
