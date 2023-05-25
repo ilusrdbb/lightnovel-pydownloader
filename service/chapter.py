@@ -122,7 +122,7 @@ async def lightnovel_pay(login_info, cost, book_data, chapter_data, text_data, s
     cost_param = '{"platform":"android","client":"app","sign":"","ver_name":"0.11.50","ver_code":190,' \
                  '"d":{"goods_id":1,"params":' + chapter_data.id + ',"price":' + str(cost) + \
                  ',"number":1,"totla_price":' + str(cost) + ',' \
-                 '"security_key":"' + login_info.token + '"},"gz":1}'
+                                                            '"security_key":"' + login_info.token + '"},"gz":1}'
     cost_res = await util.http_post(cost_url, util.build_headers(login_info), json.loads(cost_param), None,
                                     '%s打钱失败... %s' % (book_data.title, chapter_data.title), True, session)
     if util.unzip(cost_res)['code'] == 0:
@@ -174,8 +174,7 @@ async def chapter_purchase(login_info, book_data, chapter_data, page_body, sessi
                     page_body = html.fromstring(text)
                     chapter_data.content = page_body.xpath(config.read('xpath_config')[login_info.site]['content'])
                     chapter_data.pic = page_body.xpath(config.read('xpath_config')[login_info.site]['pic'])
-                    chapter_data.title = page_body.xpath(config.read('xpath_config')[login_info.site]['chapter_title'])[
-                        0]
+                    chapter_data.title = page_body.xpath(config.read('xpath_config')[login_info.site]['chapter_title'])[0]
 
 
 # 写入章节信息
@@ -184,8 +183,8 @@ async def _build_chapter(login_info, book_data, chapter_data, session):
     if not chapter_data.title:
         return
     # 写入文本
-    chapter_data.title = zhconv.convert(chapter_data.title, 'zh-hans') if config.read(
-        'convert_hans') else chapter_data.title
+    chapter_data.title = zhconv.convert(chapter_data.title, 'zh-hans') \
+        if config.read('convert_hans') else chapter_data.title
     chapter_data.title = util.format_text(chapter_data.title)
     content_path = book_data.path + '/#' + str(chapter_data.order) + '_' + \
                    chapter_data.title + '_' + chapter_data.id + '.txt'

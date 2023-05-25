@@ -26,7 +26,8 @@ def get_split_str_list(start, end, str):
 async def http_get(url, headers, success_info, fail_info, session):
     proxy = config.read('proxy_url') if config.read('proxy_url') else None
     try:
-        response = await session.get(url=url, headers=headers, proxy=proxy, timeout=config.read('time_out'))
+        response = await session.get(url=url, headers=headers, proxy=proxy,
+                                     timeout=config.read('time_out'))
         if not response.status == 200:
             raise Exception(fail_info) if fail_info else Exception()
         text = await response.text()
@@ -45,9 +46,11 @@ async def http_post(url, headers, param, success_info, fail_info, is_json, sessi
     proxy = config.read('proxy_url') if config.read('proxy_url') else None
     try:
         if is_json:
-            response = await session.post(url=url, headers=headers, proxy=proxy, json=param, timeout=config.read('time_out'))
+            response = await session.post(url=url, headers=headers, proxy=proxy,
+                                          json=param, timeout=config.read('time_out'))
         else:
-            response = await session.post(url=url, headers=headers, proxy=proxy, data=param, timeout=config.read('time_out'))
+            response = await session.post(url=url, headers=headers, proxy=proxy,
+                                          data=param, timeout=config.read('time_out'))
         if not response.status == 200:
             raise Exception(fail_info) if fail_info else Exception()
         text = await response.text()
@@ -66,7 +69,8 @@ async def http_get_pic(url, headers, session, log=''):
     proxy = config.read('proxy_url') if config.read('proxy_url') else None
     pic = None
     try:
-        response = await session.get(url=url, headers=headers, proxy=proxy, timeout=config.read('time_out'))
+        response = await session.get(url=url, headers=headers, proxy=proxy,
+                                     timeout=config.read('time_out'))
         pic = await response.read()
     except Exception:
         print('获取图片连接已断开 %s' % url)

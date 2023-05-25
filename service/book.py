@@ -68,7 +68,7 @@ async def build_book(login_info, book_urls, session):
 async def async_build_book(login_info, book_url, session, thread_count):
     async with thread_count:
         text = await util.http_get(book_url, util.build_headers(login_info), None,
-                                '书籍连接已断开，重试中... %s' % book_url, session)
+                                   '书籍连接已断开，重试中... %s' % book_url, session)
         page_body = html.fromstring(text)
         if login_info.site == 'oldlightnovel':
             book_data = Book(login_info.site, get_book_id(login_info, book_url),
@@ -174,7 +174,8 @@ async def lightnovel_build_book(login_info, session):
             book_data.aid = book['aid']
             book_data.sid = book['sid']
             book_data.title = util.format_text(book_data.title)
-            book_data.title = zhconv.convert(book_data.title, 'zh-hans') if config.read('convert_hans') else book_data.title
+            book_data.title = zhconv.convert(book_data.title, 'zh-hans') if config.read(
+                'convert_hans') else book_data.title
             if book_data.aid not in black_aid:
                 # 获取目录
                 if book_data.sid != 0:
@@ -203,15 +204,17 @@ async def lightnovel_get_category(login_info, book_data, session):
     param_str = '{"platform":"android","client":"app","sign":"","ver_name":"0.11.50","ver_code":190,' \
                 '"d":{"sid":' + str(book_data.sid) + ',"security_key":"' + login_info.token + '"},"gz":1}'
     text = await util.http_post(page_url, util.build_headers(login_info), json.loads(param_str), None,
-                                 '页面连接已断开，重试中... ', True, session)
+                                '页面连接已断开，重试中... ', True, session)
     text_data = util.unzip(text)['data']
     book_data.title = text_data['name']
     book_data.introduction = [text_data['intro']]
     book_data.chapter = []
     for chapter_text in text_data['articles']:
-        chapter_data = chapter.Chapter(str(chapter_text['aid']), None, chapter_text['title'], None, chapter_text['order'], None)
+        chapter_data = chapter.Chapter(str(chapter_text['aid']), None, chapter_text['title'], None,
+                                       chapter_text['order'], None)
         chapter_data.title = util.format_text(chapter_data.title)
-        chapter_data.title = zhconv.convert(chapter_data.title, 'zh-hans') if config.read('convert_hans') else chapter_data.title
+        chapter_data.title = zhconv.convert(chapter_data.title, 'zh-hans') if config.read(
+            'convert_hans') else chapter_data.title
         book_data.chapter.append(chapter_data)
 
 
@@ -223,6 +226,3 @@ async def async_lightnovel_book(login_info, book_data, session, thread_count):
     # 生成epub
     if config.read('generate_epub'):
         epub.build_epub(book_data)
-
-
-
