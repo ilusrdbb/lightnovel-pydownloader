@@ -42,8 +42,6 @@ txt_dir: './books/'
 generate_epub: true
 # epub保存目录 目录/站点/书名.epub
 epub_dir: './epub/'
-# 是否开启签到 该功能暂未开发
-is_sign: true
 # 定时抓取 cron表达式 该功能暂未开发
 cron: '0 0 10 * * ?'
 
@@ -81,7 +79,7 @@ xpath_config:
     tags: '//section[contains(@class,''widget-tags'')]/a/text()'
     introduction: '//div[@class=''description'']//text()'
     cover: '//div[contains(@class,''product-gallery'')]/a/@href'
-    chapter: '//div[@id=''chapterList'']/a/@href'
+    chapter: '//div[@id=''chapterList'']//a/@href'
     chapter_title: '//section[@class=''container'']//h2/text()'
     content: '//div[contains(@class,''forum-content'')]/p//text()'
     pic: '//div[contains(@class,''forum-content'')]//img/@src'
