@@ -142,7 +142,7 @@ async def _set_chapter(login_info, book_data, chapter_data, session):
     # esj不考虑外链
     if login_info.site == 'esj' and 'esjzone.cc' not in chapter_data.url:
         chapter_data.content = [chapter_data.url]
-        chapter_data.title = chapter_data.url
+        chapter_data.title = 'esj外链，地址见文本内容'
         return
     text = await util.http_get(chapter_data.url, util.build_headers(login_info),
                                '%s已获取章节 地址：%s' % (book_data.title, chapter_data.url),
