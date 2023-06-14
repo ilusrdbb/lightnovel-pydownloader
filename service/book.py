@@ -78,9 +78,12 @@ async def async_build_book(login_info, book_url, session, thread_count):
             book_data.max_order = 0
             book_data.chapter = []
         else:
+            author = None
+            if page_body.xpath(config.read('xpath_config')[login_info.site]['author']):
+                author = page_body.xpath(config.read('xpath_config')[login_info.site]['author'])[0]
             book_data = Book(login_info.site, get_book_id(login_info, book_url),
                              page_body.xpath(config.read('xpath_config')[login_info.site]['title'])[0],
-                             page_body.xpath(config.read('xpath_config')[login_info.site]['author'])[0],
+                             author,
                              page_body.xpath(config.read('xpath_config')[login_info.site]['tags']),
                              page_body.xpath(config.read('xpath_config')[login_info.site]['cover']),
                              page_body.xpath(config.read('xpath_config')[login_info.site]['introduction']))
