@@ -124,7 +124,7 @@ def find_id_path(path, id):
 
 # 格式化标题文本
 def format_text(str):
-    return str.replace('/', '').replace('.', '，').replace('?', '？') \
+    return str.replace('/', '').replace('.', '，').replace('?', '？').replace('\t', '') \
         .replace(':', '：').replace('*', '').replace('<', '《').replace('>', '》') \
         .replace('\r', '').replace('\n', '').replace('\xa0', '').replace(' ', '') \
         .replace('"', '“').replace('|', '').replace('\\', '').replace('_', '').replace('#', '')
