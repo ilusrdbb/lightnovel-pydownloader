@@ -127,6 +127,8 @@ async def download_cover(login_info, book_data, session):
         if pic:
             util.write_byte_data(path, pic)
             book_data.cover = [path]
+        else:
+            book_data.cover = None
 
 
 # 处理书籍文件夹，应对标题更改的情况
