@@ -11,7 +11,7 @@ import re
 from lxml import html
 from zhconv import zhconv
 
-from service import config, util
+from service import config, util, log
 
 
 class Chapter:
@@ -117,7 +117,7 @@ async def lightnovel_build_chapter(login_info, book_data, chapter_data, session)
 
 # 轻国打钱
 async def lightnovel_pay(login_info, cost, book_data, chapter_data, text_data, session):
-    print('%s开始打钱..花费:%s' % (book_data.title, str(cost)))
+    log.info('%s开始打钱..花费:%s' % (book_data.title, str(cost)))
     cost_url = 'https://api.lightnovel.us/api/coin/use'
     cost_param = '{"platform":"android","client":"app","sign":"","ver_name":"0.11.50","ver_code":190,' \
                  '"d":{"goods_id":1,"params":' + chapter_data.id + ',"price":' + str(cost) + \
@@ -164,7 +164,7 @@ async def chapter_purchase(login_info, book_data, chapter_data, page_body, sessi
         if not chapter_data.title and config.read('is_purchase'):
             cost = int(page_body.xpath('//input[@class=\'cost\']/@value')[0])
             if cost <= config.read('max_purchase'):
-                print('%s开始打钱..花费:%s' % (book_data.title, str(cost)))
+                log.info('%s开始打钱..花费:%s' % (book_data.title, str(cost)))
                 res = await util.http_post('https://masiro.me/admin/pay', util.build_headers(login_info, False, True),
                                            {'type': '2', 'object_id': chapter_data.id, 'cost': cost}, None,
                                            '%s %s 打钱失败！' % (book_data.title, chapter_data.id), False, session)

@@ -1,4 +1,4 @@
-# 抓取站点 masiro 真白萌，esj esj，oldlightnovel 某站旧站，lightnovel 某站新站
+# 抓取站点 all 全部 masiro 真白萌，esj esj，oldlightnovel 某站旧站，lightnovel 某站新站
 site: 'esj'
 # 白名单，填入书籍地址，某站不支持该模式
 white_list: []
@@ -10,8 +10,15 @@ max_thread: 3
 is_login: true
 # 登录账号密码
 login_info:
-  username: ''
-  password: ''
+  esj:
+    username: ''
+    password: ''
+  masiro:
+    username: ''
+    password: ''
+  lightnovel:
+    username: ''
+    password: ''
 # 开始页
 start_page: 1
 # 结束页
@@ -19,7 +26,7 @@ end_page: 1
 # 代理地址 不支持https代理 注意esj日轻只能挂非中日韩节点的代理
 proxy_url: ''
 # 某站或真白萌花金币购买 注意剩余金币
-is_purchase: true
+is_purchase: false
 # 花费上限，花费高于此值的帖子不花费，请根据自身账号情况修改
 max_purchase: 20
 # 请求超时时间 单位秒
@@ -42,8 +49,10 @@ txt_dir: './books/'
 generate_epub: true
 # epub保存目录 目录/站点/书名.epub
 epub_dir: './epub/'
-# 定时抓取 cron表达式 该功能暂未开发
-cron: '0 0 10 * * ?'
+# 是否定时执行
+is_cron: false
+# 定时执行开启时，每天执行爬取的时间 格式hh:mm:dd 例20:50:05
+cron_time: '10:00:00'
 
 # 下面的设置请谨慎更改 除非你对源码有足够的了解
 # 通用请求头

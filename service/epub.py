@@ -7,7 +7,7 @@ import os
 from ebooklib import epub
 from zhconv import zhconv
 
-from service import config
+from service import config, log
 
 
 # 构造epub，方法有些长懒得拆先这样吧
@@ -15,7 +15,7 @@ def build_epub(book_data):
     path = config.read('epub_dir') + book_data.site + '/' + book_data.title + '.epub'
     if not os.path.exists(config.read('epub_dir') + book_data.site):
         os.makedirs(config.read('epub_dir') + book_data.site)
-    print(book_data.title + "，开始生成epub...")
+    log.info(book_data.title + "，开始生成epub...")
     book = epub.EpubBook()
     # 元数据
     book.set_identifier(book_data.id)
@@ -75,4 +75,4 @@ def build_epub(book_data):
     book.add_item(nav_css)
     # 保存
     epub.write_epub(path, book)
-    print('epub已导出!')
+    log.info('epub已导出!')

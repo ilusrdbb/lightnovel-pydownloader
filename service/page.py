@@ -6,7 +6,7 @@ import json
 
 from lxml import html
 
-from service import config, book, util
+from service import config, book, util, log
 
 
 # 抓取页数据
@@ -25,7 +25,7 @@ async def get_page(login_info, session):
 async def common_get_page(login_info, session):
     book_urls = []
     for page_num in range(config.read('start_page'), config.read('end_page') + 1):
-        print('开始获取第%d页' % page_num)
+        log.info('开始获取第%d页' % page_num)
         page_url = config.read('url_config')[login_info.site]['page'] % page_num
         text = await util.http_get(page_url, util.build_headers(login_info), None,
                                     '页面连接已断开，重试中... %s' % page_url, session)

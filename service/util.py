@@ -13,7 +13,7 @@ import pillow_avif
 from tenacity import retry, stop_after_attempt
 from zhconv import zhconv
 
-from service import config
+from service import config, log
 
 
 # 正则获取两字符串之间的字符串
@@ -32,10 +32,10 @@ async def http_get(url, headers, success_info, fail_info, session):
             raise Exception(fail_info) if fail_info else Exception()
         text = await response.text()
         if success_info:
-            print(success_info)
+            log.info(success_info)
     except Exception as e:
         if fail_info:
-            print(fail_info)
+            log.info(fail_info)
         raise e
     return text
 
@@ -55,10 +55,10 @@ async def http_post(url, headers, param, success_info, fail_info, is_json, sessi
             raise Exception(fail_info) if fail_info else Exception()
         text = await response.text()
         if success_info:
-            print(success_info)
+            log.info(success_info)
     except Exception as e:
         if fail_info:
-            print(fail_info)
+            log.info(fail_info)
         raise e
     return text
 
@@ -73,7 +73,7 @@ async def http_get_pic(url, headers, session, log=''):
                                      timeout=config.read('time_out'))
         pic = await response.read()
     except Exception:
-        print('获取图片连接已断开 %s' % url)
+        log.info('获取图片连接已断开 %s' % url)
         # 写入日志
         write_miss_data('%s 获取图片%s失败' % (log, url + '\n'))
     return pic

@@ -8,6 +8,15 @@ from service import login, config, page, book
 
 
 async def start_build(site):
+    if site == 'all':
+        await _start_build('esj')
+        await _start_build('masiro')
+        await _start_build('lightnovel')
+    else:
+        await _start_build(site)
+
+
+async def _start_build(site):
     jar = aiohttp.CookieJar(unsafe=True)
     conn = aiohttp.TCPConnector(ssl=False)
     async with aiohttp.ClientSession(connector=conn, trust_env=True, cookie_jar=jar) as session:

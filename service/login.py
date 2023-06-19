@@ -8,7 +8,7 @@ import random
 from lxml import html
 
 from js.runjs import js_md5
-from service import config, util
+from service import config, util, log
 
 
 class Login:
@@ -29,13 +29,16 @@ class Login:
     def __init__(self, site):
         self.site = site
         self.url = config.read('url_config')[site]['login']
-        self.username = config.read('login_info')['username']
-        self.password = config.read('login_info')['password']
+        # 轻国新旧站账号密码通用
+        if site == 'oldlightnovel':
+            site = 'lightnovel'
+        self.username = config.read('login_info')[site]['username']
+        self.password = config.read('login_info')[site]['password']
 
 
 # 旧轻国获取hash以及验证码
 async def oldlightnovel_get_hash(login_info, session):
-    print('开始获取验证码...')
+    log.info('开始获取验证码...')
     # 获取hash
     headers = config.read('headers')
     headers['Referer'] = 'https://obsolete.lightnovel.us/thread-1029685-1-1.html'
@@ -54,7 +57,7 @@ async def oldlightnovel_get_hash(login_info, session):
                                       headers, session)
     pic_path = config.read('txt_dir') + 'code.jpg'
     util.write_byte_data(config.read('txt_dir') + 'code.jpg', pic_res)
-    print('已获取验证码，图片存放位置%s' % pic_path)
+    log.info('已获取验证码，图片存放位置%s' % pic_path)
 
 
 # 真白萌获取token
@@ -84,7 +87,7 @@ async def login(login_info, session):
     if login_info.site == 'lightnovel':
         # 轻国设置token
         login_info.token = json.loads(res)['data']['security_key']
-    print('登录成功！')
+    log.info('登录成功！')
 
 
 # 构造请求头

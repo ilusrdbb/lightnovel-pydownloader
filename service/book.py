@@ -10,7 +10,7 @@ import re
 from lxml import html
 from zhconv import zhconv
 
-from service import config, util, chapter, epub
+from service import config, util, chapter, epub, log
 
 
 class Book:
@@ -162,7 +162,7 @@ def get_book_id(login_info, book_url):
 async def lightnovel_build_book(login_info, session):
     book_data_list = []
     for page_num in range(config.read('start_page'), config.read('end_page') + 1):
-        print('开始获取第%d页' % page_num)
+        log.info('开始获取第%d页' % page_num)
         page_url = 'https://api.lightnovel.us/api/category/get-article-by-cate'
         param_str = '{"platform":"android","client":"app","sign":"","ver_name":"0.11.50","ver_code":190,' \
                     '"d":{"parent_gid":3,"gid":106,"page":' + str(page_num) + ',"pageSize":40,' \
