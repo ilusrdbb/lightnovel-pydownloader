@@ -65,7 +65,7 @@ async def http_post(url, headers, param, success_info, fail_info, is_json, sessi
 
 # 获取图片流
 @retry(stop=stop_after_attempt(3))
-async def http_get_pic(url, headers, session, log=''):
+async def http_get_pic(url, headers, session, msg=''):
     proxy = config.read('proxy_url') if config.read('proxy_url') else None
     pic = None
     try:
@@ -75,7 +75,7 @@ async def http_get_pic(url, headers, session, log=''):
     except Exception:
         log.info('获取图片连接已断开 %s' % url)
         # 写入日志
-        write_miss_data('%s 获取图片%s失败' % (log, url + '\n'))
+        write_miss_data('%s 获取图片%s失败' % (msg, url + '\n'))
     return pic
 
 
