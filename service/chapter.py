@@ -108,7 +108,7 @@ async def lightnovel_build_chapter(login_info, book_data, chapter_data, session)
     chapter_data.content = [re.sub(pic_pattern, '', text_data['content'])]
     # 写入文本
     content_path = book_data.path + '/#' + str(chapter_data.order) + '_' + \
-                   chapter_data.title + '_' + chapter_data.id + '.txt'
+                   chapter_data.title + '_' + chapter_data.id + '_' + '.txt'
     util.write_str_data(content_path, '\n'.join(chapter_data.content))
     # 写入图片
     if chapter_data.pic and config.read('get_pic'):
@@ -187,7 +187,7 @@ async def _build_chapter(login_info, book_data, chapter_data, session):
         if config.read('convert_hans') else chapter_data.title
     chapter_data.title = util.format_text(chapter_data.title)
     content_path = book_data.path + '/#' + str(chapter_data.order) + '_' + \
-                   chapter_data.title + '_' + chapter_data.id + '.txt'
+                   chapter_data.title + '_' + chapter_data.id + '_' + '.txt'
     util.write_str_data(content_path, '\n'.join(chapter_data.content))
     # 写入图片
     if chapter_data.pic and config.read('get_pic'):

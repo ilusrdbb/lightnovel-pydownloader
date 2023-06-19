@@ -118,7 +118,7 @@ def find_id_path(path, id):
     # 列出所有文件夹
     all_dirs = [os.path.join(path, name) for name in os.listdir(path)]
     result = [item for item in all_dirs if os.path.isdir(item)
-              and '_' + id in os.path.basename(item) or '_' + id in item]
+              and '_' + id in os.path.basename(item) or '_' + id + '_' in item]
     return result
 
 
