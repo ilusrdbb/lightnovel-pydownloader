@@ -152,8 +152,8 @@ async def _set_chapter(login_info, book_data, chapter_data, session):
     chapter_data.pic = page_body.xpath(config.read('xpath_config')[login_info.site]['pic'])
     try:
         chapter_data.title = page_body.xpath(config.read('xpath_config')[login_info.site]['chapter_title'])[0]
-        if len(chapter_data.title) > 150:
-            chapter_data.title = chapter_data.title[:150]
+        if len(chapter_data.title) > 100:
+            chapter_data.title = chapter_data.title[:100]
     except:
         chapter_data.title = None
     # 打钱
