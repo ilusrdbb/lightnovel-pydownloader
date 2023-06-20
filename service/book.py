@@ -51,7 +51,7 @@ class Book:
         self.tags = tags
         self.cover = cover
         self.introduction = introduction
-        self.path = config.read('txt_dir') + self.site + '/' + self.title + '_' + self.id
+        self.path = config.read('txt_dir') + self.site + '/' + self.title + '_' + self.id + '_'
 
 
 # 异步抓取书籍
@@ -81,6 +81,9 @@ async def async_build_book(login_info, book_url, session, thread_count):
             author = None
             if page_body.xpath(config.read('xpath_config')[login_info.site]['author']):
                 author = page_body.xpath(config.read('xpath_config')[login_info.site]['author'])[0]
+            if not page_body.xpath(config.read('xpath_config')[login_info.site]['title']):
+                # 跳过无标题的书籍
+                return
             book_data = Book(login_info.site, get_book_id(login_info, book_url),
                              page_body.xpath(config.read('xpath_config')[login_info.site]['title'])[0],
                              author,

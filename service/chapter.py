@@ -57,7 +57,7 @@ async def build_chapter(login_info, book_data, chapter_data, session):
         if old_txt_path and not always_update:
             old_txt_path = old_txt_path[0]
             # 填入标题和内容，不需要重新抓取
-            chapter_data.title = old_txt_path.split('_')[2]
+            chapter_data.title = old_txt_path.split('_')[3]
             with open(old_txt_path, encoding='utf-8') as f:
                 chapter_data.content = [f.read()]
             if not old_txt_path.startswith('#' + str(chapter_data.order) + '_'):
