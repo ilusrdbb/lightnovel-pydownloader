@@ -31,7 +31,7 @@ def build_epub(book_data):
         book.add_metadata('DC', 'source', book_data.site)
         book.add_metadata('DC', 'rights', '本电子书由lightnovel-pydownloader制作生成，仅供个人使用，不得对外传播以及用于商业用途。')
         if book_data.tags:
-            book.add_metadata('DC', 'subject', ';'.join(book_data.tags))
+            book.add_metadata('DC', 'subject', ','.join(book_data.tags))
         if book_data.cover:
             # 设置封面
             book.set_cover("cover.jpg", open(book_data.cover[0], 'rb').read())
