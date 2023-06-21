@@ -1,4 +1,4 @@
-# 抓取站点 all 全部 masiro 真白萌，esj esj，oldlightnovel 某站旧站，lightnovel 某站新站
+# 抓取站点 all 全部 masiro 真白萌，esj esj，lightnovel 某站
 site: 'esj'
 # 白名单，填入书籍地址，某站不支持该模式
 white_list: []
