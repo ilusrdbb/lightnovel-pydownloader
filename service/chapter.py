@@ -76,7 +76,8 @@ async def build_chapter(login_info, book_data, chapter_data, session):
         elif old_txt_path and always_update:
             # 删除旧路径文件，重新抓取
             for old_path in old_paths:
-                os.remove(old_path)
+                if os.path.isfile(old_path):
+                    os.remove(old_path)
     if config.read('sleep_time') > 0:
         await asyncio.sleep(random.random() * config.read('sleep_time'))
     if login_info.site != 'lightnovel':
