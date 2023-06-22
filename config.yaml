@@ -79,6 +79,7 @@ url_config:
     pic: 'https://obsolete.lightnovel.us/%s'
   lightnovel:
     login: 'https://www.lightnovel.us/proxy/api/user/login'
+    pic: 'https://www.lightnovel.us/%s'
 # xpath配置
 xpath_config:
   esj:
