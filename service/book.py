@@ -214,7 +214,7 @@ async def lightnovel_get_category(login_info, book_data, session):
     text = await util.http_post(page_url, util.build_headers(login_info), json.loads(param_str), None,
                                 '页面连接已断开，重试中... ', True, session)
     text_data = util.unzip(text)['data']
-    book_data.title = text_data['name']
+    book_data.title = str(text_data['name'])
     book_data.introduction = [text_data['intro']]
     book_data.chapter = []
     for chapter_text in text_data['articles']:
