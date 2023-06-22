@@ -218,7 +218,7 @@ async def lightnovel_get_category(login_info, book_data, session):
     book_data.introduction = [text_data['intro']]
     book_data.chapter = []
     for chapter_text in text_data['articles']:
-        chapter_data = chapter.Chapter(str(chapter_text['aid']), None, chapter_text['title'], None,
+        chapter_data = chapter.Chapter(str(chapter_text['aid']), None, str(chapter_text['title']), None,
                                        chapter_text['order'], None)
         chapter_data.title = util.format_text(chapter_data.title)
         if len(chapter_data.title) > 70:
