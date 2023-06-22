@@ -221,6 +221,8 @@ async def lightnovel_get_category(login_info, book_data, session):
         chapter_data = chapter.Chapter(str(chapter_text['aid']), None, chapter_text['title'], None,
                                        chapter_text['order'], None)
         chapter_data.title = util.format_text(chapter_data.title)
+        if len(chapter_data.title) > 70:
+            chapter_data.title = chapter_data.title[:70]
         chapter_data.title = zhconv.convert(chapter_data.title, 'zh-hans') if config.read(
             'convert_hans') else chapter_data.title
         book_data.chapter.append(chapter_data)
