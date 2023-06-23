@@ -178,12 +178,13 @@ async def lightnovel_build_book(login_info, session):
         black_aid = [969547, 1113228, 1099310, 1048596]
         for book in book_list:
             book_id = str(book['aid']) if book['sid'] == 0 else str(book['sid'])
-            book_data = Book(login_info.site, book_id, book['title'], None, None, [book['cover']], None)
+            title = util.format_text(book['title'])
+            if len(title) > 70:
+                title = title[:70]
+            title = zhconv.convert(title, 'zh-hans') if config.read('convert_hans') else title
+            book_data = Book(login_info.site, book_id, title, None, None, [book['cover']], None)
             book_data.aid = book['aid']
             book_data.sid = book['sid']
-            book_data.title = util.format_text(book_data.title)
-            book_data.title = zhconv.convert(book_data.title, 'zh-hans') if config.read(
-                'convert_hans') else book_data.title
             if book_data.aid not in black_aid:
                 # 获取目录
                 if book_data.sid != 0:
