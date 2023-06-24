@@ -178,7 +178,7 @@ async def lightnovel_build_book(login_info, session):
         black_aid = [969547, 1113228, 1099310, 1048596]
         for book in book_list:
             book_id = str(book['aid']) if book['sid'] == 0 else str(book['sid'])
-            title = util.format_text(book['title'])
+            title = util.format_text(str(book['title']))
             if len(title) > 70:
                 title = title[:70]
             title = zhconv.convert(title, 'zh-hans') if config.read('convert_hans') else title
