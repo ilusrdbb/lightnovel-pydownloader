@@ -94,26 +94,27 @@ async def lightnovel_build_chapter(login_info, book_data, chapter_data, session)
     text = await util.http_post(page_url, util.build_headers(login_info), json.loads(param_str),
                                 '%s已获取章节 %s' % (book_data.title, chapter_data.title),
                                 '%s章节连接已断开，重试中... %s' % (book_data.title, chapter_data.title), True, session)
-    text_data = util.unzip(text)['data']
-    # 轻国打钱
-    if text_data.get('pay_info'):
-        if text_data.get('pay_info')['is_paid'] == 0 and config.read('is_purchase'):
-            cost = text_data.get('pay_info')['price']
-            if cost > config.read('max_purchase'):
-                text_data = await lightnovel_pay(login_info, cost, book_data, chapter_data, text_data, session)
-    # 正则从文本里提取插图
-    pic_pattern = r'\[img\](.*?)\[/img\]'
-    chapter_data.pic = re.findall(pic_pattern, text_data['content'])
-    # 文本中剔除插图
-    pic_pattern = r'\[img\].*?\[/img\]'
-    chapter_data.content = [re.sub(pic_pattern, '', text_data['content'])]
-    # 写入文本
-    content_path = book_data.path + '/#' + str(chapter_data.order) + '_' + \
-                   chapter_data.title + '_' + chapter_data.id + '_' + '.txt'
-    util.write_str_data(content_path, '\n'.join(chapter_data.content))
-    # 写入图片
-    if chapter_data.pic and config.read('get_pic'):
-        await download_pic(login_info, book_data, chapter_data, session)
+    if util.unzip(text).get('data'):
+        text_data = util.unzip(text)['data']
+        # 轻国打钱
+        if text_data.get('pay_info'):
+            if text_data.get('pay_info')['is_paid'] == 0 and config.read('is_purchase'):
+                cost = text_data.get('pay_info')['price']
+                if cost > config.read('max_purchase'):
+                    text_data = await lightnovel_pay(login_info, cost, book_data, chapter_data, text_data, session)
+        # 正则从文本里提取插图
+        pic_pattern = r'\[img\](.*?)\[/img\]'
+        chapter_data.pic = re.findall(pic_pattern, text_data['content'])
+        # 文本中剔除插图
+        pic_pattern = r'\[img\].*?\[/img\]'
+        chapter_data.content = [re.sub(pic_pattern, '', text_data['content'])]
+        # 写入文本
+        content_path = book_data.path + '/#' + str(chapter_data.order) + '_' + \
+                       chapter_data.title + '_' + chapter_data.id + '_' + '.txt'
+        util.write_str_data(content_path, '\n'.join(chapter_data.content))
+        # 写入图片
+        if chapter_data.pic and config.read('get_pic'):
+            await download_pic(login_info, book_data, chapter_data, session)
 
 
 # 轻国打钱
