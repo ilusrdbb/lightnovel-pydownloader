@@ -10,7 +10,9 @@
 
 本项目基于pycharm开发，也建议在此之下运行
 
-使用方法：安装requirements.txt下依赖，根据自身需求修改config.yaml配置，运行lightnovel.py
+使用方法：在release中下载解压压缩包，根据自身需求修改config.yaml中的配置项，运行lightnovel.exe
+
+可在log目录下查看运行日志
 
 此项目仍在开发中，如有bug请提交issue
 
