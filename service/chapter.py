@@ -3,6 +3,7 @@
 # @Time : 2023/5/20
 # @Author : chaocai
 import asyncio
+import base64
 import json
 import os
 import random
@@ -107,9 +108,9 @@ async def lightnovel_build_chapter(login_info, book_data, chapter_data, session)
         chapter_data.pic = re.findall(pic_pattern, text_data['content'])
         # 文本中剔除插图
         pic_pattern = r'\[img\].*?\[/img\]'
-        chapter_data.content = [re.sub(pic_pattern, '', text_data['content'])]
-        # 正则从文本里提取文字
-        chapter_data.content = [re.sub(r'\[.*?\]', '', chapter_data.content[0])]
+        no_img_content = re.sub(pic_pattern, '', text_data['content'])
+        # 从bbcode里提取文字
+        chapter_data.content = [re.sub(r'\[.*?\]', '', no_img_content)]
         # 写入文本
         content_path = book_data.path + '/#' + str(chapter_data.order) + '_' + \
                        chapter_data.title + '_' + chapter_data.id + '_' + '.txt'
@@ -251,6 +252,17 @@ async def download_pic(login_info, book_data, chapter_data, session):
     pics_path = []
     pic_count = 1
     for pic_url in pics:
+        if pic_url.startswith('data:image'):
+            # 直接写流
+            pic_name = str(pic_count) + '.jpeg'
+            pic = base64.urlsafe_b64decode(pic_url.split(',')[1])
+            if config.read('least_pic') > 0 and len(pic) < config.read('least_pic'):
+                continue
+            path = book_data.path + '/#' + str(chapter_data.order) + '_' + chapter_data.id + '_' + pic_name
+            util.write_byte_data(path, pic)
+            pics_path.append(path)
+            pic_count += 1
+            continue
         if not pic_url.startswith('http'):
             pic_url = config.read('url_config')[login_info.site]['pic'] % pic_url
         pic_name = format_pic_name(pic_url)
