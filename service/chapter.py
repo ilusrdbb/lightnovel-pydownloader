@@ -103,11 +103,13 @@ async def lightnovel_build_chapter(login_info, book_data, chapter_data, session)
                 if cost > config.read('max_purchase'):
                     text_data = await lightnovel_pay(login_info, cost, book_data, chapter_data, text_data, session)
         # 正则从文本里提取插图
-        pic_pattern = r'\[img\](.*?)\[/img\]'
+        pic_pattern = r'\[img\s*(.*?)\](.*?)\[/img\]'
         chapter_data.pic = re.findall(pic_pattern, text_data['content'])
         # 文本中剔除插图
-        pic_pattern = r'\[img\].*?\[/img\]'
+        pic_pattern = r'\[img\s*(.*?)\].*?\[/img\]'
         chapter_data.content = [re.sub(pic_pattern, '', text_data['content'])]
+        # 正则从文本里提取文字
+        chapter_data.content = [re.sub(r'\[.*?\]', '', chapter_data.content[0])]
         # 写入文本
         content_path = book_data.path + '/#' + str(chapter_data.order) + '_' + \
                        chapter_data.title + '_' + chapter_data.id + '_' + '.txt'
