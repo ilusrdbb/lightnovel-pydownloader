@@ -263,6 +263,10 @@ async def download_pic(login_info, book_data, chapter_data, session):
             pics_path.append(path)
             pic_count += 1
             continue
+        if 'noire.cc:233' in pic_url:
+            pic_url = pic_url.replace('noire.cc:233', 'noire.cc')
+        if 'i.noire.cc:332' in pic_url:
+            pic_url = pic_url.replace('i.noire.cc:332', 'i.noire.cc')
         if not pic_url.startswith('http'):
             pic_url = config.read('url_config')[login_info.site]['pic'] % pic_url
         pic_name = format_pic_name(pic_url)
