@@ -204,7 +204,8 @@ async def lightnovel_build_book(login_info, session):
     thread_count = asyncio.Semaphore(config.read('max_thread'))
     tasks = []
     for book_data in book_data_list:
-        tasks.append(async_lightnovel_book(login_info, book_data, session, thread_count))
+        if book_data.chapter:
+            tasks.append(async_lightnovel_book(login_info, book_data, session, thread_count))
     await asyncio.wait(tasks)
 
 
@@ -228,6 +229,8 @@ async def lightnovel_get_category(login_info, book_data, session):
             chapter_data.title = zhconv.convert(chapter_data.title, 'zh-hans') if config.read(
                 'convert_hans') else chapter_data.title
             book_data.chapter.append(chapter_data)
+    else:
+        book_data.chapter = []
 
 
 # 异步抓取轻国章节
