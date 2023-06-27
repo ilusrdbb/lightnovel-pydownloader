@@ -147,11 +147,15 @@ def unzip(str):
 
 # avif转png
 def convert_avif_png(path):
-    avif_image = Image.open(path)
-    png_image = avif_image.convert('RGB')
-    output_path = os.path.splitext(path)[0] + '.png'
-    png_image.save(output_path, 'PNG')
-    avif_image.close()
-    png_image.close()
+    output_path = None
+    try:
+        avif_image = Image.open(path)
+        png_image = avif_image.convert('RGB')
+        output_path = os.path.splitext(path)[0] + '.png'
+        png_image.save(output_path, 'PNG')
+        avif_image.close()
+        png_image.close()
+    except:
+        pass
     os.remove(path)
     return output_path

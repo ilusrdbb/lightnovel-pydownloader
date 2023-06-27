@@ -284,8 +284,9 @@ async def download_pic(login_info, book_data, chapter_data, session):
             if pic_name.endswith('.avif'):
                 # 轻国avif转png
                 path = util.convert_avif_png(path)
-            pics_path.append(path)
-            pic_count += 1
+            if path:
+                pics_path.append(path)
+                pic_count += 1
     chapter_data.pic = pics_path
 
 
