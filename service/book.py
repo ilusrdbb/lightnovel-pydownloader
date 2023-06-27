@@ -169,6 +169,7 @@ async def lightnovel_build_book(login_info, session):
     for page_num in range(config.read('start_page'), config.read('end_page') + 1):
         log.info('开始获取第%d页' % page_num)
         page_url = 'https://api.lightnovel.us/api/category/get-article-by-cate'
+        # gid 106 最新 gid 107 整卷
         param_str = '{"platform":"android","client":"app","sign":"","ver_name":"0.11.50","ver_code":190,' \
                     '"d":{"parent_gid":3,"gid":106,"page":' + str(page_num) + ',"pageSize":40,' \
                     '"security_key":"' + login_info.token + '"},"gz":1}'
