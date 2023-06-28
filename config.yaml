@@ -79,6 +79,9 @@ url_config:
     pic: 'https://obsolete.lightnovel.us/%s'
   lightnovel:
     login: 'https://www.lightnovel.us/proxy/api/user/login'
+    page: 'https://api.lightnovel.us/api/article/get-detail'
+    book: 'https://api.lightnovel.us/api/category/get-article-by-cate'
+    detail: 'https://api.lightnovel.us/api/series/get-info'
     pic: 'https://www.lightnovel.us/%s'
 # xpath配置
 xpath_config:

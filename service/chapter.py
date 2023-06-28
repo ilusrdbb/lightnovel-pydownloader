@@ -89,7 +89,7 @@ async def build_chapter(login_info, book_data, chapter_data, session):
 
 # 轻国抓取章节内容
 async def lightnovel_build_chapter(login_info, book_data, chapter_data, session):
-    page_url = 'https://api.lightnovel.us/api/article/get-detail'
+    page_url = config.read('url_config')[login_info.site]['page']
     param_str = '{"platform":"android","client":"app","sign":"","ver_name":"0.11.50","ver_code":190,' \
                 '"d":{"aid":' + chapter_data.id + ',"simple":0,"security_key":"' + login_info.token + '"},"gz":1}'
     text = await util.http_post(page_url, util.build_headers(login_info), json.loads(param_str),
@@ -132,7 +132,7 @@ async def lightnovel_pay(login_info, cost, book_data, chapter_data, text_data, s
                                     '%s打钱失败... %s' % (book_data.title, chapter_data.title), True, session)
     if util.unzip(cost_res)['code'] == 0:
         # 刷新章节内容
-        page_url = 'https://api.lightnovel.us/api/article/get-detail'
+        page_url = config.read('url_config')[login_info.site]['page']
         param_str = '{"platform":"android","client":"app","sign":"","ver_name":"0.11.50","ver_code":190,' \
                     '"d":{"aid":' + chapter_data.id + ',"simple":0,"security_key":"' + login_info.token + '"},"gz":1}'
         text = await util.http_post(page_url, util.build_headers(login_info), json.loads(param_str), None,

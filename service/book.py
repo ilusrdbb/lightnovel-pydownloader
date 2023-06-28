@@ -168,7 +168,7 @@ async def lightnovel_build_book(login_info, session):
     book_data_list = []
     for page_num in range(config.read('start_page'), config.read('end_page') + 1):
         log.info('开始获取第%d页' % page_num)
-        page_url = 'https://api.lightnovel.us/api/category/get-article-by-cate'
+        page_url = config.read('url_config')[login_info.site]['book']
         # gid 106 最新 gid 107 整卷
         param_str = '{"platform":"android","client":"app","sign":"","ver_name":"0.11.50","ver_code":190,' \
                     '"d":{"parent_gid":3,"gid":106,"page":' + str(page_num) + ',"pageSize":40,' \
@@ -211,7 +211,7 @@ async def lightnovel_build_book(login_info, session):
 
 
 async def lightnovel_get_category(login_info, book_data, session):
-    page_url = 'https://api.lightnovel.us/api/series/get-info'
+    page_url = config.read('url_config')[login_info.site]['detail']
     param_str = '{"platform":"android","client":"app","sign":"","ver_name":"0.11.50","ver_code":190,' \
                 '"d":{"sid":' + str(book_data.sid) + ',"security_key":"' + login_info.token + '"},"gz":1}'
     text = await util.http_post(page_url, util.build_headers(login_info), json.loads(param_str), None,
