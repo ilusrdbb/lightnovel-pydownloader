@@ -168,11 +168,17 @@ async def lightnovel_build_book(login_info, session):
     book_data_list = []
     for page_num in range(config.read('start_page'), config.read('end_page') + 1):
         log.info('开始获取第%d页' % page_num)
-        page_url = config.read('url_config')[login_info.site]['book']
+        page_url = config.read('url_config')[login_info.site]['page']
         # gid 106 最新 gid 107 整卷
         param_str = '{"platform":"android","client":"app","sign":"","ver_name":"0.11.50","ver_code":190,' \
                     '"d":{"parent_gid":3,"gid":106,"page":' + str(page_num) + ',"pageSize":40,' \
                     '"security_key":"' + login_info.token + '"},"gz":1}'
+        if config.read('get_collection'):
+            page_url = config.read('url_config')[login_info.site]['collection']
+            # 收藏页 class 1 单本 class 2 合集
+            param_str = '{"platform":"android","client":"app","sign":"","ver_name":"0.11.50","ver_code":190,' \
+                        '"d":{"uid":' + str(login_info.uid) + ',"page":' + str(page_num) + ',"type":1,"class":1,"pageSize":20,' \
+                        '"security_key":"' + login_info.token + '"},"gz":1}'
         text = await util.http_post(page_url, util.build_headers(login_info), json.loads(param_str), None,
                                     '页面连接已断开，重试中... ', True, session)
         book_list = util.unzip(text)['data']['list']
@@ -211,7 +217,7 @@ async def lightnovel_build_book(login_info, session):
 
 
 async def lightnovel_get_category(login_info, book_data, session):
-    page_url = config.read('url_config')[login_info.site]['detail']
+    page_url = config.read('url_config')[login_info.site]['book']
     param_str = '{"platform":"android","client":"app","sign":"","ver_name":"0.11.50","ver_code":190,' \
                 '"d":{"sid":' + str(book_data.sid) + ',"security_key":"' + login_info.token + '"},"gz":1}'
     text = await util.http_post(page_url, util.build_headers(login_info), json.loads(param_str), None,

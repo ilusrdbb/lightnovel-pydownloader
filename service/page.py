@@ -27,14 +27,22 @@ async def common_get_page(login_info, session):
     for page_num in range(config.read('start_page'), config.read('end_page') + 1):
         log.info('开始获取第%d页' % page_num)
         page_url = config.read('url_config')[login_info.site]['page'] % page_num
+        if config.read('get_collection'):
+            page_url = config.read('url_config')[login_info.site]['collection'] % page_num
         text = await util.http_get(page_url, util.build_headers(login_info), None,
                                     '页面连接已断开，重试中... %s' % page_url, session)
         if login_info.site == 'masiro':
             text = json.loads(text)['html']
         page_body = html.fromstring(text)
-        for book_url in page_body.xpath(config.read('xpath_config')[login_info.site]['page']):
-            book_full_url = config.read('url_config')[login_info.site]['book'] % book_url
-            if book_full_url not in config.read('black_list'):
-                book_urls.append(book_full_url)
+        if config.read('get_collection'):
+            for book_url in page_body.xpath(config.read('xpath_config')[login_info.site]['collection']):
+                book_full_url = config.read('url_config')[login_info.site]['book'] % book_url
+                if book_full_url not in config.read('black_list'):
+                    book_urls.append(book_full_url)
+        else:
+            for book_url in page_body.xpath(config.read('xpath_config')[login_info.site]['page']):
+                book_full_url = config.read('url_config')[login_info.site]['book'] % book_url
+                if book_full_url not in config.read('black_list'):
+                    book_urls.append(book_full_url)
     return book_urls
 

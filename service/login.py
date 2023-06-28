@@ -24,6 +24,8 @@ class Login:
     token: None
     # hash 旧轻国需要
     hash: None
+    # 新轻国uid
+    uid: None
 
     # 初始化
     def __init__(self, site):
@@ -85,8 +87,9 @@ async def login(login_info, session):
     if '验证码填写错误' in res:
         raise Exception('验证码填写错误！')
     if login_info.site == 'lightnovel':
-        # 轻国设置token
+        # 轻国设置token和uid
         login_info.token = json.loads(res)['data']['security_key']
+        login_info.uid = json.loads(res)['data']['uid']
     log.info('登录成功！')
 
 

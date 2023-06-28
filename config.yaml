@@ -19,6 +19,8 @@ login_info:
   lightnovel:
     username: ''
     password: ''
+# 是否爬取收藏页 注意某站分单本和合集 不支持一次全部爬取 需要在代码里设置class
+get_collection: false
 # 开始页
 start_page: 1
 # 结束页
@@ -68,21 +70,24 @@ url_config:
     page: 'https://www.esjzone.cc/list-11/%d.html'
     book: 'https://www.esjzone.cc%s'
     pic: 'https://www.esjzone.cc%s'
+    collection: 'https://www.esjzone.cc/my/favorite/%d'
   masiro:
     login: 'https://masiro.me/admin/auth/login'
     page: 'https://masiro.me/admin/loadMoreNovels?ori=0&page=%d'
     book: 'https://masiro.me%s'
     pic: 'https://masiro.me%s'
+    collection: 'https://masiro.me/admin/loadMoreNovels?page=%d&collection=1'
   oldlightnovel:
     login: 'https://obsolete.lightnovel.us/%s&inajax=1'
     page: 'https://obsolete.lightnovel.us/forum-173-%d.html'
     pic: 'https://obsolete.lightnovel.us/%s'
   lightnovel:
     login: 'https://www.lightnovel.us/proxy/api/user/login'
-    page: 'https://api.lightnovel.us/api/article/get-detail'
-    book: 'https://api.lightnovel.us/api/category/get-article-by-cate'
-    detail: 'https://api.lightnovel.us/api/series/get-info'
+    page: 'https://api.lightnovel.us/api/category/get-article-by-cate'
+    book: 'https://api.lightnovel.us/api/series/get-info'
+    chapter: 'https://api.lightnovel.us/api/article/get-detail'
     pic: 'https://www.lightnovel.us/%s'
+    collection: 'https://api.lightnovel.us/api/history/get-collections'
 # xpath配置
 xpath_config:
   esj:
@@ -96,6 +101,7 @@ xpath_config:
     chapter_title: '//section[@class=''container'']//h2/text()'
     content: '//div[contains(@class,''forum-content'')]/p//text()'
     pic: '//div[contains(@class,''forum-content'')]//img/@src'
+    collection: '//h5[@class=''product-title'']/a/@href'
   masiro:
     page: '//div[@class=''layui-card'']/a[1]/@href'
     title: '//div[@class=''novel-title'']/text()'
@@ -107,6 +113,7 @@ xpath_config:
     chapter_title: '//span[@class=''novel-title'']/div/text()'
     content: '//div[@class=''box-body nvl-content'']//text()'
     pic: '//div[@class=''box-body nvl-content'']//img/@src'
+    collection: '//div[@class=''layui-card'']/a[1]/@href'
   oldlightnovel:
     page: '//div[@class=''layui-card'']/a[1]/@href'
     title: '//span[@id=''thread_subject'']/text()'
