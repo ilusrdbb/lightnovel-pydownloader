@@ -127,7 +127,8 @@ def format_text(str):
     return str.replace('/', '').replace('.', '，').replace('?', '？').replace('\t', '') \
         .replace(':', '：').replace('*', '').replace('<', '《').replace('>', '》') \
         .replace('\r', '').replace('\n', '').replace('\xa0', '').replace(' ', '') \
-        .replace('"', '“').replace('|', '').replace('\\', '').replace('_', '').replace('#', '')
+        .replace('"', '“').replace('|', '').replace('\\', '').replace('_', '').replace('#', '') \
+        .replace('\x1c', '')
 
 
 # 写入文本
