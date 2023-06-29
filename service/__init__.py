@@ -4,8 +4,6 @@
 # @Author : chaocai
 from __future__ import annotations
 
-import asyncio
-
 import service.base
 from service import config
 
