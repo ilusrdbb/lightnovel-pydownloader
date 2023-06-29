@@ -61,7 +61,8 @@ async def build_book(login_info, book_urls, session):
     for book_url in book_urls:
         if book_url:
             tasks.append(async_build_book(login_info, book_url, session, thread_count))
-    await asyncio.wait(tasks)
+    if tasks:
+        await asyncio.wait(tasks)
 
 
 # 构造书籍元数据，获取书籍下全部章节并抓取
