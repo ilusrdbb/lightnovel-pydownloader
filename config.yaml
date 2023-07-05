@@ -92,6 +92,7 @@ url_config:
     book: 'https://obsolete.lightnovel.us/%s'
     chapter: 'https://obsolete.lightnovel.us/forum.php?mod=viewthread&tid=%s&page=%s&authorid=%s'
     pic: 'https://obsolete.lightnovel.us/%s'
+    collection: 'https://obsolete.lightnovel.us/forum-173-%d.html'
   yuri:
     hash: 'https://bbs.yamibo.com/member.php?mod=logging&action=login'
     login: 'https://bbs.yamibo.com/%s&frommessage&inajax=1'
@@ -99,6 +100,7 @@ url_config:
     book: 'https://bbs.yamibo.com/%s'
     chapter: 'https://bbs.yamibo.com/forum.php?mod=viewthread&tid=%s&page=%s&authorid=%s'
     pic: 'https://bbs.yamibo.com/%s'
+    collection: 'https://bbs.yamibo.com/forum-55-%d.html'
 # xpath配置
 xpath_config:
   esj:
@@ -130,11 +132,13 @@ xpath_config:
     title: '//span[@id=''thread_subject'']/text()'
     chapter: '//div[@class=''114514'']'
     author: '//dl[@class=''cl'']//a/text()'
+    collection: '//div[@class=''layui-card'']/a[1]/@href'
   yuri:
     page: '//table[@summary=''forum_55'']/tbody/tr/th/a[2]/@href'
     title: '//span[@id=''thread_subject'']/text()'
     chapter: '//div[@class=''1919810'']'
     author: '//dl[@class=''pil cl'']//a/text()'
+    collection: '//table[@summary=''forum_55'']/tbody/tr/th/a[2]/@href'
 
 
 

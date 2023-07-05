@@ -34,14 +34,14 @@ async def common_get_page(login_info, session):
         if login_info.site == 'masiro':
             text = json.loads(text)['html']
         page_body = html.fromstring(text)
-        if config.read('get_collection'):
-            for book_url in page_body.xpath(config.read('xpath_config')[login_info.site]['collection']):
-                book_full_url = config.read('url_config')[login_info.site]['book'] % book_url
-                if book_full_url not in config.read('black_list'):
-                    book_urls.append(book_full_url)
-        else:
-            for book_url in page_body.xpath(config.read('xpath_config')[login_info.site]['page']):
-                if login_info.site == 'yuri' and 'javascript' not in book_url:
+        if 'javascript' not in book_url:
+            if config.read('get_collection'):
+                for book_url in page_body.xpath(config.read('xpath_config')[login_info.site]['collection']):
+                    book_full_url = config.read('url_config')[login_info.site]['book'] % book_url
+                    if book_full_url not in config.read('black_list'):
+                        book_urls.append(book_full_url)
+            else:
+                for book_url in page_body.xpath(config.read('xpath_config')[login_info.site]['page']):
                     book_full_url = config.read('url_config')[login_info.site]['book'] % book_url
                     if book_full_url not in config.read('black_list'):
                         book_urls.append(book_full_url)
