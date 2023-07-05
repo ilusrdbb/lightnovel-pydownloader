@@ -20,15 +20,8 @@ def js_md5(password):
 
 
 def get_dsign(read):
-    result = None
-    try:
-        read_cache = read
-        read = js_dsign(read)
-        js = execjs.compile(read)
-        result = js.eval('tempfunction')
-        result = result.replace('forrum', 'forum')
-    except Exception as e:
-        print(read_cache)
-        print(read)
-        print(e)
+    read = js_dsign(read)
+    js = execjs.compile(read)
+    result = js.eval('tempfunction')
+    result = result.replace('forrum', 'forum')
     return result
