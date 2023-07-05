@@ -1,14 +1,12 @@
-# 抓取站点 all 全部 masiro 真白萌，esj esj，lightnovel 某站
+# 抓取站点 all 全部 masiro 真白萌，esj esj，lightnovel 某站，yuri 某百合站
 site: 'esj'
 # 白名单，填入书籍地址，某站不支持该模式
 white_list: []
 # 黑名单，填入书籍地址，某站不支持该模式
 black_list: []
-# 最大线程数 不要设置的过大 小心被ban 某站和真白萌建议设置为3以下
+# 最大线程数 不要设置的过大 小心被ban 某站和真白萌建议设置为3以下 某百合站由于反爬比较变态建议设置为1
 max_thread: 3
-# 是否需要登录 有的网站比如真白萌只允许登录查看 请确保自己账号的权限充足
-is_login: true
-# 登录账号密码
+# 登录账号密码 请确保自己账号的权限充足
 login_info:
   esj:
     username: ''
@@ -19,7 +17,10 @@ login_info:
   lightnovel:
     username: ''
     password: ''
-# 是否爬取收藏页 注意某站分单本和合集 不支持一次全部爬取 需要在代码里设置class
+  yuri:
+    username: ''
+    password: ''
+# 是否爬取收藏页 注意某站分单本和合集 不支持一次全部爬取 需要在代码里设置class 某百合站不支持该模式
 get_collection: false
 # 开始页
 start_page: 1
@@ -36,7 +37,7 @@ time_out: 10
 # 抓取间隔时间 比如设置2则每次抓章节前睡随机0~2秒 设置0不生效
 sleep_time: 2
 # 字数小于此值且无图片的章节不生成epub章节 避免epub生成公告这种章节 设置0无限制
-least_words: 200
+least_words: 300
 # 大小小于此值的图片不下载 设置0无限制 单位byte
 least_pic: 100000
 # 是否抓取图片
@@ -77,10 +78,6 @@ url_config:
     book: 'https://masiro.me%s'
     pic: 'https://masiro.me%s'
     collection: 'https://masiro.me/admin/loadMoreNovels?page=%d&collection=1'
-  oldlightnovel:
-    login: 'https://obsolete.lightnovel.us/%s&inajax=1'
-    page: 'https://obsolete.lightnovel.us/forum-173-%d.html'
-    pic: 'https://obsolete.lightnovel.us/%s'
   lightnovel:
     login: 'https://www.lightnovel.us/proxy/api/user/login'
     page: 'https://api.lightnovel.us/api/category/get-article-by-cate'
@@ -88,6 +85,20 @@ url_config:
     chapter: 'https://api.lightnovel.us/api/article/get-detail'
     pic: 'https://www.lightnovel.us/%s'
     collection: 'https://api.lightnovel.us/api/history/get-collections'
+  oldlightnovel:
+    hash: 'https://obsolete.lightnovel.us/member.php?mod=logging&action=login'
+    login: 'https://obsolete.lightnovel.us/%s&inajax=1'
+    page: 'https://obsolete.lightnovel.us/forum-173-%d.html'
+    book: 'https://obsolete.lightnovel.us/%s'
+    chapter: 'https://obsolete.lightnovel.us/forum.php?mod=viewthread&tid=%s&page=%s&authorid=%s'
+    pic: 'https://obsolete.lightnovel.us/%s'
+  yuri:
+    hash: 'https://bbs.yamibo.com/member.php?mod=logging&action=login'
+    login: 'https://bbs.yamibo.com/%s&frommessage&inajax=1'
+    page: 'https://bbs.yamibo.com/forum-55-%d.html'
+    book: 'https://bbs.yamibo.com/%s'
+    chapter: 'https://bbs.yamibo.com/forum.php?mod=viewthread&tid=%s&page=%s&authorid=%s'
+    pic: 'https://bbs.yamibo.com/%s'
 # xpath配置
 xpath_config:
   esj:
@@ -118,6 +129,12 @@ xpath_config:
     page: '//div[@class=''layui-card'']/a[1]/@href'
     title: '//span[@id=''thread_subject'']/text()'
     chapter: '//div[@class=''114514'']'
+    author: '//dl[@class=''cl'']//a/text()'
+  yuri:
+    page: '//table[@summary=''forum_55'']/tbody/tr/th/a[2]/@href'
+    title: '//span[@id=''thread_subject'']/text()'
+    chapter: '//div[@class=''1919810'']'
+    author: '//dl[@class=''pil cl'']//a/text()'
 
 
 

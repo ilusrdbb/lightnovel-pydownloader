@@ -12,6 +12,7 @@ import re
 from lxml import html
 from zhconv import zhconv
 
+from js.runjs import get_dsign
 from service import config, util, log
 
 
@@ -201,43 +202,59 @@ async def _build_chapter(login_info, book_data, chapter_data, session):
         await download_pic(login_info, book_data, chapter_data, session)
 
 
-# 旧轻国抓取页面
-async def build_oldlightnovel_chapter(login_info, book_data, session):
+# discuz论坛抓取页面
+async def build_discuz_chapter(login_info, book_data, session):
     # 只看楼主
-    book_data.url = 'https://obsolete.lightnovel.us/forum.php?mod=viewthread&tid=%s&page=1&authorid=%s' \
-                    % (book_data.id, book_data.author_id)
-    text = await util.http_get(book_data.url, util.build_headers(login_info),
-                               '%s已获取书籍 地址：%s' % (book_data.title, book_data.url),
-                               '书籍连接已断开，重试中... %s' % book_data.url, session)
-    page_body = html.fromstring(text)
-    await oldlightnovel_set_chapter(login_info, page_body, book_data, session)
-    # 获取页数
-    pages = page_body.xpath('//div[@class=\'pg\']//span/@title')
-    if pages:
-        page_num = int(re.findall('\d+', pages[0])[0])
-        if page_num > 1:
-            for num in range(2, page_num + 1):
-                page_url = 'https://obsolete.lightnovel.us/forum.php?mod=viewthread&tid=%s&page=%s&authorid=%s' \
-                           % (book_data.id, str(num), book_data.author_id)
-                text = await util.http_get(page_url, util.build_headers(login_info), None,
-                                           '书籍连接已断开，重试中... %s' % book_data.url, session)
-                page_body = html.fromstring(text)
-                await oldlightnovel_set_chapter(login_info, page_body, book_data, session)
+    book_data.url = config.read('url_config')[login_info.site]['chapter'] \
+                    % (book_data.id, '1', book_data.author_id)
+    if book_data.url:
+        text = await util.http_get(book_data.url, util.build_headers(login_info),
+                                   '%s已获取书籍 地址：%s' % (book_data.title, book_data.url),
+                                   '书籍连接已断开，重试中... %s' % book_data.url, session)
+        if login_info.site == 'yuri' and text.startswith('<script'):
+            # 反爬处理
+            book_data.url = 'https://bbs.yamibo.com' + get_dsign(text)
+            text = await util.http_get(book_data.url, util.build_headers(login_info),
+                                       '%s已获取书籍 地址：%s' % (book_data.title, book_data.url),
+                                       '书籍连接已断开，重试中... %s' % book_data.url, session)
+        page_body = html.fromstring(text)
+        await discuz_set_chapter(login_info, page_body, book_data, session)
+        # 获取页数
+        pages = page_body.xpath('//div[@class=\'pg\']//span/@title')
+        if pages:
+            page_num = int(re.findall('\d+', pages[0])[0])
+            if page_num > 1:
+                for num in range(2, page_num + 1):
+                    page_url = config.read('url_config')[login_info.site]['chapter'] \
+                               % (book_data.id, str(num), book_data.author_id)
+                    text = await util.http_get(page_url, util.build_headers(login_info), None,
+                                               '书籍连接已断开，重试中... %s' % page_url, session)
+                    if login_info.site == 'yuri' and text.startswith('<script'):
+                        # 反爬处理
+                        new_page_url = 'https://bbs.yamibo.com' + get_dsign(text)
+                        text = await util.http_get(new_page_url, util.build_headers(login_info), None,
+                                                   '书籍连接已断开，重试中... %s' % new_page_url, session)
+                    page_body = html.fromstring(text)
+                    await discuz_set_chapter(login_info, page_body, book_data, session)
 
 
-# 旧轻国获取章节
-async def oldlightnovel_set_chapter(login_info, page_body, book_data, session):
+# discuz论坛获取章节
+async def discuz_set_chapter(login_info, page_body, book_data, session):
     max_order = book_data.max_order
     text_list = page_body.xpath('//td[@class=\'t_f\']')
     for text in text_list:
-        max_order += 1
         body = html.fromstring(html.tostring(text))
         content = body.xpath('//text()')
         pic_url_list = body.xpath('//img/@file')
+        # 字数统计
+        content_size = sum(len(string) for string in content)
+        if len(pic_url_list) < 1 and content_size < 500:
+            # 手动过滤
+            continue
+        max_order += 1
         chapter_data = Chapter(str(max_order), None, str(max_order), content, max_order, pic_url_list)
         # 写入文本
-        content_path = book_data.path + '/#' + str(chapter_data.order) + '_' + \
-                       chapter_data.title + '_' + chapter_data.id + '.txt'
+        content_path = book_data.path + '/#' + str(chapter_data.order) + '_.txt'
         util.write_str_data(content_path, '\n'.join(chapter_data.content))
         # 写入图片
         if chapter_data.pic and config.read('get_pic'):
@@ -275,6 +292,8 @@ async def download_pic(login_info, book_data, chapter_data, session):
         if pic_name.endswith('.i'):
             pic_name = pic_name.replace('.i', '.avif')
         path = book_data.path + '/#' + str(chapter_data.order) + '_' + chapter_data.id + '_' + pic_name
+        if login_info.site == 'oldlightnovel' or login_info.site == 'yuri':
+            path = book_data.path + '/#' + str(chapter_data.order) + '_' + pic_name
         pic = await util.http_get_pic(pic_url, util.build_headers(login_info, True, False), session,
                                       book_data.title + '_' + chapter_data.title)
         if pic:

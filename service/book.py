@@ -10,6 +10,7 @@ import re
 from lxml import html
 from zhconv import zhconv
 
+from js.runjs import get_dsign
 from service import config, util, chapter, epub, log
 
 
@@ -32,9 +33,9 @@ class Book:
     chapter: None
     # 路径
     path: None
-    # 译者id，旧轻国需要
+    # 译者id，旧轻国和百合会需要
     author_id: None
-    # 最大顺序号，旧轻国需要
+    # 最大顺序号，旧轻国和百合会需要
     max_order: None
     # aid，轻国需要
     aid: None
@@ -70,12 +71,21 @@ async def async_build_book(login_info, book_url, session, thread_count):
     async with thread_count:
         text = await util.http_get(book_url, util.build_headers(login_info), None,
                                    '书籍连接已断开，重试中... %s' % book_url, session)
+        if login_info.site == 'yuri' and text.startswith('<script'):
+            # 反爬处理
+            new_book_url = 'https://bbs.yamibo.com' + get_dsign(text)
+            text = await util.http_get(new_book_url, util.build_headers(login_info), None,
+                                       '书籍连接已断开，重试中... %s' % book_url, session)
         page_body = html.fromstring(text)
-        if login_info.site == 'oldlightnovel':
-            book_data = Book(login_info.site, get_book_id(login_info, book_url),
-                             page_body.xpath(config.read('xpath_config')[login_info.site]['title'])[0],
-                             None, None, None, None)
-            book_data.author_id = page_body.xpath('//dl[@class=\'cl\']//a/text()')[0]
+        if login_info.site == 'oldlightnovel' or login_info.site == 'yuri':
+            try:
+                book_data = Book(login_info.site, get_book_id(login_info, book_url),
+                                 page_body.xpath(config.read('xpath_config')[login_info.site]['title'])[0],
+                                 None, None, None, None)
+            except:
+                # 跳过权限不足的
+                return
+            book_data.author_id = page_body.xpath(config.read('xpath_config')[login_info.site]['author'])[0]
             book_data.max_order = 0
             book_data.chapter = []
         else:
@@ -112,9 +122,9 @@ async def async_build_book(login_info, book_url, session, thread_count):
                 await chapter.build_chapter(login_info, book_data, chapter_data, session)
                 book_data.chapter.append(chapter_data)
                 order += 1
-        elif login_info.site == 'oldlightnovel':
-            # 旧轻国 只看楼主-抓楼层做章节
-            await chapter.build_oldlightnovel_chapter(login_info, book_data, session)
+        elif login_info.site == 'oldlightnovel' or login_info.site == 'yuri':
+            # 旧轻国 百合会 只看楼主-抓楼层做章节
+            await chapter.build_discuz_chapter(login_info, book_data, session)
         # 生成epub
         if config.read('generate_epub'):
             epub.build_epub(book_data)
@@ -160,8 +170,8 @@ def get_book_id(login_info, book_url):
         return re.search(r'/(\d+)\.html$', book_url).group(1)
     if login_info.site == 'masiro':
         return book_url.split('?novel_id=')[-1]
-    if login_info.site == 'oldlightnovel':
-        return util.get_split_str_list('/thread-', '-1-1.html', book_url)[0]
+    if login_info.site == 'oldlightnovel' or login_info.site == 'yuri':
+        return book_url.split('-')[1]
 
 
 # 轻国特殊逻辑

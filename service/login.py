@@ -22,7 +22,7 @@ class Login:
     password: None
     # token 真白萌、新轻国需要
     token: None
-    # hash 旧轻国需要
+    # hash 旧轻国、百合会需要
     hash: None
     # 新轻国uid
     uid: None
@@ -38,28 +38,32 @@ class Login:
         self.password = config.read('login_info')[site]['password']
 
 
-# 旧轻国获取hash以及验证码
-async def oldlightnovel_get_hash(login_info, session):
-    log.info('开始获取验证码...')
+# discuz论坛获取hash以及验证码
+async def discuz_get_hash(login_info, session):
     # 获取hash
     headers = config.read('headers')
-    headers['Referer'] = 'https://obsolete.lightnovel.us/thread-1029685-1-1.html'
-    res = await util.http_get('https://obsolete.lightnovel.us/member.php?mod=logging&action=login', headers,
-                              None, '获取验证码失败！', session)
+    res = await util.http_get(config.read('url_config')[login_info.site]['hash'], headers,
+                              None, '获取登录hash失败！', session)
     page_body = html.fromstring(res)
     login_info.hash = {'formhash': str(page_body.xpath('//input[@name=\'formhash\']/@value')[0]),
                        'loginhash': str(page_body.xpath('//form[@name=\'login\']/@action')[0])}
     # 调用接口获取js
-    headers['Referer'] = 'https://obsolete.lightnovel.us/member.php?mod=logging&action=login'
-    js_text = await util.http_get('https://obsolete.lightnovel.us/misc.php?mod=seccode&action=update&idhash=cS&%s&modid=undefined' % str(random.random()),
-                                  headers, None, '获取验证码失败！', session)
-    # 分析js获取验证码地址
-    headers['Accept'] = 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8'
-    pic_res = await util.http_get_pic('https://obsolete.lightnovel.us/%s' % util.get_split_str_list('height="30" src="', '" class="vm"', js_text)[0],
-                                      headers, session)
-    pic_path = config.read('txt_dir') + 'code.jpg'
-    util.write_byte_data(config.read('txt_dir') + 'code.jpg', pic_res)
-    log.info('已获取验证码，图片存放位置%s' % pic_path)
+    if login_info.site == 'oldlightnovel':
+        log.info('开始获取验证码...')
+        headers['Referer'] = config.read('url_config')[login_info.site]['hash']
+        js_text = await util.http_get(
+            'https://obsolete.lightnovel.us/misc.php?mod=seccode&action=update&idhash=cS&%s&modid=undefined' % str(
+                random.random()),
+            headers, None, '获取验证码失败！', session)
+        # 分析js获取验证码地址
+        headers['Accept'] = 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8'
+        pic_res = await util.http_get_pic(
+            'https://obsolete.lightnovel.us/%s' % util.get_split_str_list('height="30" src="', '" class="vm"', js_text)[
+                0],
+            headers, session)
+        pic_path = config.read('txt_dir') + 'code.jpg'
+        util.write_byte_data(config.read('txt_dir') + 'code.jpg', pic_res)
+        log.info('已获取验证码，图片存放位置%s' % pic_path)
 
 
 # 真白萌获取token
@@ -75,12 +79,12 @@ async def login(login_info, session):
     if login_info.site == 'masiro':
         # 真白萌设置token
         await masiro_get_token(login_info, session)
-    if login_info.site == 'oldlightnovel':
+    if login_info.site == 'oldlightnovel' or login_info.site == 'yuri':
         # 旧轻国获取hash
-        await oldlightnovel_get_hash(login_info, session)
+        await discuz_get_hash(login_info, session)
     login_param = build_login_param(login_info)
     login_headers = build_login_headers(login_info)
-    if login_info.site == 'oldlightnovel':
+    if login_info.site == 'oldlightnovel' or login_info.site == 'yuri':
         login_info.url = login_info.url % login_info.hash['loginhash']
     res = await util.http_post(login_info.url, login_headers, login_param, None, '登录失败！',
                                True if login_info.site == 'lightnovel' else False, session)
@@ -137,6 +141,16 @@ def build_login_param(login_info):
             'seccodemodid': 'member::logging',
             'cookietime': '2592000',
             'seccodeverify': code
+        }
+    if login_info.site == 'yuri':
+        return {
+            'formhash': login_info.hash['formhash'],
+            'referer': 'https://bbs.yamibo.com/forum-55-2.html',
+            'username': login_info.username,
+            'password': login_info.password,
+            'questionid': '0',
+            'answer': '',
+            'cookietime': '2592000'
         }
     if login_info.site == 'lightnovel':
         return {

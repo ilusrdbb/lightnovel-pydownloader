@@ -8,12 +8,20 @@ from service import login, config, page, book
 
 
 async def start_build(site):
+    # 百合会有概率登录出验证码，暂不考虑all抓取
     if site == 'all':
-        await _start_build('esj')
-        await _start_build('masiro')
-        await _start_build('lightnovel')
+        if config.read('login_info')['esj']['username']:
+            await _start_build('esj')
+        if config.read('login_info')['masiro']['username']:
+            await _start_build('masiro')
+        if config.read('login_info')['lightnovel']['username']:
+            await _start_build('lightnovel')
+        # 定时第一个站会莫名抓不到数据，再抓一次
+        if config.read('login_info')['esj']['username']:
+            await _start_build('esj')
     else:
-        await _start_build(site)
+        if config.read('login_info')[site]['username']:
+            await _start_build(site)
 
 
 async def _start_build(site):
@@ -21,9 +29,8 @@ async def _start_build(site):
     conn = aiohttp.TCPConnector(ssl=False)
     async with aiohttp.ClientSession(connector=conn, trust_env=True, cookie_jar=jar) as session:
         # 登录
-        if config.read('is_login'):
-            login_info = login.Login(site)
-            await login.login(login_info, session)
+        login_info = login.Login(site)
+        await login.login(login_info, session)
         await book.build_book(login_info, config.read('white_list'), session) \
             if config.read('white_list') else await page.get_page(login_info, session)
 
