@@ -30,7 +30,7 @@ async def http_get(url, headers, success_info, fail_info, session):
                                      timeout=config.read('time_out'))
         if not response.status == 200:
             raise Exception(fail_info) if fail_info else Exception()
-        text = await response.text()
+        text = await response.text('utf-8', 'ignore')
         if success_info:
             log.info(success_info)
     except Exception as e:
