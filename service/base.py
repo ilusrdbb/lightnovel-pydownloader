@@ -16,9 +16,6 @@ async def start_build(site):
             await _start_build('masiro')
         if config.read('login_info')['lightnovel']['username']:
             await _start_build('lightnovel')
-        # 定时第一个站会莫名抓不到数据，再抓一次
-        if config.read('login_info')['esj']['username']:
-            await _start_build('esj')
     else:
         if config.read('login_info')[site]['username']:
             await _start_build(site)
