@@ -146,7 +146,7 @@ async def lightnovel_pay(login_info, cost, book_data, chapter_data, text_data, s
 # 构造章节标题、图片、内容
 async def _set_chapter(login_info, book_data, chapter_data, session):
     # esj不考虑外链
-    if login_info.site == 'esj' and 'esjzone.cc' not in chapter_data.url:
+    if login_info.site == 'esj' and 'esjzone' not in chapter_data.url:
         chapter_data.content = [chapter_data.url]
         chapter_data.title = 'esj外链，地址见文本内容'
         return
