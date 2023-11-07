@@ -2,9 +2,11 @@
 # -*- coding: utf-8 -*-
 # @Time : 2023/5/20
 # @Author : chaocai
+import asyncio
 import base64
 import json
 import os
+import random
 import re
 import zlib
 from PIL import Image
@@ -22,8 +24,12 @@ def get_split_str_list(start, end, str):
 
 
 # 通用get请求
-@retry(stop=stop_after_attempt(5))
+@retry(stop=stop_after_attempt(3))
 async def http_get(url, headers, success_info, fail_info, session):
+    if config.read('sleep_time') > 0 and not 'masiro' in url:
+        await asyncio.sleep(random.random() * config.read('sleep_time'))
+    elif 'masiro.' in url:
+        await asyncio.sleep(5)
     proxy = config.read('proxy_url') if config.read('proxy_url') else None
     try:
         response = await session.get(url=url, headers=headers, proxy=proxy,
@@ -41,8 +47,12 @@ async def http_get(url, headers, success_info, fail_info, session):
 
 
 # 通用post请求
-@retry(stop=stop_after_attempt(5))
+@retry(stop=stop_after_attempt(3))
 async def http_post(url, headers, param, success_info, fail_info, is_json, session):
+    if config.read('sleep_time') > 0 and not 'masiro' in url:
+        await asyncio.sleep(random.random() * config.read('sleep_time'))
+    elif 'masiro.' in url:
+        await asyncio.sleep(5)
     proxy = config.read('proxy_url') if config.read('proxy_url') else None
     try:
         if is_json:
@@ -66,6 +76,8 @@ async def http_post(url, headers, param, success_info, fail_info, is_json, sessi
 # 获取图片流
 @retry(stop=stop_after_attempt(3))
 async def http_get_pic(url, headers, session, msg=''):
+    if 'masiro.' in url:
+        await asyncio.sleep(5)
     proxy = config.read('proxy_url') if config.read('proxy_url') else None
     pic = None
     try:
@@ -94,8 +106,6 @@ def write_byte_data(path, byte):
 # 通用构造请求头
 def build_headers(login_info, is_pic = False, is_pay = False):
     headers = config.read('headers')
-    if login_info.site == 'oldlightnovel':
-        headers['Referer'] = 'https://obsolete.lightnovel.us/member.php?mod=logging&action=login'
     if login_info.site == 'lightnovel' and not is_pic:
         headers = {}
         headers['user-agent'] = 'Dart/2.10 (dart:io)'

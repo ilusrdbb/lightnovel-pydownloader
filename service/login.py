@@ -20,20 +20,17 @@ class Login:
     username: None
     # 密码
     password: None
-    # token 真白萌、新轻国需要
+    # token 真白萌、轻国需要
     token: None
-    # hash 旧轻国、百合会需要
+    # hash 百合会需要
     hash: None
-    # 新轻国uid
+    # 轻国uid
     uid: None
 
     # 初始化
     def __init__(self, site):
         self.site = site
         self.url = config.read('url_config')[site]['login']
-        # 轻国新旧站账号密码通用
-        if site == 'oldlightnovel':
-            site = 'lightnovel'
         self.username = config.read('login_info')[site]['username']
         self.password = config.read('login_info')[site]['password']
 
@@ -47,7 +44,7 @@ async def discuz_get_hash(login_info, session):
     page_body = html.fromstring(res)
     login_info.hash = {'formhash': str(page_body.xpath('//input[@name=\'formhash\']/@value')[0]),
                        'loginhash': str(page_body.xpath('//form[@name=\'login\']/@action')[0])}
-    # 调用接口获取js
+    # 调用接口获取js 这段代码作废 留存用作登录出验证码的处理
     if login_info.site == 'oldlightnovel':
         log.info('开始获取验证码...')
         headers['Referer'] = config.read('url_config')[login_info.site]['hash']
@@ -79,12 +76,12 @@ async def login(login_info, session):
     if login_info.site == 'masiro':
         # 真白萌设置token
         await masiro_get_token(login_info, session)
-    if login_info.site == 'oldlightnovel' or login_info.site == 'yuri':
-        # 旧轻国获取hash
+    if login_info.site == 'yuri':
+        # discuz获取hash
         await discuz_get_hash(login_info, session)
     login_param = build_login_param(login_info)
     login_headers = build_login_headers(login_info)
-    if login_info.site == 'oldlightnovel' or login_info.site == 'yuri':
+    if login_info.site == 'yuri':
         login_info.url = login_info.url % login_info.hash['loginhash']
     res = await util.http_post(login_info.url, login_headers, login_param, None, '登录失败！',
                                True if login_info.site == 'lightnovel' else False, session)

@@ -2,11 +2,9 @@
 # -*- coding: utf-8 -*-
 # @Time : 2023/5/20
 # @Author : chaocai
-import asyncio
 import base64
 import json
 import os
-import random
 import re
 
 from lxml import html
@@ -80,8 +78,6 @@ async def build_chapter(login_info, book_data, chapter_data, session):
             for old_path in old_paths:
                 if os.path.isfile(old_path):
                     os.remove(old_path)
-    if config.read('sleep_time') > 0:
-        await asyncio.sleep(random.random() * config.read('sleep_time'))
     if login_info.site != 'lightnovel':
         await _build_chapter(login_info, book_data, chapter_data, session)
     else:

@@ -33,9 +33,9 @@ class Book:
     chapter: None
     # 路径
     path: None
-    # 译者id，旧轻国和百合会需要
+    # 译者id，百合会需要
     author_id: None
-    # 最大顺序号，旧轻国和百合会需要
+    # 最大顺序号，百合会需要
     max_order: None
     # aid，轻国需要
     aid: None
@@ -58,6 +58,8 @@ class Book:
 # 异步抓取书籍
 async def build_book(login_info, book_urls, session):
     thread_count = asyncio.Semaphore(config.read('max_thread'))
+    if login_info.site == 'masiro':
+        thread_count = asyncio.Semaphore(1)
     tasks = []
     for book_url in book_urls:
         if book_url:
@@ -123,7 +125,7 @@ async def async_build_book(login_info, book_url, session, thread_count):
                 book_data.chapter.append(chapter_data)
                 order += 1
         elif login_info.site == 'oldlightnovel' or login_info.site == 'yuri':
-            # 旧轻国 百合会 只看楼主-抓楼层做章节
+            # 百合会 只看楼主-抓楼层做章节
             await chapter.build_discuz_chapter(login_info, book_data, session)
         # 生成epub
         if config.read('generate_epub'):
@@ -188,7 +190,8 @@ async def lightnovel_build_book(login_info, session):
             page_url = config.read('url_config')[login_info.site]['collection']
             # 收藏页 class 1 单本 class 2 合集
             param_str = '{"platform":"android","client":"app","sign":"","ver_name":"0.11.50","ver_code":190,' \
-                        '"d":{"uid":' + str(login_info.uid) + ',"page":' + str(page_num) + ',"type":1,"class":1,"pageSize":20,' \
+                        '"d":{"uid":' + str(login_info.uid) + ',"page":' + str(page_num) + ',"type":1,' \
+                        '"class":' + str(config.read('lightnovel_collection_class')) + ',"pageSize":20,' \
                         '"security_key":"' + login_info.token + '"},"gz":1}'
         text = await util.http_post(page_url, util.build_headers(login_info), json.loads(param_str), None,
                                     '页面连接已断开，重试中... ', True, session)
@@ -197,6 +200,7 @@ async def lightnovel_build_book(login_info, session):
         for book in book_list:
             book_id = str(book['aid']) if book['sid'] == 0 else str(book['sid'])
             title = util.format_text(str(book['title']))
+            # linux 文件长度限制
             if len(title) > 70:
                 title = title[:70]
             title = zhconv.convert(title, 'zh-hans') if config.read('convert_hans') else title

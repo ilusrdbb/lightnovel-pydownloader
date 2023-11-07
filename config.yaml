@@ -1,11 +1,13 @@
-# 抓取站点 all 全部 masiro 真白萌，esj esj，lightnovel 某站，yuri 某百合站
+# 抓取站点 all 全部 masiro 真白萌，esj esj，lightnovel 轻国，yuri 百合会
+# 注意百合会登录有概率出验证码，all暂不包括百合会
 site: 'esj'
-# 白名单，填入书籍地址，某站不支持该模式
+# 白名单，填入书籍地址，轻国不支持该模式
 white_list: []
-# 黑名单，填入书籍地址，某站不支持该模式
+# 黑名单，填入书籍地址，轻国不支持该模式
 black_list: []
-# 最大线程数 不要设置的过大 小心被ban 某站和真白萌建议设置为3以下 某百合站由于反爬比较变态建议设置为1
-max_thread: 3
+# 最大线程数 不要设置的过大 小心被ban 轻国和百合会强烈建议设置为1单线程执行
+# 真白萌由于并发会ban号在程序中强制单线程执行
+max_thread: 1
 # 登录账号密码 请确保自己账号的权限充足
 login_info:
   esj:
@@ -20,22 +22,25 @@ login_info:
   yuri:
     username: ''
     password: ''
-# 是否爬取收藏页 注意某站分单本和合集 不支持一次全部爬取 需要在代码里设置class 某百合站不支持该模式
+# 是否只爬取收藏页 百合会不支持该模式
 get_collection: false
+# 轻国收藏页爬取单本或合集 单本填1合集填2
+lightnovel_collection_class: 1
 # 开始页
 start_page: 1
-# 结束页
+# 结束页 不建议一次抓取过多
 end_page: 1
 # 代理地址 不支持https代理 注意esj日轻只能挂非中日韩节点的代理
 proxy_url: ''
-# 某站或真白萌花金币购买 注意剩余金币
+# 轻国或真白萌花金币购买 注意剩余金币
 is_purchase: false
 # 花费上限，花费高于此值的帖子不花费，请根据自身账号情况修改
 max_purchase: 20
 # 请求超时时间 单位秒
 time_out: 10
-# 抓取间隔时间 比如设置2则每次抓章节前睡随机0~2秒 设置0不生效
-sleep_time: 2
+# 每次请求睡眠时间 比如设置2则每次请求前睡随机0~2秒 设置0不生效
+# 真白萌由于频繁请求会报错，在程序中强制睡5秒
+sleep_time: 1
 # 字数小于此值且无图片的章节不生成epub章节 避免epub生成公告这种章节 设置0无限制
 least_words: 300
 # 大小小于此值的图片不下载 设置0无限制 单位byte
@@ -52,10 +57,6 @@ txt_dir: './books/'
 generate_epub: true
 # epub保存目录 目录/站点/书名.epub
 epub_dir: './epub/'
-# 是否定时执行
-is_cron: false
-# 定时执行开启时，每天执行爬取的时间 格式hh:mm:dd 例20:50:05
-cron_time: '10:00:00'
 
 # 下面的设置请谨慎更改 除非你对源码有足够的了解
 # 通用请求头
@@ -85,14 +86,6 @@ url_config:
     chapter: 'https://api.lightnovel.us/api/article/get-detail'
     pic: 'https://www.lightnovel.us/%s'
     collection: 'https://api.lightnovel.us/api/history/get-collections'
-  oldlightnovel:
-    hash: 'https://obsolete.lightnovel.us/member.php?mod=logging&action=login'
-    login: 'https://obsolete.lightnovel.us/%s&inajax=1'
-    page: 'https://obsolete.lightnovel.us/forum-173-%d.html'
-    book: 'https://obsolete.lightnovel.us/%s'
-    chapter: 'https://obsolete.lightnovel.us/forum.php?mod=viewthread&tid=%s&page=%s&authorid=%s'
-    pic: 'https://obsolete.lightnovel.us/%s'
-    collection: 'https://obsolete.lightnovel.us/forum-173-%d.html'
   yuri:
     hash: 'https://bbs.yamibo.com/member.php?mod=logging&action=login'
     login: 'https://bbs.yamibo.com/%s&frommessage&inajax=1'
@@ -126,12 +119,6 @@ xpath_config:
     chapter_title: '//span[@class=''novel-title'']/div/text()'
     content: '//div[@class=''box-body nvl-content'']//text()'
     pic: '//div[@class=''box-body nvl-content'']//img/@src'
-    collection: '//div[@class=''layui-card'']/a[1]/@href'
-  oldlightnovel:
-    page: '//div[@class=''layui-card'']/a[1]/@href'
-    title: '//span[@id=''thread_subject'']/text()'
-    chapter: '//div[@class=''114514'']'
-    author: '//dl[@class=''cl'']//a/text()'
     collection: '//div[@class=''layui-card'']/a[1]/@href'
   yuri:
     page: '//table[@summary=''forum_55'']/tbody/tr/th/a[2]/@href'
