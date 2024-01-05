@@ -2,7 +2,7 @@
 
 轻小说网站爬虫工具，支持爬取结果自动生成epub
 
-目前已适配真白萌新站、esj zone、轻国
+目前已适配真白萌（需要自搭flaresolverr服务）、esj zone、轻国
 
 使用前请务必仔细阅读config.yaml下的所有配置项注释
 
