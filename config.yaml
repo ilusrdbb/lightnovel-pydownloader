@@ -22,6 +22,8 @@ login_info:
   yuri:
     username: ''
     password: ''
+# 真白萌由于新加了cf盾，需要搭建flaresolverr绕过，例http://127.0.0.1:8191/v1
+flaresolverr_url: ''
 # 是否只爬取收藏页 百合会不支持该模式
 get_collection: false
 # 轻国收藏页爬取单本或合集 单本填1合集填2

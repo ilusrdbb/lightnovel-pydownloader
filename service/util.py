@@ -73,6 +73,26 @@ async def http_post(url, headers, param, success_info, fail_info, is_json, sessi
     return text
 
 
+# flaresolverr请求
+@retry(stop=stop_after_attempt(3))
+async def http_flaresolverr_post(url, target, fail_info, session):
+    proxy = config.read('proxy_url') if config.read('proxy_url') else None
+    headers = {
+        'content-type': 'application/json'
+    }
+    param_str = '{"cmd": "request.get","url": "'+target+'","maxTimeout": 60000}'
+    try:
+        response = await session.post(url=url, headers=headers, proxy=proxy, json=json.loads(param_str), timeout=120)
+        if not response.status == 200:
+            raise Exception(fail_info) if fail_info else Exception()
+        text = await response.text()
+    except Exception as e:
+        if fail_info:
+            log.info(fail_info)
+        raise e
+    return json.loads(text)['solution']
+
+
 # 获取图片流
 @retry(stop=stop_after_attempt(3))
 async def http_get_pic(url, headers, session, msg=''):
@@ -114,9 +134,12 @@ def build_headers(login_info, is_pic = False, is_pay = False):
         headers['host'] = 'api.lightnovel.us'
     if is_pic:
         headers['Accept'] = 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8'
+    if login_info.site == 'masiro':
+        headers['origin'] = 'https://masiro.me'
+        headers['referer'] = 'https://masiro.me/admin'
+        headers['user-agent'] = login_info.ua
     if login_info.site == 'masiro' and is_pay:
         headers['x-csrf-token'] = login_info.token
-        headers['x-requested-with'] = 'XMLHttpRequest'
     return headers
 
 

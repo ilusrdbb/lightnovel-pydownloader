@@ -4,24 +4,36 @@
 # @Author : chaocai
 import aiohttp
 
-from service import login, config, page, book
+from service import login, config, page, book, log
 
 
 async def start_build(site):
     # 百合会有概率登录出验证码，暂不考虑all抓取
     if site == 'all':
-        if config.read('login_info')['esj']['username']:
-            await _start_build('esj')
-        if config.read('login_info')['masiro']['username']:
-            await _start_build('masiro')
-        if config.read('login_info')['lightnovel']['username']:
-            await _start_build('lightnovel')
+        try:
+            if config.read('login_info')['esj']['username']:
+                await _start_build('esj')
+        except Exception:
+            pass
+        try:
+            if config.read('login_info')['lightnovel']['username']:
+                await _start_build('lightnovel')
+        except Exception:
+            pass
+        try:
+            if config.read('login_info')['masiro']['username']:
+                await _start_build('masiro')
+        except Exception:
+            pass
     else:
         if config.read('login_info')[site]['username']:
             await _start_build(site)
 
 
 async def _start_build(site):
+    if site == 'masiro' and not config.read('flaresolverr_url'):
+        log.info('真白萌请自行搭建flaresolverr')
+        return
     jar = aiohttp.CookieJar(unsafe=True)
     conn = aiohttp.TCPConnector(ssl=False)
     async with aiohttp.ClientSession(connector=conn, trust_env=True, cookie_jar=jar) as session:

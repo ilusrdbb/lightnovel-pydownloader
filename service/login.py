@@ -26,6 +26,10 @@ class Login:
     hash: None
     # 轻国uid
     uid: None
+    # 真白萌ua
+    ua: None
+    # 真白萌cf cookie
+    cf: None
 
     # 初始化
     def __init__(self, site):
@@ -65,8 +69,17 @@ async def discuz_get_hash(login_info, session):
 
 # 真白萌获取token
 async def masiro_get_token(login_info, session):
-    res = await util.http_get('https://masiro.me/admin/auth/login', config.read('headers'),
-                              None, '获取token失败！', session)
+    log.info('真白萌开始破盾...')
+    flaresolverr_res = await util.http_flaresolverr_post(config.read('flaresolverr_url'), 'https://masiro.me/admin/wishingPondIndex',
+                                                         'cf破盾失败，重试中...', session)
+    login_info.ua = flaresolverr_res['userAgent']
+    login_info.cf = flaresolverr_res['cookies'][0]['value']
+    headers = {
+        'referer': 'https://masiro.me/admin',
+        'user-agent': login_info.ua,
+        'cookie': 'cf_clearance=' + login_info.cf
+    }
+    res = await util.http_get('https://masiro.me/admin/auth/login', headers, None, '获取token失败！', session)
     page_body = html.fromstring(res)
     login_info.token = str(page_body.xpath('//input[@class=\'csrf\']/@value')[0])
 
@@ -98,8 +111,11 @@ async def login(login_info, session):
 def build_login_headers(login_info):
     headers = config.read('headers')
     if login_info.site == 'masiro':
+        headers['origin'] = 'https://masiro.me'
+        headers['referer'] = 'https://masiro.me/admin'
+        headers['user-agent'] = login_info.ua
         headers['x-csrf-token'] = login_info.token
-        headers['x-requested-with'] = 'XMLHttpRequest'
+        headers['cookie'] = 'cf_clearance=' + login_info.cf
     if login_info.site == 'lightnovel':
         headers['Accept'] = 'application/json, text/plain, */*'
         headers['Accept-Language'] = 'zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7'
