@@ -113,12 +113,15 @@ async def async_build_book(login_info, book_url, session, thread_count):
             await download_cover(login_info, book_data, session)
         # 获取章节
         chapter_url_list = page_body.xpath(config.read('xpath_config')[login_info.site]['chapter'])
+        # 真白萌特殊获取章节地址列表
+        if login_info.site == 'masiro':
+            chapter_url_list = json.loads(page_body.xpath('//code[@id="chapters-json"]//text()')[0])
         if chapter_url_list:
             book_data.chapter = []
             order = 1
             for chapter_url in chapter_url_list:
                 if login_info.site == 'masiro':
-                    chapter_url = 'https://masiro.me' + chapter_url
+                    chapter_url = 'https://masiro.me/admin/novelReading?cid=' + str(chapter_url['id'])
                 chapter_data = chapter.Chapter(None, chapter_url, None, None, order, None)
                 # 抓取章节
                 await chapter.build_chapter(login_info, book_data, chapter_data, session)
