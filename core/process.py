@@ -25,7 +25,7 @@ class Process(object):
             # todo 重新下载图片
             log.info("图片已重新下载！")
             return
-        if not config.read("scheduler_config")["enabled"] and config.read("download_fail_again"):
+        if not config.read("scheduler_config")["enabled"] and config.read("purchase_again"):
             # 重爬打钱章节
             await Reload().re_pay()
             log.info("已重新打钱！")
