@@ -1,0 +1,119 @@
+# 抓取站点 all 全部 masiro 真白萌，esj esj，lk 轻国
+site: 'esj'
+# 白名单，填入书籍地址，轻国填入合集id
+white_list: []
+# 黑名单，填入书籍地址，轻国填入合集id
+black_list: []
+# 最大线程数 不要设置的过大 小心被ban 建议设置为1单线程执行
+# 真白萌由于并发会ban号在程序中强制单线程执行
+max_thread: 1
+# 登录账号密码 请确保自己账号的权限充足
+login_info:
+  esj:
+    username: ''
+    password: ''
+  masiro:
+    username: ''
+    password: ''
+  lk:
+    username: ''
+    password: ''
+# 由于真白萌的cf盾，需要搭建flaresolverr绕过，例http://127.0.0.1:8191/v1
+# 请拉取此镜像alexfozor/flaresolverr:pr-1300，官方docker镜像无法绕过
+flaresolverr_url: ''
+# 是否只爬取收藏页
+get_collection: false
+# 开始页
+start_page: 1
+# 结束页 不建议一次抓取过多
+end_page: 1
+# 代理地址 仅支持http代理 例'http://127.0.0.1:1081' 注意esj只能挂非中日韩节点的代理
+proxy_url: ''
+# 轻国或真白萌花金币购买 注意剩余金币
+is_purchase: false
+# 消费上限，高于此值的章节不消费，请根据自身账号情况修改
+max_purchase: 20
+# 请求超时时间 单位秒
+time_out: 15
+# 每次请求睡眠时间 比如设置2则每次请求前睡随机0~2秒 设置0不生效
+# 真白萌由于频繁请求会报错，每次请求强制睡10秒
+sleep_time: 1
+# 字数小于此值且无图片的章节不生成epub章节 避免epub生成公告这种章节 设置0无限制
+least_words: 300
+# 生成epub时是否全局繁转简
+convert_hans: true
+# 定时执行设置
+scheduler_config:
+  enabled: false
+  hour: 9
+  minute: 0
+# 推送设置 填写部署路径 填空不启用
+push:
+  calibre: ''
+
+# 下面的设置请谨慎更改
+# epub保存目录 目录/站点/书名.epub
+epub_dir: './epub'
+# 图片保存目录 目录/站点/书id/章节id/图片名
+image_dir: './images'
+# 是否在爬取前统一下载全部之前爬取失败的图片，定时开启时此项无效
+download_fail_again: false
+# 危险！清空数据库中的图片信息，此选项只应该在误删图片保存目录的时候开启，定时开启时此项无效
+delete_pic_table: false
+# 地址配置
+url_config:
+  esj:
+    user: 'https://www.esjzone.cc/my/profile.html'
+    login: 'https://www.esjzone.cc/inc/mem_login.php'
+    page: 'https://www.esjzone.cc/list-11/%d.html'
+    book: 'https://www.esjzone.cc%s'
+    collection: 'https://www.esjzone.cc/my/favorite/%d'
+  masiro:
+    user: 'https://masiro.me/admin/userCenterShow'
+    login: 'https://masiro.me/admin/auth/login'
+    page: 'https://masiro.me/admin/loadMoreNovels?ori=0&page=%d'
+    book: 'https://masiro.me/admin/novelView?novel_id=%d'
+    chapter: 'https://masiro.me/admin/novelReading?cid=%s'
+    pic: 'https://masiro.me%s'
+    collection: 'https://masiro.me/admin/loadMoreNovels?page=%d&collection=1'
+    referer: 'https://masiro.me'
+    cost: 'https://masiro.me/admin/pay'
+  lk:
+    user: 'https://api.lightnovel.us/api/user/info'
+    login: 'https://api.lightnovel.us/api/user/login'
+    page: 'https://api.lightnovel.us/api/category/get-article-by-cate'
+    book: 'https://api.lightnovel.us/api/series/get-info'
+    chapter: 'https://api.lightnovel.us/api/article/get-detail'
+    collection: 'https://api.lightnovel.us/api/history/get-collections'
+    cost: 'https://api.lightnovel.us/api/coin/use'
+# xpath配置
+xpath_config:
+  esj:
+    page: '//a[@class=''card-img-tiles'']/@href'
+    title: '//div[contains(@class,''book-detail'')]/h2/text()'
+    author: '//div[contains(@class,''book-detail'')]/ul/li[2]/a/text()'
+    tags: '//section[contains(@class,''widget-tags'')]/a/text()'
+    describe: '//div[@class=''description'']//text()'
+    cover: '//div[contains(@class,''product-gallery'')]/a/@href'
+    chapter: '//div[@id=''chapterList'']//a'
+    content: '//div[contains(@class,''forum-content'')]/*'
+    pic: '//div[contains(@class,''forum-content'')]//img/@src'
+    collection: '//h5[@class=''product-title'']/a/@href'
+  masiro:
+    token: '//input[@class=''csrf'']/@value'
+    page: '//div[@class=''layui-card'']/a[1]/@href'
+    title: '//div[@class=''novel-title'']/text()'
+    author: '//div[@class=''author'']/a/text()'
+    tags: '//div[@class=''tags'']//a/span/text()'
+    describe: '//div[@class=''brief'']/text()'
+    cover: '//img[@class=''img img-thumbnail'']/@data-src'
+    chapter: '//script[@id=''chapters-json'']//text()'
+    parent_chapter: '//script[@id=''f-chapters-json'']//text()'
+    content: '//div[@class=''box-body nvl-content'']/*'
+    pic: '//div[@class=''box-body nvl-content'']//img/@src'
+    collection: '//div[@class=''layui-card'']/a[1]/@href'
+
+
+
+
+
