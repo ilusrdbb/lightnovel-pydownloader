@@ -307,8 +307,8 @@ class Lk(Site):
         if config.read('get_collection'):
             page_url = config.read("url_config")[self.site]["collection"]
             param["d"]["type"] = 1
-            # class 1 单本 class 2 合集
-            param["d"]["class"] = config.read("lk_collection_class")
+            # class 1 单本
+            param["d"]["class"] = 1
         else:
             page_url = config.read("url_config")[self.site]["page"]
             param["d"]["parent_gid"] = 3
@@ -316,5 +316,11 @@ class Lk(Site):
             param["d"]["gid"] = 106
         res = await request.post_json(url=page_url, headers=self.header, json=param, session=self.session)
         if res and common.unzip(res)["code"] == 0:
-            return common.unzip(res)["data"]["list"]
+            if config.read('get_collection'):
+                # class 2 合集
+                param["d"]["class"] = 2
+                res2 = await request.post_json(url=page_url, headers=self.header, json=param, session=self.session)
+                return common.unzip(res)["data"]["list"] + common.unzip(res2)["data"]["list"]
+            else:
+                return common.unzip(res)["data"]["list"]
         return None
