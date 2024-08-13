@@ -1,6 +1,5 @@
 import aiohttp
 
-from sites.esj import Esj
 from sites.lk import Lk
 from sites.masiro import Masiro
 from sqlite.database import Database
