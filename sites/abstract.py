@@ -14,7 +14,10 @@ class Site(object):
     thread: Semaphore
 
     async def run(self):
-        await self.login()
+        try:
+            await self.login()
+        except:
+            return
         await self.get_books()
 
     @abstractmethod
