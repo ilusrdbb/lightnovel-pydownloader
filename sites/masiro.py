@@ -92,7 +92,7 @@ class Masiro(Site):
 
     async def build_content(self, book: Book, chapter: Chapter, chapter_url: str, cost: int):
         text = await request.get(chapter_url, self.header, self.session)
-        if cost > 0 and "立即打钱" in text:
+        if cost > 0 and text and "立即打钱" in text:
             # 打钱处理
             chapter.purchase_fail_flag = 1
             if config.read("is_purchase") and cost <= config.read("max_purchase"):
