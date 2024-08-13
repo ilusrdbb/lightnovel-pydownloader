@@ -50,8 +50,8 @@ python3 lightnovel.py &
 |scheduler_config|配置每天定时执行爬虫任务，未测试|
 |epub_dir|epub保存目录，默认值./epub，不建议更改|
 |image_dir|图片保存目录，默认值./images，不建议更改|
-|download_fail_again|是否统一下载之前爬取失败的图片，默认值false，定时开启时此项无效，未测试|
-|delete_pic_table|是否清空数据库中的图片信息，默认值false，此配置只应该在误删图片保存目录的时候开启，定时开启时此项无效，未测试|
+|download_fail_again|是否统一下载之前爬取失败的图片，默认值false，定时开启时此项无效|
+|delete_pic_table|是否清空数据库中的图片信息，默认值false，此配置只应该在误删图片保存目录的时候开启，定时开启时此项无效|
 |purchase_again|是否统一支付之前未支付的章节，默认值false，定时开启时此项无效，未测试|
 |url_config|网站地址配置，请勿更改|
 |xpath_config|xpath配置，请勿更改|

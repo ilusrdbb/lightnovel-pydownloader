@@ -3,7 +3,7 @@ import aiohttp
 from sites.lk import Lk
 from sites.masiro import Masiro
 from sqlite.database import Database
-from utils import config, epub, image
+from utils import config, epub, image, log
 
 
 class Reload(object):
@@ -68,10 +68,14 @@ class Reload(object):
                         book = db.book.get_by_id(chapter.book_table_id)
                         book_dict[book.id] = book
                 # 重新下载
+                log.info("%s 重新下载..." % pic.pic_url)
                 await image.download(pic, book.source, book.book_id, chapter.chapter_id, session)
                 if pic.pic_path:
                     with Database() as db:
                         db.pic.insert_or_update(pic)
+                    log.info("%s 下载成功" % pic.pic_url)
+                else:
+                    log.info("%s 下载失败" % pic.pic_url)
         # 重新构建涉及到的书籍和章节
         for book in book_dict.values():
             with Database() as db:
