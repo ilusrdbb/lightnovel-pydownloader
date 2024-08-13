@@ -11,7 +11,7 @@ from models.cookie import Cookie
 from models.pic import Pic
 from sites.abstract import Site
 from sqlite.database import Database
-from utils import config, request, common, log, epub, image, push
+from utils import config, request, common, log, epub, image
 
 
 class Lk(Site):

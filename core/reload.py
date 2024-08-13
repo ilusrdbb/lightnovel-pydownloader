@@ -3,7 +3,7 @@ import aiohttp
 from sites.lk import Lk
 from sites.masiro import Masiro
 from sqlite.database import Database
-from utils import config, epub, push, image
+from utils import config, epub, image
 
 
 class Reload(object):

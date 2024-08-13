@@ -13,7 +13,7 @@ from models.pic import Pic
 from sites.abstract import Site
 
 from sqlite.database import Database
-from utils import config, request, log, common, image, epub, push
+from utils import config, request, log, common, image, epub
 
 
 class Esj(Site):
