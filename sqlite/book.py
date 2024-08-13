@@ -43,3 +43,7 @@ class BookDatabase:
     def get_by_ids(self, ids: list) -> list[Book]:
         statement = select(Book).where(Book.id.in_(ids))
         return self.session.exec(statement).all()
+
+    def get_by_id(self, id: str) -> Optional[Book]:
+        statement = select(Book).where(Book.id == id)
+        return self.session.exec(statement).first()

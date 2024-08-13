@@ -25,6 +25,10 @@ class PicDatabase:
         statement = select(Pic).where(Pic.chapter_table_id == chapter_table_id, isnot(Pic.pic_path, None))
         return self.session.exec(statement).all()
 
+    def get_null_list(self) -> list[Pic]:
+        statement = select(Pic).where(Pic.pic_path.is_(None))
+        return self.session.exec(statement).all()
+
     def get_one(self, id: str) -> Optional[Pic]:
         statement = select(Pic).where(Pic.id == id)
         return self.session.exec(statement).first()

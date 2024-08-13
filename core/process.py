@@ -22,7 +22,8 @@ class Process(object):
             log.info("数据库图片地址信息已清除！")
             return
         if not config.read("scheduler_config")["enabled"] and config.read("download_fail_again"):
-            # todo 重新下载图片
+            # 重新下载图片
+            await Reload().re_download()
             log.info("图片已重新下载！")
             return
         if not config.read("scheduler_config")["enabled"] and config.read("purchase_again"):
