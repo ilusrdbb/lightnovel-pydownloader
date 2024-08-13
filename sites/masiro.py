@@ -260,6 +260,8 @@ class Masiro(Site):
             with Database() as db:
                 db.cookie.insert_or_update(self.cookie)
             log.info("%s 登录成功" % self.site)
+        else:
+            raise Exception("登录失败！")
 
     async def get_token(self):
         url = config.read("url_config")[self.site]["login"]
