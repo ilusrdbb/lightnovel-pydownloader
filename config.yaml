@@ -47,12 +47,6 @@ scheduler_config:
   enabled: false
   hour: 9
   minute: 0
-# 推送设置 填写部署路径 填空不启用
-# 地址例http://localhost:8083/api/v1/upload
-push_calibre:
-  url: ''
-  username: ''
-  password: ''
 
 # 下面的设置请谨慎更改
 # epub保存目录 目录/站点/书名.epub

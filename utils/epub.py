@@ -23,7 +23,7 @@ def build_epub(book: Book, chapter_list: Optional[Chapter]):
     if config.read('convert_hans'):
         book.book_name = zhconv.convert(book.book_name, 'zh-hans')
     epub_book.set_title(book.book_name)
-    epub_book.set_language("cn")
+    epub_book.set_language("zh")
     epub_book.add_author(book.author)
     if config.read('convert_hans') and book.describe:
         book.describe = zhconv.convert(book.describe, 'zh-hans')

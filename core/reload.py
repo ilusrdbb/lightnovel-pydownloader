@@ -39,7 +39,6 @@ class Reload(object):
                         if not lk.update_chapter(chapter, chapters):
                             await lk.build_content(book, chapter)
                     epub.build_epub(book, chapters)
-                    push.calibre(book)
                 if book.source == "masiro":
                     masiro = Masiro(session)
                     await masiro.login()
@@ -78,4 +77,3 @@ class Reload(object):
             with Database() as db:
                 chapters = db.chapter.get_by_book(book.id)
             epub.build_epub(book, chapters)
-            push.calibre(book)

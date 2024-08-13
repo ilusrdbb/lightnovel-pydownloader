@@ -48,7 +48,6 @@ python3 lightnovel.py &
 |least_words|html字节数小于此值且不存在图片的章节不生成epub，默认值0，设置为0时不限制|
 |convert_hans|生成epub是否将标题和内容的繁体转为简体，默认值true|
 |scheduler_config|配置每天定时执行爬虫任务，未测试|
-|push_calibre|配置推送calibre-web部署地址，未测试|
 |epub_dir|epub保存目录，默认值./epub，不建议更改|
 |image_dir|图片保存目录，默认值./images，不建议更改|
 |download_fail_again|是否统一下载之前爬取失败的图片，默认值false，定时开启时此项无效，未测试|
@@ -73,7 +72,7 @@ python3 lightnovel.py &
 本项目仅供个人学习交流，爬取数据不得对外传播，不得用于商业用途   
 
 ## TODO
-目前开发阶段完成后再打包
+目前开发阶段完成后再打包  
 批量测试  
 整理代码  
 完善log  

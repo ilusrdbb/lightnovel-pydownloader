@@ -129,8 +129,6 @@ class Lk(Site):
                 chapter_list = await self.build_chapters(book, res)
             # epub
             epub.build_epub(book, chapter_list)
-            # 推送calibre
-            push.calibre(book)
 
     async def build_chapter(self, book: Book, page_book: dict) -> Chapter:
         with Database() as db:

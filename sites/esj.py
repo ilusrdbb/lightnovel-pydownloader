@@ -96,8 +96,6 @@ class Esj(Site):
             chapter_list = await self.build_chapters(book, res)
             # epub
             epub.build_epub(book, chapter_list)
-            # 推送calibre
-            push.calibre(book)
 
     async def build_chapters(self, book: Book, text: str) -> list[Chapter]:
         chapter_xpaths = config.get_xpath(text, self.site, "chapter")
