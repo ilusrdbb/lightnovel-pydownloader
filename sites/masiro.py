@@ -5,7 +5,6 @@ import uuid
 from typing import Optional
 
 from aiohttp import ClientSession
-from lxml import html
 
 from models.book import Book
 from models.chapter import Chapter
