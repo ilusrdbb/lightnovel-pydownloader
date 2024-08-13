@@ -7,6 +7,10 @@
 ## 使用说明
 ### Windows
 解压release最新版本的压缩包（2.0暂未发布待开发完成），修改config.yaml配置文件，双击lightnovel.exe运行  
+或使用Pyinstaller从源代码中打包，环境准备见下方Linux说明  
+~~~bash
+Pyinstaller lightnovel_exe.spec
+~~~
 ### Linux
 Linux下暂时需要从源代码运行  
 安装python3环境，建议3.9及以上  
