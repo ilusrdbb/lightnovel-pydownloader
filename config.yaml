@@ -38,8 +38,8 @@ time_out: 15
 # 每次请求睡眠时间 比如设置2则每次请求前睡随机0~2秒 设置0不生效
 # 真白萌由于频繁请求会报错，每次请求强制睡10秒
 sleep_time: 1
-# 字数小于此值且无图片的章节不生成epub章节 避免epub生成公告这种章节 设置0无限制
-least_words: 300
+# 字数小于此值且无图片的章节不生成epub章节 设置0无限制
+least_words: 0
 # 生成epub时是否全局繁转简
 convert_hans: true
 # 定时执行设置
@@ -48,8 +48,11 @@ scheduler_config:
   hour: 9
   minute: 0
 # 推送设置 填写部署路径 填空不启用
-push:
-  calibre: ''
+# 地址例http://localhost:8083/api/v1/upload
+push_calibre:
+  url: ''
+  username: ''
+  password: ''
 
 # 下面的设置请谨慎更改
 # epub保存目录 目录/站点/书名.epub

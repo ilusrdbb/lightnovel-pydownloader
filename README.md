@@ -6,7 +6,7 @@
 
 ## 使用说明
 ### Windows
-解压release最新版本的压缩包，修改config.yaml配置文件，双击lightnovel.exe运行  
+解压release最新版本的压缩包（2.0暂未发布待开发完成），修改config.yaml配置文件，双击lightnovel.exe运行  
 ### Linux
 Linux下暂时需要从源代码运行  
 安装python3环境，建议3.9及以上  
@@ -41,10 +41,10 @@ python3 lightnovel.py &
 |max_purchase|消费上限，超过此值的章节不购买，默认值20|
 |time_out|请求超时时间（秒），默认值15|
 |sleep_time|每次网络请求睡眠时间（秒），默认值1，设置为0时不限制，例：设置2为随机睡0~2秒，注意真白萌此配置项无效程序会强制睡10秒防止频繁请求报错|
-|least_words|小于此值且不存在图片的章节不生成epub，默认值300，设置为0时不限制|
+|least_words|html字节数小于此值且不存在图片的章节不生成epub，默认值0，设置为0时不限制|
 |convert_hans|生成epub是否将标题和内容的繁体转为简体，默认值true|
 |scheduler_config|配置每天定时执行爬虫任务，未测试|
-|push|配置推送calibre，未开发|
+|push_calibre|配置推送calibre-web部署地址，未测试|
 |epub_dir|epub保存目录，默认值./epub，不建议更改|
 |image_dir|图片保存目录，默认值./images，不建议更改|
 |download_fail_again|是否统一下载之前爬取失败的图片，默认值false，定时开启时此项无效，未测试|
@@ -69,7 +69,7 @@ python3 lightnovel.py &
 本项目仅供个人学习交流，爬取数据不得对外传播，不得用于商业用途   
 
 ## TODO
-完成未实现的配置项  
+目前开发阶段完成后再打包
 批量测试  
 整理代码  
 完善log  
