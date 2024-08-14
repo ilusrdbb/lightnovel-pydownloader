@@ -47,7 +47,7 @@ python3 lightnovel.py &
 |sleep_time|每次网络请求睡眠时间（秒），默认值1，设置为0时不限制，例：设置2为随机睡0~2秒，注意真白萌此配置项无效程序会强制睡10秒防止频繁请求报错|
 |least_words|html字节数小于此值且不存在图片的章节不生成epub，默认值0，设置为0时不限制|
 |convert_hans|生成epub是否将标题和内容的繁体转为简体，默认值true|
-|scheduler_config|配置每天定时执行爬虫任务，未测试|
+|scheduler_config|配置每天定时执行爬虫任务|
 |epub_dir|epub保存目录，默认值./epub，不建议更改|
 |image_dir|图片保存目录，默认值./images，不建议更改|
 |download_fail_again|是否统一下载之前爬取失败的图片，默认值false，定时开启时此项无效|
