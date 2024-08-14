@@ -13,16 +13,19 @@ loop = asyncio.get_event_loop()
 
 
 def run():
-    print("Version 2.0.0")
+    if config.read("scheduler_config")["enabled"]:
+        print("===========start scheduler===========")
     log.init_log()
     script.init_db()
     loop.run_until_complete(Process(config.read("site")).run())
     log.remove_log()
+    if config.read("scheduler_config")["enabled"]:
+        print("===========end scheduler===========")
 
 
 if __name__ == '__main__':
+    print("Version 2.0.0")
     if config.read("scheduler_config")["enabled"]:
-        print("===========start scheduler===========")
         # 添加定时任务
         scheduler.add_job(
             run,
@@ -34,7 +37,6 @@ if __name__ == '__main__':
             max_instances=1
         )
         scheduler.start()
-        print("===========end scheduler===========")
     else:
         run()
         input("Press Enter to exit...")
