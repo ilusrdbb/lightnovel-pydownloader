@@ -19,7 +19,8 @@ class Reload(object):
             return
         book_ids = set()
         for nopay_chapter in nopay_list:
-            book_ids.add(nopay_chapter.book_table_id)
+            if nopay_chapter.id == '56dcf8f8-7678-4b23-bed7-b165d080bee5':
+                book_ids.add(nopay_chapter.book_table_id)
         # 获取全部需要再次爬的书
         with Database() as db:
             books = db.book.get_by_ids(list(book_ids))

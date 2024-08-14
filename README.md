@@ -6,7 +6,7 @@
 
 ## 使用说明
 ### Windows
-解压release最新版本的压缩包（2.0暂未发布待开发完成），修改config.yaml配置文件，双击lightnovel.exe运行  
+解压release最新版本的压缩包，修改config.yaml配置文件，双击lightnovel.exe运行  
 或使用Pyinstaller从源代码中打包，环境准备见下方Linux说明  
 ~~~bash
 Pyinstaller lightnovel_exe.spec
@@ -52,7 +52,7 @@ python3 lightnovel.py &
 |image_dir|图片保存目录，默认值./images，不建议更改|
 |download_fail_again|是否统一下载之前爬取失败的图片，默认值false，定时开启时此项无效|
 |delete_pic_table|是否清空数据库中的图片信息，默认值false，此配置只应该在误删图片保存目录的时候开启，定时开启时此项无效|
-|purchase_again|是否统一支付之前未支付的章节，默认值false，定时开启时此项无效，未测试|
+|purchase_again|是否统一支付之前未支付的章节，默认值false，定时开启时此项无效|
 |url_config|网站地址配置，请勿更改|
 |xpath_config|xpath配置，请勿更改|
 
@@ -71,9 +71,7 @@ python3 lightnovel.py &
 本项目未经过大量测试，如发现bug欢迎提issue，~~至于需求有空再说~~  
 本项目仅供个人学习交流，爬取数据不得对外传播，不得用于商业用途   
 
-## TODO
-目前开发阶段完成后再打包  
-批量测试  
+## TODO 
 整理代码  
 完善log  
 添加百合会支持  

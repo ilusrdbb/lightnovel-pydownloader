@@ -38,6 +38,10 @@ def init_db():
       "book_table_id" COLLATE BINARY ASC
     );
     
+    CREATE INDEX IF NOT EXISTS "idx_flag" ON "chapter" (
+      "purchase_fail_flag" COLLATE BINARY ASC
+    );
+    
     CREATE TABLE IF NOT EXISTS "cookie" (
       "id" text NOT NULL,
       "source" text NOT NULL,
