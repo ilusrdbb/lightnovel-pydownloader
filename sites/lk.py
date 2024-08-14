@@ -104,11 +104,11 @@ class Lk(Site):
         async with self.thread:
             # 屏蔽公告等
             black_aid = [969547, 1113228, 1099310, 1048596]
-            if page_book["aid"] in black_aid:
-                return
+            aid = page_book["aid"]
             sid = page_book["sid"]
+            if aid in black_aid:
+                return
             if sid == 0:
-                aid = page_book["aid"]
                 # 黑名单
                 if config.read("black_list") and aid in config.read("black_list"):
                     return
