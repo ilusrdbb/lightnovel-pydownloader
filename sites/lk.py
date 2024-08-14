@@ -108,6 +108,10 @@ class Lk(Site):
                 return
             sid = page_book["sid"]
             if sid == 0:
+                aid = page_book["aid"]
+                # 黑名单
+                if config.read("black_list") and aid in config.read("black_list"):
+                    return
                 book = self.build_book_from_page(page_book)
             else:
                 # 黑名单

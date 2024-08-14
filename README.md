@@ -32,8 +32,8 @@ python3 lightnovel.py &
 |配置项|说明|
 |:-:|:-:|
 |site|配置需要爬取的站点，默认值esj，masiro 真白萌、esj esj、lk 轻国，输入all为爬取全部支持的站点|
-|white_list|白名单，数组，esj和真白萌填入书籍的地址，轻国填入合集的id，不支持轻国单本|
-|black_list|黑名单，数组，esj和真白萌填入书籍的地址，轻国填入合集的id，不支持轻国单本|
+|white_list|白名单，数组，esj和真白萌填入书籍的地址，轻国填入合集的id（数字不是字符串），不支持轻国单本id|
+|black_list|黑名单，数组，esj和真白萌填入书籍的地址，轻国填入单本或合集的id（数字不是字符串）|
 |max_thread|最大线程数，默认值1，不建议设置过大，程序限制esj最大值8、轻国最大值4、真白萌最大值1|
 |login_info|登录账号密码，必填，目前支持的站点都必须登录才可爬取|
 |flaresolverr_url|flaresolverr服务地址，用于绕过真白萌cf盾，例：http://127.0.0.1:8191/v1，目前只有此镜像可以完美绕过alexfozor/flaresolverr:pr-1300|
