@@ -44,3 +44,4 @@ class Process(object):
                     await Lk(session).run()
                 if site == "masiro":
                     await Masiro(session).run()
+                await session.close()

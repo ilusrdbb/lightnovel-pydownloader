@@ -1,13 +1,13 @@
 import asyncio
 
-from apscheduler.schedulers.blocking import BlockingScheduler
+from apscheduler.schedulers.background import BackgroundScheduler
 
 from core.process import Process
 from sqlite import script
 from utils import config, log
 
 config.init_config()
-scheduler = BlockingScheduler()
+scheduler = BackgroundScheduler(timezone='Asia/Shanghai')
 loop = asyncio.get_event_loop()
 
 
@@ -25,12 +25,9 @@ if __name__ == '__main__':
         # 添加定时任务
         scheduler.add_job(
             run,
-            'cron',
+            "cron",
             hour=config.read("scheduler_config")["hour"],
-            minute=config.read("scheduler_config")["minute"],
-            misfire_grace_time=600,
-            coalesce=True,
-            max_instances=1
+            minute=config.read("scheduler_config")["minute"]
         )
         scheduler.start()
         print("===========end scheduler===========")
