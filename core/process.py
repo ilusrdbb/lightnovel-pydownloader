@@ -38,12 +38,9 @@ class Process(object):
             jar = aiohttp.CookieJar(unsafe=True)
             conn = aiohttp.TCPConnector(ssl=False)
             async with aiohttp.ClientSession(connector=conn, trust_env=True, cookie_jar=jar) as session:
-                try:
-                    if site == "esj":
-                        await Esj(session).run()
-                    if site == "lk":
-                        await Lk(session).run()
-                    if site == "masiro":
-                        await Masiro(session).run()
-                finally:
-                    await session.close()
+                if site == "esj":
+                    await Esj(session).run()
+                if site == "lk":
+                    await Lk(session).run()
+                if site == "masiro":
+                    await Masiro(session).run()

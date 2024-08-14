@@ -44,7 +44,6 @@ class Reload(object):
                     await masiro.login()
                     book_url = config.read("url_config")[self.site]["book"] % book.book_id
                     await masiro.build_book(book_url)
-            await session.close()
 
     async def re_download(self):
         book_dict = {}
@@ -77,7 +76,6 @@ class Reload(object):
                     log.info("%s 下载成功" % pic.pic_url)
                 else:
                     log.info("%s 下载失败" % pic.pic_url)
-            await session.close()
         # 重新构建涉及到的书籍和章节
         for book in book_dict.values():
             with Database() as db:
