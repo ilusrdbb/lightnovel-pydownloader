@@ -31,6 +31,11 @@ class Process(object):
             await Reload().re_pay()
             log.info("已重新打钱！")
             return
+        if not config.read("scheduler_config")["enabled"] and config.read("purchase_again"):
+            # 重新导出epub
+            Reload().re_epub()
+            log.info("已导出epub！")
+            return
         sites = [self.site]
         if self.site == "all":
             sites = ["esj", "lk", "masiro"]

@@ -82,3 +82,17 @@ class Reload(object):
             with Database() as db:
                 chapters = db.chapter.get_by_book(book.id)
             epub.build_epub(book, chapters)
+
+    def re_epub(self):
+        # 全部书籍
+        with Database() as db:
+            books = db.book.get_all()
+        if not books:
+            return
+        for book in books:
+            # 全部章节
+            with Database() as db:
+                chapters = db.chapter.get_by_book(book.id)
+            if not chapters:
+                continue
+            epub.build_epub(book, chapters)

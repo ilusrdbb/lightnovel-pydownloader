@@ -53,12 +53,14 @@ scheduler_config:
 epub_dir: './epub'
 # 图片保存目录 目录/站点/书id/章节id/图片名
 image_dir: './images'
-# 是否在爬取前统一下载全部之前爬取失败的图片，定时开启时此项无效
+# 是否统一下载全部之前爬取失败的图片，定时开启时此项无效
 download_fail_again: false
 # 危险！清空数据库中的图片信息，此选项只应该在误删图片保存目录的时候开启，定时开启时此项无效
 delete_pic_table: false
-# 是否在爬取前统一支付之前未支付的章节，定时开启时此项无效
+# 是否统一支付之前未支付的章节，定时开启时此项无效
 purchase_again: false
+# 是否导出数据库数据到epub，定时开启时此项无效
+export_epub_again: false
 # 地址配置
 url_config:
   esj:

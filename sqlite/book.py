@@ -21,6 +21,10 @@ class BookDatabase:
         statement = select(Book).where(Book.book_id == book_id, Book.source == source)
         return self.session.exec(statement).first()
 
+    def get_all(self) -> list[Book]:
+        statement = select(Book)
+        return self.session.exec(statement).all()
+
     async def insert_or_update(self, data: Book, session: ClientSession):
         book = self.get_one(data.book_id, data.source)
         if not book:
