@@ -4,7 +4,7 @@ import random
 from aiohttp import ClientSession
 from tenacity import retry, stop_after_attempt
 
-from utils import config
+from utils import config, log
 
 
 @retry(stop=stop_after_attempt(3))
@@ -25,6 +25,7 @@ async def get(url: str, headers: dict, session: ClientSession) -> str:
         res_text = await res.text()
         return res_text
     except Exception:
+        log.info("%s 请求失败！" % url)
         return None
 
 
@@ -46,6 +47,7 @@ async def post_data(url: str, headers: dict, data: dict, session: ClientSession)
             "headers": res.headers
         }
     except Exception:
+        log.info("%s 请求失败！" % url)
         return None
 
 
@@ -66,4 +68,5 @@ async def post_json(url: str, headers: dict, json: dict, session: ClientSession)
         res_text = await res.text()
         return res_text
     except Exception:
+        log.info("%s 请求失败！" % url)
         return None

@@ -61,10 +61,12 @@ class Lk(Site):
         self.param["d"]["security_key"] = self.cookie.token
         res = await request.post_json(url=url, headers=self.header, json=self.param, session=self.session)
         if res and common.unzip(res).get("code") == 0:
+            log.info("%s校验缓存cookie成功，跳过登录" % self.site)
             return True
         return False
 
     async def get_cookie(self):
+        log.info("%s开始登录..." % self.site)
         url = config.read("url_config")[self.site]["login"]
         param = self.param
         param["is_encrypted"] = 0
@@ -80,7 +82,7 @@ class Lk(Site):
             self.param["d"]["security_key"] = self.cookie.token
             with Database() as db:
                 db.cookie.insert_or_update(self.cookie)
-            log.info("%s 登录成功" % self.site)
+            log.info("%s登录成功" % self.site)
         else:
             raise Exception("登录失败！")
 

@@ -236,10 +236,12 @@ class Masiro(Site):
         self.token = self.cookie.token
         res = await request.get(url=url, headers=self.header, session=self.session)
         if res and "csrf-token" in res:
+            log.info("%s校验缓存cookie成功，跳过登录" % self.site)
             return True
         return False
 
     async def get_cookie(self):
+        log.info("%s开始登录..." % self.site)
         url = config.read("url_config")[self.site]["login"]
         cf_bool = await self.fuck_cf()
         if not cf_bool:
@@ -259,7 +261,7 @@ class Masiro(Site):
             self.header["Cookie"] = self.cookie.cookie
             with Database() as db:
                 db.cookie.insert_or_update(self.cookie)
-            log.info("%s 登录成功" % self.site)
+            log.info("%s登录成功" % self.site)
         else:
             raise Exception("登录失败！")
 
@@ -270,7 +272,7 @@ class Masiro(Site):
             self.token = config.get_xpath(res, self.site, "token")[0]
 
     async def fuck_cf(self) -> bool:
-        log.info("真白萌开始破cf盾...")
+        log.info("开始破cf盾...")
         url = config.read("flaresolverr_url")
         headers = {
             'content-type': 'application/json'
@@ -287,6 +289,6 @@ class Masiro(Site):
             for cf_cookie in res_json["solution"]["cookies"]:
                 if cf_cookie["name"] == "cf_clearance":
                     self.header["Cookie"] = "cf_clearance=" + cf_cookie["value"] + ";"
-                    log.info("真白萌破盾成功！")
+                    log.info("破cf盾成功！")
                     return True
         return False

@@ -9,7 +9,7 @@ from ebooklib.epub import EpubBook
 
 from models.chapter import Chapter
 from models.pic import Pic
-from utils import common, config
+from utils import common, config, log
 
 
 async def download(pic: Pic, site: str, book_id: str, chapter_id: str, session: ClientSession):
@@ -47,7 +47,7 @@ async def download(pic: Pic, site: str, book_id: str, chapter_id: str, session: 
             file_path = avif(file_path)
         pic.pic_path = file_path
     except Exception:
-        pass
+        log.info("%s 图片下载失败！" % pic.pic_url)
     return
 
 
@@ -79,7 +79,7 @@ async def cover(pic_url: str, site: str, book_id: str, session: ClientSession):
         with open(file_path, 'wb') as f:
             f.write(image_data)
     except Exception:
-        pass
+        log.info("%s 封面下载失败！" % pic_url)
     return
 
 

@@ -50,10 +50,12 @@ class Esj(Site):
         self.header["Cookie"] = self.cookie.cookie
         res = await request.get(url=url, headers=self.header, session=self.session)
         if res and res.startswith("<!DOCTYPE html>"):
+            log.info("%s校验缓存cookie成功，跳过登录" % self.site)
             return True
         return False
 
     async def get_cookie(self):
+        log.info("%s开始登录..." % self.site)
         url = config.read("url_config")[self.site]["login"]
         login_data = {
             "email": config.read("login_info")[self.site]["username"],
@@ -66,7 +68,7 @@ class Esj(Site):
             self.header["Cookie"] = self.cookie.cookie
             with Database() as db:
                 db.cookie.insert_or_update(self.cookie)
-            log.info("%s 登录成功" % self.site)
+            log.info("%s登录成功" % self.site)
         else:
             raise Exception("登录失败！")
 
