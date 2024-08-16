@@ -205,7 +205,7 @@ class Lk(Site):
         log.info("%s 新获取章节内容" % chapter.chapter_name)
 
     async def pay(self, book: Book, chapter: Chapter, cost: int, pic_urls: list):
-        log.info("%s 开始打钱..花费: %s轻币" % (book.book_name, str(cost)))
+        log.info("%s 开始打钱..花费: %s轻币" % (chapter.chapter_name, str(cost)))
         cost_url = config.read("url_config")[self.site]["cost"]
         cost_param = copy.deepcopy(self.param)
         cost_param["d"]["goods_id"] = 1
@@ -216,7 +216,7 @@ class Lk(Site):
         cost_res = await request.post_json(url=cost_url, headers=self.header, json=cost_param, session=self.session)
         if cost_res and common.unzip(cost_res)["code"] == 0:
             # 打钱成功 刷新文本
-            log.info("%s 打钱成功！" % book.book_name)
+            log.info("%s 打钱成功！" % chapter.chapter_name)
             chapter_url = config.read("url_config")[self.site]["chapter"]
             param = copy.deepcopy(self.param)
             param["d"]["aid"] = chapter.chapter_id
@@ -227,6 +227,8 @@ class Lk(Site):
                 chapter.content = common.bbcode_to_html(chapter_data["content"], chapter_data, pic_urls)
                 if chapter.content:
                     chapter.purchase_fail_flag = 0
+        else:
+            log.info("%s 打钱失败！" % chapter.chapter_name)
 
     async def build_images(self, book: Book, chapter: Chapter, pic_urls: list):
         if not chapter.content:

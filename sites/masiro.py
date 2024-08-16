@@ -108,7 +108,7 @@ class Masiro(Site):
         log.info("%s 新获取章节内容" % chapter.chapter_name)
 
     async def pay(self, book: Book, chapter: Chapter, chapter_url: str, cost: int) -> str:
-        log.info("%s 开始打钱..花费: %s金币" % (book.book_name, str(cost)))
+        log.info("%s 开始打钱..花费: %s金币" % (chapter.chapter_name, str(cost)))
         cost_url = config.read("url_config")[self.site]["cost"]
         cost_param = {
             "type": 2,
@@ -120,11 +120,12 @@ class Masiro(Site):
         cost_res = await request.post_json(url=cost_url, headers=cost_header, json=cost_param, session=self.session)
         if cost_res and json.loads(cost_res)['code'] == 1:
             # 打钱成功 刷新文本
-            log.info("%s 打钱成功！" % book.book_name)
+            log.info("%s 打钱成功！" % chapter.chapter_name)
             text = await request.get(chapter_url, self.header, self.session)
             chapter.content = config.get_html(text, self.site, "content")
             chapter.purchase_fail_flag = 0
             return text
+        log.info("%s 打钱失败！" % chapter.chapter_name)
         return None
 
     async def build_images(self, book: Book, chapter: Chapter, text: str):
