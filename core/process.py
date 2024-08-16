@@ -19,22 +19,18 @@ class Process(object):
             # 删图片库
             with Database() as db:
                 db.pic.clear()
-            log.info("数据库图片地址信息已清除！")
             return
         if not config.read("scheduler_config")["enabled"] and config.read("download_fail_again"):
             # 重新下载图片
             await Reload().re_download()
-            log.info("图片已重新下载！")
             return
         if not config.read("scheduler_config")["enabled"] and config.read("purchase_again"):
             # 重爬打钱章节
             await Reload().re_pay()
-            log.info("已重新打钱！")
             return
         if not config.read("scheduler_config")["enabled"] and config.read("purchase_again"):
             # 重新导出epub
             Reload().re_epub()
-            log.info("已导出epub！")
             return
         sites = [self.site]
         if self.site == "all":

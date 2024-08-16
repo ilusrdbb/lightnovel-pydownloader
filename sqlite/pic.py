@@ -4,7 +4,7 @@ from sqlalchemy.sql.operators import isnot
 from sqlmodel import Session, select, update
 
 from models.pic import Pic
-from utils import common
+from utils import common, log
 
 
 class PicDatabase:
@@ -48,3 +48,4 @@ class PicDatabase:
         # 执行更新操作
         self.session.execute(statement)
         self.session.commit()
+        log.info("数据库图片地址信息已清除！")

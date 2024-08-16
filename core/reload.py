@@ -12,6 +12,7 @@ class Reload(object):
         pass
 
     async def re_pay(self):
+        log.info("开始打钱...")
         # 全部打钱失败的章节
         with Database() as db:
             nopay_list = db.chapter.get_nopay_list()
@@ -19,8 +20,7 @@ class Reload(object):
             return
         book_ids = set()
         for nopay_chapter in nopay_list:
-            if nopay_chapter.id == '56dcf8f8-7678-4b23-bed7-b165d080bee5':
-                book_ids.add(nopay_chapter.book_table_id)
+            book_ids.add(nopay_chapter.book_table_id)
         # 获取全部需要再次爬的书
         with Database() as db:
             books = db.book.get_by_ids(list(book_ids))
@@ -45,8 +45,10 @@ class Reload(object):
                     await masiro.login()
                     book_url = config.read("url_config")[self.site]["book"] % book.book_id
                     await masiro.build_book(book_url)
+        log.info("已重新打钱！")
 
     async def re_download(self):
+        log.info("开始重新下载图片...")
         book_dict = {}
         chapter_dict = {}
         # 全部未下载的图片
@@ -69,7 +71,7 @@ class Reload(object):
                         book = db.book.get_by_id(chapter.book_table_id)
                         book_dict[book.id] = book
                 # 重新下载
-                log.info("%s 重新下载..." % pic.pic_url)
+                log.info("%s 开始重新下载..." % pic.pic_url)
                 await image.download(pic, book.source, book.book_id, chapter.chapter_id, session)
                 if pic.pic_path:
                     with Database() as db:
@@ -82,8 +84,10 @@ class Reload(object):
             with Database() as db:
                 chapters = db.chapter.get_by_book(book.id)
             epub.build_epub(book, chapters)
+        log.info("图片已重新下载！")
 
     def re_epub(self):
+        log.info("开始全量导出epub...")
         # 全部书籍
         with Database() as db:
             books = db.book.get_all()
@@ -96,3 +100,4 @@ class Reload(object):
             if not chapters:
                 continue
             epub.build_epub(book, chapters)
+        log.info("已全量导出epub！")
