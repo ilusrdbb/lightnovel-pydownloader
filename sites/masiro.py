@@ -59,8 +59,11 @@ class Masiro(Site):
             epub.build_epub(book, chapter_list)
 
     async def build_chapters(self, book: Book, text: str) -> list[Chapter]:
-        parent_chapter_json = json.loads(config.get_xpath(text, self.site, "parent_chapter")[0])
-        chapter_json = json.loads(config.get_xpath(text, self.site, "chapter")[0])
+        try:
+            parent_chapter_json = json.loads(config.get_xpath(text, self.site, "parent_chapter")[0])
+            chapter_json = json.loads(config.get_xpath(text, self.site, "chapter")[0])
+        except:
+            return None
         if not chapter_json:
             return None
         with Database() as db:
