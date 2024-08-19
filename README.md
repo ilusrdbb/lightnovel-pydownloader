@@ -27,6 +27,13 @@ git clone https://github.com/ilusrdbb/lightnovel-pydownloader.git
 python3 lightnovel.py &
 ~~~
 
+## 支持站点说明
+|站点|配置名称|特殊情况说明|
+|:-:|:-:|:-:|
+|esj|esj|外链(X)、密码章节(X)|
+|轻之国度|lk|gzip解压(√)、bbcode转换(√)、轻币购买(√)、勇者权限(X)、app权限(√)|
+|真白萌|masiro|cf盾(√)、等级权限(X)、金币购买(√)|
+
 ## 配置说明
 配置文件位于程序目录下的config.yaml，运行程序请根据自身需要修改配置
 |配置项|说明|
