@@ -115,5 +115,6 @@ def handle_title(book: Book):
     book.book_name = book.book_name.replace("|", " ")
     book.book_name = book.book_name.replace("?", "？")
     book.book_name = book.book_name.replace("*", " ")
-    if len(book.book_name) > 127:
-        book.book_name = book.book_name[:127]
+    # linux 85 windows 127
+    if len(book.book_name) > 85:
+        book.book_name = book.book_name[:85]
