@@ -80,4 +80,5 @@ python3 lightnovel.py &
 **本项目仅供个人学习交流，爬取数据不得对外传播，不得用于商业用途**   
 
 ## TODO
+docker版calibre-web推送  
 添加百合会支持  
