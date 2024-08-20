@@ -29,8 +29,12 @@ def build_epub(book: Book, chapter_list: Optional[Chapter]):
         book.describe = zhconv.convert(book.describe, 'zh-hans')
     epub_book.add_metadata("DC", "description", book.describe)
     epub_book.add_metadata("DC", "source", book.source)
+    epub_book.add_metadata("DC", "publisher", book.source)
+    epub_book.add_metadata("DC", "contributor", "lightnovel-pydownloader")
     epub_book.add_metadata("DC", "rights", "本电子书由lightnovel-pydownloader制作生成，仅供个人使用，不得对外传播以及用于商业用途。")
-    epub_book.add_metadata("DC", "subject", book.tags)
+    if book.tags:
+        for tag in book.tags.split(","):
+            epub_book.add_metadata("DC", "subject", tag)
     if book.cover_url:
         cover_path = config.read("image_dir") + "/" + book.source + "/" + book.book_id + "/book_cover.jpg"
         try:
