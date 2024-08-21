@@ -43,11 +43,11 @@ python3 lightnovel.py &
 |black_list|黑名单，数组，esj和真白萌填入书籍的地址，轻国填入单本或合集的id（数字不是字符串）|
 |max_thread|最大线程数，默认值1，不建议设置过大，程序限制esj最大值8、轻国最大值4、真白萌最大值1|
 |login_info|登录账号密码，必填，目前支持的站点都必须登录才可爬取|
-|flaresolverr_url|flaresolverr服务地址，用于绕过真白萌cf盾，例：http://127.0.0.1:8191/v1，目前只有此镜像可以完美绕过alexfozor/flaresolverr:pr-1300|
+|flaresolverr_url|flaresolverr服务地址，用于绕过真白萌cf盾，例：`http://127.0.0.1:8191/v1`，目前只有此镜像可以完美绕过alexfozor/flaresolverr:pr-1300|
 |get_collection|是否爬取收藏页，默认值false，如选否则爬取网站日轻列表|
 |start_page|爬取范围（包含），收藏或列表开始页数，默认值1|
 |end_page|爬取范围（包含），收藏或列表结束页数，默认值1|
-|proxy_url|代理地址，仅支持http代理，例：http://127.0.0.1:1081，esj只能使用非日韩的代理，真白萌代理只对下载图片生效|
+|proxy_url|代理地址，仅支持http代理，例：`http://127.0.0.1:1081`，esj只能使用非日韩的代理，真白萌代理只对下载图片生效|
 |is_purchase|是否使用轻币或真白萌金币购买付费章节，默认值false|
 |max_purchase|消费上限，超过此值的章节不购买，默认值20|
 |time_out|请求超时时间（秒），默认值15|
