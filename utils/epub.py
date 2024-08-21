@@ -7,7 +7,7 @@ from zhconv import zhconv
 from models.book import Book
 from models.chapter import Chapter
 from sqlite.database import Database
-from utils import image, config, log, common
+from utils import image, config, log, common, push
 
 
 def build_epub(book: Book, chapter_list: Optional[Chapter]):
@@ -20,9 +20,10 @@ def build_epub(book: Book, chapter_list: Optional[Chapter]):
     epub_book = epub.EpubBook()
     # 元数据
     epub_book.set_identifier(book.id)
+    title = book.book_name
     if config.read('convert_hans'):
-        book.book_name = zhconv.convert(book.book_name, 'zh-hans')
-    epub_book.set_title(book.book_name)
+        title = zhconv.convert(title, 'zh-hans')
+    epub_book.set_title(title)
     epub_book.set_language("zh")
     epub_book.add_author(book.author)
     if config.read('convert_hans') and book.describe:
@@ -79,3 +80,6 @@ def build_epub(book: Book, chapter_list: Optional[Chapter]):
     # 保存
     epub.write_epub(path, epub_book)
     log.info(book.book_name + " epub导出成功!")
+    # 推送
+    if config.read("push_calibre")["enabled"]:
+        push.calibre(book)

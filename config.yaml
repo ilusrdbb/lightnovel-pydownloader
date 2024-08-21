@@ -47,6 +47,15 @@ scheduler_config:
   enabled: false
   hour: 9
   minute: 0
+# 推送calibre-web设置 下方默认配置仅做示例
+push_calibre:
+  enabled: false
+  # docker容器id
+  container_id: ''
+  # docker映射爬虫的epub目录
+  absolute_path: '/epub'
+  # docker映射书籍目录
+  library_path: '/library'
 
 # 下面的设置请谨慎更改
 # epub保存目录 目录/站点/书名.epub

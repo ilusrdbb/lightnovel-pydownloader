@@ -1,6 +1,6 @@
 # lightnovel-pydownloader
 
-轻小说网站爬虫工具，内置sqlite保存数据，最终生成epub  
+轻小说网站爬虫工具，内置sqlite保存数据，最终生成epub，支持推送到calibre-web服务  
 目前已适配真白萌、esj zone、轻国  
 本项目基于pycharm开发，开发环境为python 3.9  
 
@@ -55,6 +55,7 @@ python3 lightnovel.py &
 |least_words|html字节数小于此值且不存在图片的章节不生成epub，默认值0，设置为0时不限制|
 |convert_hans|生成epub是否将标题和内容的繁体转为简体，默认值true|
 |scheduler_config|配置每天定时执行爬虫任务，注意如果爬真白萌很可能一天爬不完，此时不建议开启定时执行|
+|push_calibre|配置docker版calibre-web推送|
 |epub_dir|epub保存目录，默认值./epub，不建议更改|
 |image_dir|图片保存目录，默认值./images，不建议更改|
 |download_fail_again|是否统一下载之前爬取失败的图片（优先级1），默认值false，定时开启时此项无效，此项开启时正常爬虫任务会停止|
@@ -80,5 +81,4 @@ python3 lightnovel.py &
 **本项目仅供个人学习交流，爬取数据不得对外传播，不得用于商业用途**   
 
 ## TODO
-docker版calibre-web推送  
 添加百合会支持  
