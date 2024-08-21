@@ -28,9 +28,9 @@ class Process(object):
             # 重爬打钱章节
             await Reload().re_pay()
             return
-        if not config.read("scheduler_config")["enabled"] and config.read("purchase_again"):
+        if not config.read("scheduler_config")["enabled"] and config.read("export_epub_again"):
             # 重新导出epub
-            Reload().re_epub()
+            await Reload().re_epub()
             return
         sites = [self.site]
         if self.site == "all":

@@ -17,8 +17,7 @@ def calibre(book: Book):
     log.info("%s 开始推送calibre..." % book.book_name)
     try:
         # 执行docker命令
-        result = subprocess.run(docker_command, capture_output=True, text=True)
-        log.info(result)
+        subprocess.run(docker_command, capture_output=True, text=True)
         log.info("%s 推送calibre成功！" % book.book_name)
     except:
         log.info("%s 推送calibre失败！" % book.book_name)

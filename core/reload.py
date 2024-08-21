@@ -1,5 +1,8 @@
+import asyncio
+
 import aiohttp
 
+from models.book import Book
 from sites.lk import Lk
 from sites.masiro import Masiro
 from sqlite.database import Database
@@ -86,18 +89,21 @@ class Reload(object):
             epub.build_epub(book, chapters)
         log.info("图片已重新下载！")
 
-    def re_epub(self):
+    async def re_epub(self):
         log.info("开始全量导出epub...")
         # 全部书籍
         with Database() as db:
             books = db.book.get_all()
         if not books:
             return
-        for book in books:
-            # 全部章节
-            with Database() as db:
-                chapters = db.chapter.get_by_book(book.id)
-            if not chapters:
-                continue
+        tasks = [self.re_book_epub(book) for book in books]
+        if tasks:
+            await asyncio.gather(*tasks)
+            log.info("已全量导出epub！")
+
+    async def re_book_epub(self, book: Book):
+        # 全部章节
+        with Database() as db:
+            chapters = db.chapter.get_by_book(book.id)
+        if chapters:
             epub.build_epub(book, chapters)
-        log.info("已全量导出epub！")
