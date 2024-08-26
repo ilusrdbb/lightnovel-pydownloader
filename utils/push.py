@@ -12,7 +12,7 @@ def calibre(book: Book):
         return
     full_path = abs_path + "/" + book.source + "/" + book.book_name + ".epub"
     # calibre推送api
-    calibre_command = "calibredb add " + full_path + " --with-library " + library_path
+    calibre_command = "calibredb add " + full_path + " --automerge overwrite --with-library " + library_path
     docker_command = ["docker", "exec", "-d", container_id] + ["/bin/sh", "-c", calibre_command]
     log.info("%s 开始推送calibre..." % book.book_name)
     try:
