@@ -23,7 +23,7 @@ def run():
 
 
 if __name__ == '__main__':
-    print("Version 2.0.7")
+    print("Version 2.0.8")
     script.init_db()
     if config.read("scheduler_config")["enabled"]:
         # 添加定时任务
