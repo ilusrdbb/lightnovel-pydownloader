@@ -78,8 +78,12 @@ def build_epub(book: Book, chapter_list: Optional[Chapter]):
                             media_type="text/css", content=style)
     epub_book.add_item(nav_css)
     # 保存
-    epub.write_epub(path, epub_book)
-    log.info(book.book_name + " epub导出成功!")
+    try:
+        epub.write_epub(path, epub_book)
+        log.info(book.book_name + " epub导出成功!")
+    except:
+        log.info(book.book_name + " epub导出失败!")
+        return
     # 推送
     if config.read("push_calibre")["enabled"]:
         push.calibre(book)
