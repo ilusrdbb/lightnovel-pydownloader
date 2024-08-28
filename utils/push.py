@@ -16,7 +16,7 @@ def calibre(book: Book):
     try:
         # calibre search
         calibre_search_command = "calibredb search publisher:" + book.source + \
-                                 " title:\"" + book.book_name + "\""
+                                 " 'title:\"" + book.book_name + "\"'"
         docker_search_command = docker_command + ["/bin/sh", "-c", calibre_search_command]
         search_result = subprocess.run(docker_search_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         calibre_id = search_result.stdout.decode()
@@ -26,7 +26,7 @@ def calibre(book: Book):
             docker_remove_command = docker_command + ["/bin/sh", "-c", calibre_remove_command]
             subprocess.run(docker_remove_command)
         # calibre add
-        calibre_add_command = "calibredb add " + full_path + " --with-library " + library_path
+        calibre_add_command = "calibredb add \"" + full_path + "\" --with-library " + library_path
         docker_add_command = docker_command + ["/bin/sh", "-c", calibre_add_command]
         subprocess.run(docker_add_command)
         log.info("%s 推送calibre成功！" % book.book_name)
