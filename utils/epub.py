@@ -20,10 +20,7 @@ def build_epub(book: Book, chapter_list: Optional[Chapter]):
     epub_book = epub.EpubBook()
     # 元数据
     epub_book.set_identifier(book.id)
-    title = book.book_name
-    if config.read('convert_hans'):
-        title = zhconv.convert(title, 'zh-hans')
-    epub_book.set_title(title)
+    epub_book.set_title(book.book_name)
     epub_book.set_language("zh")
     epub_book.add_author(book.author)
     if config.read('convert_hans') and book.describe:
