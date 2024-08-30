@@ -19,7 +19,7 @@ def calibre(book: Book):
                                  " 'title:\"" + book.book_name + "\"'"
         docker_search_command = docker_command + ["/bin/sh", "-c", calibre_search_command]
         search_result = subprocess.run(docker_search_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        calibre_id = search_result.stdout.decode()
+        calibre_id = search_result.stdout
         if calibre_id and calibre_id.isdigit():
             # calibre remove
             calibre_remove_command = "calibredb remove " + calibre_id
