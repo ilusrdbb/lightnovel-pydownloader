@@ -22,7 +22,7 @@ async def get(url: str, headers: dict, session: ClientSession) -> str:
         res = await session.get(url=url, headers=headers, proxy=proxy, timeout=timeout)
         if not res.status == 200:
             raise Exception()
-        res_text = await res.text()
+        res_text = await res.text("utf-8", "ignore")
         return res_text
     except Exception:
         log.info("%s 请求失败！" % url)

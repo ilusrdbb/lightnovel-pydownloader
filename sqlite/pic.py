@@ -38,7 +38,7 @@ class PicDatabase:
         if not pic:
             self.update(data)
             return
-        if data.pic_path != pic.pic_path :
+        if data.pic_path != pic.pic_path:
             pic.pic_path = data.pic_path
             self.update(pic)
         common.copy(pic, data)

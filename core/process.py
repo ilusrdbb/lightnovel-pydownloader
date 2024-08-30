@@ -4,8 +4,9 @@ from core.reload import Reload
 from sites.esj import Esj
 from sites.lk import Lk
 from sites.masiro import Masiro
+from sites.yuri import Yuri
 from sqlite.database import Database
-from utils import config, log
+from utils import config
 
 
 class Process(object):
@@ -34,7 +35,7 @@ class Process(object):
             return
         sites = [self.site]
         if self.site == "all":
-            sites = ["esj", "lk", "masiro"]
+            sites = ["esj", "lk", "masiro", "yuri"]
         for site in sites:
             jar = aiohttp.CookieJar(unsafe=True)
             conn = aiohttp.TCPConnector(ssl=False)
@@ -45,3 +46,5 @@ class Process(object):
                     await Lk(session).run()
                 if site == "masiro":
                     await Masiro(session).run()
+                if site == "yuri":
+                    await Yuri(session).run()

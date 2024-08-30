@@ -1,4 +1,4 @@
-# 抓取站点 all 全部 masiro 真白萌，esj esj，lk 轻国
+# 抓取站点 all 全部 masiro 真白萌，esj esj，lk 轻国，yuri 百合会
 site: 'esj'
 # 白名单，填入书籍地址，轻国填入合集id
 white_list: []
@@ -18,6 +18,8 @@ login_info:
   lk:
     username: ''
     password: ''
+  yuri:
+    cookie: ''
 # 由于真白萌的cf盾，需要搭建flaresolverr绕过，例http://127.0.0.1:8191/v1
 # 请拉取此镜像alexfozor/flaresolverr:pr-1300，官方docker镜像无法绕过
 flaresolverr_url: ''
@@ -96,6 +98,13 @@ url_config:
     chapter: 'https://api.lightnovel.us/api/article/get-detail'
     collection: 'https://api.lightnovel.us/api/history/get-collections'
     cost: 'https://api.lightnovel.us/api/coin/use'
+  yuri:
+    user: 'https://bbs.yamibo.com/home.php?mod=spacecp&ac=usergroup'
+    page: 'https://bbs.yamibo.com/forum-55-%d.html'
+    book: 'https://bbs.yamibo.com/%s'
+    dsign: 'https://bbs.yamibo.com%s'
+    chapter: 'https://bbs.yamibo.com/forum.php?mod=viewthread&tid=%s&page=%s&authorid=%s'
+    collection: 'https://bbs.yamibo.com/home.php?mod=space&do=favorite&type=thread&page=%d'
 # xpath配置
 xpath_config:
   esj:
@@ -122,6 +131,14 @@ xpath_config:
     content: '//div[@class=''box-body nvl-content'']/*'
     pic: '//div[@class=''box-body nvl-content'']//img/@src'
     collection: '//div[@class=''layui-card'']/a[1]/@href'
+  yuri:
+    page: '//table[@summary=''forum_55'']/tbody/tr/th/a[2]/@href'
+    title: '//span[@id=''thread_subject'']/text()'
+    author: '//dl[@class=''pil cl'']//a/text()'
+    chapter: '//td[@class=''t_f'']'
+    size: '//div[@class=''pg'']//span/@title'
+    collection: '//ul[@id=''favorite_ul'']/li/a[2]/@href'
+    pic: '//img/@file'
 
 
 
