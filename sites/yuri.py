@@ -131,8 +131,6 @@ class Yuri(Site):
         chapter_xpaths = config.get_xpath(text, self.site, "chapter")
         if not chapter_xpaths:
             return None
-        with Database() as db:
-            old_chapters = db.chapter.get_list(book.id)
         order = order_dict["order"]
         chapter_list = []
         for xpath in chapter_xpaths:
@@ -147,9 +145,6 @@ class Yuri(Site):
             chapter.chapter_id = str(order)
             order += 1
             order_dict["order"] = order
-            if self.update_chapter(chapter, old_chapters):
-                chapter_list.append(chapter)
-                continue
             # 爬文本和插图
             await self.build_content(book, chapter, chapter_html)
             chapter_list.append(chapter)
@@ -164,7 +159,7 @@ class Yuri(Site):
             db.chapter.insert_or_update(chapter)
         # 插图处理
         await self.build_images(book, chapter, text)
-        log.info("%s楼 新获取章节内容" % chapter.chapter_name)
+        log.info("%s楼 获取内容" % chapter.chapter_name)
 
     async def build_images(self, book: Book, chapter: Chapter, text: str):
         with Database() as db:
@@ -192,13 +187,6 @@ class Yuri(Site):
             pic.pic_url = pic_url
             with Database() as db:
                 db.pic.insert_or_update(pic)
-
-    def update_chapter(self, chapter: Chapter, old_chapters: Optional[Chapter]) -> bool:
-        old_chapter = common.find(old_chapters, "chapter_id", chapter.chapter_id)
-        if not old_chapter:
-            return False
-        common.copy(old_chapter, chapter)
-        return True
 
     def build_book_from_text(self, text: str, book_url: str) -> Book:
         if not text:
