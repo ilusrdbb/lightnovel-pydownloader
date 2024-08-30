@@ -28,6 +28,8 @@ class Lk(Site):
         thread = config.read("max_thread")
         if thread > 4:
             thread = 4
+        if config.read("push_calibre")["enabled"]:
+            thread = 1
         self.thread = asyncio.Semaphore(thread)
         self.param = {
             "platform": "android",

@@ -30,6 +30,8 @@ class Esj(Site):
         thread = config.read("max_thread")
         if thread > 8:
             thread = 8
+        if config.read("push_calibre")["enabled"]:
+            thread = 1
         self.thread = asyncio.Semaphore(thread)
 
     async def login(self):
