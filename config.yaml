@@ -21,7 +21,7 @@ login_info:
   yuri:
     cookie: ''
 # 由于真白萌的cf盾，需要搭建flaresolverr绕过，例http://127.0.0.1:8191/v1
-# 请拉取此镜像alexfozor/flaresolverr:pr-1300，官方docker镜像无法绕过
+# 请拉取此镜像alexfozor/flaresolverr:pr-1300-experimental，官方docker镜像无法绕过
 flaresolverr_url: ''
 # 是否只爬取收藏页
 get_collection: false

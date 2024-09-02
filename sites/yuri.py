@@ -34,6 +34,9 @@ class Yuri(Site):
         self.thread = asyncio.Semaphore(thread)
 
     async def login(self):
+        if not config.read("login_info")[self.site]["cookie"]:
+            log.info("%s cookie未配置，跳过" % self.site)
+            raise Exception()
         self.header["Cookie"] = config.read("login_info")[self.site]["cookie"]
         await self.valid_cookie()
 

@@ -35,6 +35,10 @@ class Esj(Site):
         self.thread = asyncio.Semaphore(thread)
 
     async def login(self):
+        if not config.read("login_info")[self.site]["username"] \
+                or not config.read("login_info")[self.site]["password"]:
+            log.info("%s 账号密码未配置，跳过" % self.site)
+            raise Exception()
         with Database() as db:
             self.cookie = db.cookie.get_one(self.site)
             if self.cookie:
