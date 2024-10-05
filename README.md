@@ -32,7 +32,7 @@ python3 lightnovel.py &
 |:-:|:-:|:-:|
 |esj|esj|外链(X)、密码章节(X)|
 |轻之国度|lk|轻币购买(√)、勇者权限(X)、app权限(√)|
-|真白萌|masiro|cf盾(√)、等级权限(X)、金币购买(√)|
+|真白萌|masiro|cf盾(√)、cookie登录(√)、等级权限(X)、金币购买(√)|
 |百合会|yuri|账号密码登录(X)、cookie登录(√)、等级权限(X)|
 
 ## 配置说明
@@ -43,7 +43,7 @@ python3 lightnovel.py &
 |white_list|白名单，数组，esj真白萌百合会填入书籍的地址，轻国填入合集的id（数字不是字符串），不支持轻国单本id|
 |black_list|黑名单，数组，esj真白萌百合会填入书籍的地址，轻国填入单本或合集的id（数字不是字符串）|
 |max_thread|最大线程数，默认值1，不建议设置过大，程序限制esj最大值8、轻国百合会最大值4、真白萌最大值1|
-|login_info|登录账号密码，必填，目前支持的站点都必须登录才可爬取，百合会填写cookie（建议在chrome无痕窗口中抓取）|
+|login_info|登录账号密码或cookie，必填，目前支持的站点都必须登录才可爬取，百合会填写cookie（建议在chrome无痕窗口中抓取），真白萌支持两种登录方式账号密码优先|
 |flaresolverr_url|flaresolverr服务地址，用于绕过真白萌cf盾，例：`http://127.0.0.1:8191/v1`，目前只有此镜像可以完美绕过`alexfozor/flaresolverr:pr-1300-experimental`|
 |get_collection|是否爬取收藏页，默认值false，如选否则爬取网站日轻列表|
 |start_page|爬取范围（包含），收藏或列表开始页数，默认值1|

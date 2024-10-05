@@ -7,7 +7,8 @@ black_list: []
 # 最大线程数 不要设置的过大 小心被ban 建议设置为1单线程执行
 # 真白萌由于并发会ban号在程序中强制单线程执行
 max_thread: 1
-# 登录账号密码 请确保自己账号的权限充足
+# 登录账号密码或cookie 请确保自己账号的权限充足
+# 真白萌支持账密和cookie两种登录方式，如果是cookie登录还需要抓取User-Agent
 login_info:
   esj:
     username: ''
@@ -15,12 +16,14 @@ login_info:
   masiro:
     username: ''
     password: ''
+    cookie: ''
+    useragent: ''
   lk:
     username: ''
     password: ''
   yuri:
     cookie: ''
-# 由于真白萌的cf盾，需要搭建flaresolverr绕过，例http://127.0.0.1:8191/v1
+# 由于真白萌的cf盾，使用账密登录需要搭建flaresolverr绕过，例http://127.0.0.1:8191/v1
 # 请拉取此镜像alexfozor/flaresolverr:pr-1300-experimental，官方docker镜像无法绕过
 flaresolverr_url: ''
 # 是否只爬取收藏页

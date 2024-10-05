@@ -30,6 +30,8 @@ class Masiro(Site):
         thread = 1
         self.thread = asyncio.Semaphore(thread)
         self.token = ""
+        # 登录方式 0 账密 1 cookie
+        self.login_flag = -1
 
     async def get_books(self):
         # 白名单
@@ -215,9 +217,12 @@ class Masiro(Site):
         return book_urls
 
     async def login(self):
-        if not config.read("login_info")[self.site]["username"] \
-                or not config.read("login_info")[self.site]["password"]:
-            log.info("%s 账号密码未配置，跳过" % self.site)
+        if config.read("login_info")[self.site]["username"] and config.read("login_info")[self.site]["password"]:
+            self.login_flag = 0
+        elif config.read("login_info")[self.site]["cookie"] and config.read("login_info")[self.site]["useragent"]:
+            self.login_flag = 1
+        if self.login_flag < 0:
+            log.info("%s 账号密码或cookie未配置，跳过" % self.site)
             raise Exception()
         with Database() as db:
             self.cookie = db.cookie.get_one(self.site)
@@ -225,7 +230,7 @@ class Masiro(Site):
                 valid_bool = await self.valid_cookie()
                 if valid_bool:
                     return
-        if not config.read("flaresolverr_url"):
+        if self.login_flag == 0 and not config.read("flaresolverr_url"):
             log.info("真白萌需要在配置中填写flaresolverr_url")
             return
         cookie = Cookie()
@@ -247,31 +252,49 @@ class Masiro(Site):
 
     async def get_cookie(self):
         log.info("%s开始登录..." % self.site)
-        url = config.read("url_config")[self.site]["login"]
-        cf_bool = await self.fuck_cf()
-        if not cf_bool:
-            raise Exception("真白萌破cf盾失败，停止爬取")
-        await self.get_token()
-        login_data = {
-            "username": config.read("login_info")[self.site]["username"],
-            "password": config.read("login_info")[self.site]["password"],
-            "remember": "1",
-            "_token": self.token
-        }
-        res = await request.post_data(url=url, headers=self.header, data=login_data, session=self.session)
-        if res:
-            self.cookie.cookie = self.header["Cookie"] + "; ".join(res["headers"].getall("Set-Cookie"))
-            self.cookie.uid = self.header["User-Agent"]
-            self.cookie.token = self.token
+        # 账密
+        if self.login_flag == 0:
+            url = config.read("url_config")[self.site]["login"]
+            cf_bool = await self.fuck_cf()
+            if not cf_bool:
+                raise Exception("真白萌破cf盾失败，停止爬取")
+            await self.get_token()
+            login_data = {
+                "username": config.read("login_info")[self.site]["username"],
+                "password": config.read("login_info")[self.site]["password"],
+                "remember": "1",
+                "_token": self.token
+            }
+            res = await request.post_data(url=url, headers=self.header, data=login_data, session=self.session)
+            if res:
+                self.cookie.cookie = self.header["Cookie"] + "; ".join(res["headers"].getall("Set-Cookie"))
+                self.cookie.uid = self.header["User-Agent"]
+                self.cookie.token = self.token
+                self.header["Cookie"] = self.cookie.cookie
+                with Database() as db:
+                    db.cookie.insert_or_update(self.cookie)
+                log.info("%s登录成功" % self.site)
+            else:
+                raise Exception("登录失败！")
+        # cookie
+        if self.login_flag == 1:
+            self.cookie.cookie = config.read("login_info")[self.site]["cookie"]
+            self.cookie.uid = config.read("login_info")[self.site]["useragent"]
             self.header["Cookie"] = self.cookie.cookie
+            await self.get_token()
+            if not self.token:
+                raise Exception("登录失败！")
+            self.cookie.token = self.token
             with Database() as db:
                 db.cookie.insert_or_update(self.cookie)
             log.info("%s登录成功" % self.site)
-        else:
-            raise Exception("登录失败！")
 
     async def get_token(self):
-        url = config.read("url_config")[self.site]["login"]
+        if self.login_flag == 0:
+            url = config.read("url_config")[self.site]["login"]
+        else:
+            # cookie登录从用户页拿token
+            url = config.read("url_config")[self.site]["user"]
         res = await request.get(url=url, headers=self.header, session=self.session)
         if res:
             self.token = config.get_xpath(res, self.site, "token")[0]
