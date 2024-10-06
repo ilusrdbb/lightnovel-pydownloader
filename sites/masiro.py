@@ -281,6 +281,7 @@ class Masiro(Site):
             self.cookie.cookie = config.read("login_info")[self.site]["cookie"]
             self.cookie.uid = config.read("login_info")[self.site]["useragent"]
             self.header["Cookie"] = self.cookie.cookie
+            self.header["User-Agent"] = self.cookie.uid
             await self.get_token()
             if not self.token:
                 raise Exception("登录失败！")
