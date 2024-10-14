@@ -47,6 +47,8 @@ sleep_time: 1
 least_words: 0
 # 生成epub时是否全局繁转简
 convert_hans: true
+# 是否同时将epub转为txt
+convert_txt: false
 # 定时执行设置
 scheduler_config:
   enabled: false
@@ -67,6 +69,8 @@ push_calibre:
 epub_dir: './epub'
 # 图片保存目录 目录/站点/书id/章节id/图片名
 image_dir: './images'
+# txt保存目录 目录/站点/书名.txt
+txt_dir: './txt'
 # 是否统一下载全部之前爬取失败的图片，定时开启时此项无效
 download_fail_again: false
 # 危险！清空数据库中的图片信息，此选项只应该在误删图片保存目录的时候开启，定时开启时此项无效

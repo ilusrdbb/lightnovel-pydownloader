@@ -2,6 +2,7 @@ import os
 from typing import Optional
 
 from ebooklib import epub
+from lxml import html
 from zhconv import zhconv
 
 from models.book import Book
@@ -11,6 +12,7 @@ from utils import image, config, log, common, push
 
 
 def build_epub(book: Book, chapter_list: Optional[Chapter]):
+    build_txt(book, chapter_list)
     if not chapter_list:
         return
     log.info(book.book_name + " 开始生成epub...")
@@ -84,3 +86,40 @@ def build_epub(book: Book, chapter_list: Optional[Chapter]):
     # 推送
     if config.read("push_calibre")["enabled"]:
         push.calibre(book)
+
+
+def build_txt(book: Book, chapter_list: Optional[Chapter]):
+    if not chapter_list or not config.read("convert_txt"):
+        return
+    log.info(book.book_name + " 开始生成txt...")
+    common.handle_title(book)
+    path = config.read("txt_dir") + "/" + book.source + "/" + book.book_name + ".txt"
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    txt_content = ""
+    for chapter in chapter_list:
+        # 跳过esj外链
+        if chapter.chapter_id.startswith("http"):
+            continue
+        # 跳过打钱失败的章节
+        if chapter.purchase_fail_flag and chapter.purchase_fail_flag == 1:
+            continue
+        # 跳过字数过少的章节
+        if not chapter.content:
+            continue
+        if config.read("least_words") > 0 and config.read("least_words") > len(chapter.content):
+            continue
+        # 繁转简
+        chapter_content = chapter.content
+        if config.read('convert_hans'):
+            chapter_content = zhconv.convert(chapter_content, 'zh-hans')
+        # html转纯文字
+        page_body = html.fromstring(chapter_content)
+        content_list = page_body.xpath("//text()")
+        content_list = [s.replace("\n", "") for s in content_list]
+        content_list = [s for s in content_list if s]
+        txt_content += chapter.chapter_name + "\n\n"
+        txt_content += "\n".join(content_list) + "\n\n"
+    # 写入
+    with open(path, 'w', encoding='utf-8') as f:
+        f.write(txt_content)
+    log.info(book.book_name + " txt导出成功!")
