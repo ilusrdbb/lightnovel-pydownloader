@@ -1,4 +1,5 @@
 import asyncio
+import json
 import re
 import uuid
 from typing import Optional
@@ -70,13 +71,17 @@ class Esj(Site):
         }
         res = await request.post_data(url=url, headers=self.header, data=login_data, session=self.session)
         if res:
+            if json.loads(res["text"])["status"] != 200:
+                log.info("登录失败！" + json.loads(res["text"])["msg"])
+                raise Exception()
             self.cookie.cookie = "; ".join(res["headers"].getall("Set-Cookie"))
             self.header["Cookie"] = self.cookie.cookie
             with Database() as db:
                 db.cookie.insert_or_update(self.cookie)
             log.info("%s登录成功" % self.site)
         else:
-            raise Exception("登录失败！")
+            log.info("登录失败！")
+            raise Exception()
 
     async def get_books(self):
         # 白名单

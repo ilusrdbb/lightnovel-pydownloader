@@ -48,7 +48,8 @@ class Yuri(Site):
             log.info("%s cookie校验通过" % self.site)
             # await self.get_cookie()
         else:
-            raise Exception("cookie校验失败！")
+            log.info("cookie校验失败！")
+            raise Exception()
 
     async def get_cookie(self):
         # egg

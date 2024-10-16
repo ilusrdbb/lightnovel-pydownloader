@@ -257,7 +257,8 @@ class Masiro(Site):
             url = config.read("url_config")[self.site]["login"]
             cf_bool = await self.fuck_cf()
             if not cf_bool:
-                raise Exception("真白萌破cf盾失败，停止爬取")
+                log.info("真白萌破cf盾失败，停止爬取")
+                raise Exception()
             await self.get_token()
             login_data = {
                 "username": config.read("login_info")[self.site]["username"],
@@ -275,7 +276,8 @@ class Masiro(Site):
                     db.cookie.insert_or_update(self.cookie)
                 log.info("%s登录成功" % self.site)
             else:
-                raise Exception("登录失败！")
+                log.info("登录失败！")
+                raise Exception()
         # cookie
         if self.login_flag == 1:
             self.cookie.cookie = config.read("login_info")[self.site]["cookie"]
@@ -284,7 +286,8 @@ class Masiro(Site):
             self.header["User-Agent"] = self.cookie.uid
             await self.get_token()
             if not self.token:
-                raise Exception("登录失败！")
+                log.info("登录失败！")
+                raise Exception()
             self.cookie.token = self.token
             with Database() as db:
                 db.cookie.insert_or_update(self.cookie)

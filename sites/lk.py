@@ -90,7 +90,8 @@ class Lk(Site):
                 db.cookie.insert_or_update(self.cookie)
             log.info("%s登录成功" % self.site)
         else:
-            raise Exception("登录失败！")
+            log.info("登录失败！")
+            raise Exception()
 
     async def get_books(self):
         # 白名单 sid
