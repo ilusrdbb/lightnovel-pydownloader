@@ -125,7 +125,10 @@ class Esj(Site):
                 # 外站用url做id
                 chapter_id = chapter_url
             else:
-                chapter_id = re.search(r"/(\d+)\.html", chapter_url).group(1)
+                try:
+                    chapter_id = re.search(r"/(\d+)\.html", chapter_url).group(1)
+                except Exception:
+                    continue
             chapter = Chapter()
             chapter.id = str(uuid.uuid4())
             chapter.chapter_order = order
