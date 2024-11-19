@@ -82,11 +82,11 @@ export_epub_again: false
 # 地址配置
 url_config:
   esj:
-    user: 'https://www.esjzone.cc/my/profile.html'
-    login: 'https://www.esjzone.cc/inc/mem_login.php'
-    page: 'https://www.esjzone.cc/list-11/%d.html'
-    book: 'https://www.esjzone.cc%s'
-    collection: 'https://www.esjzone.cc/my/favorite/%d'
+    user: 'https://www.esjzone.one/my/profile.html'
+    login: 'https://www.esjzone.one/inc/mem_login.php'
+    page: 'https://www.esjzone.one/list-11/%d.html'
+    book: 'https://www.esjzone.one%s'
+    collection: 'https://www.esjzone.one/my/favorite/%d'
   masiro:
     user: 'https://masiro.me/admin/userCenterShow'
     login: 'https://masiro.me/admin/auth/login'
