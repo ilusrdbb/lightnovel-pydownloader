@@ -90,15 +90,15 @@ def replace(chapter: Chapter, pics: Optional[Pic], epub_book: EpubBook):
     for pic in pics:
         try:
             image_data = open(pic.pic_path, "rb").read()
-            image_name = common.filename_from_url(pic.pic_url)
+            image_name = common.filename_from_url(pic.pic_path)
             image_type = image_name.split('.')[-1]
             image = epub.EpubImage(uid=image_name, file_name='Image/' + image_name,
                                    media_type='image/' + image_type, content=image_data)
             epub_book.add_item(image)
             if pic.pic_id:
-                content = content.replace(pic.pic_id, ("../Image/" + image_name))
+                content = content.replace(pic.pic_id, ("Image/" + image_name))
             else:
-                content = content.replace(pic.pic_url, ("../Image/" + image_name))
+                content = content.replace(pic.pic_url, ("Image/" + image_name))
         except:
             continue
     chapter.content = content
