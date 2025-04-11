@@ -22,7 +22,7 @@ class Lk(Site):
         self.header = {
             "content-type": "application/json; charset=UTF-8",
             "accept-encoding": "gzip",
-            "host": "api.lightnovel.us",
+            "host": "api.lightnovel.fun",
             "user-agent": "Dart/2.10 (dart:io)"
         }
         thread = config.read("max_thread")

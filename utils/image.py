@@ -22,8 +22,11 @@ async def download(pic: Pic, site: str, book_id: str, chapter_id: str, session: 
     file_url = pic.pic_url
     if site == "masiro" and file_url.startswith("/images"):
         file_url = config.read("url_config")[site]["pic"] % file_url
+    if "lightnovel.fun" in file_url:
+        headers["referer"] = "https://www.lightnovel.fun/"
     if "lightnovel.us" in file_url:
-        headers["referer"] = "https://www.lightnovel.us/"
+        file_url = file_url.replace("lightnovel.us", "lightnovel.fun")
+        headers["referer"] = "https://www.lightnovel.fun/"
     if 'i.noire.cc:332' in file_url:
         file_url = file_url.replace("i.noire.cc:332", "i.noire.cc")
     file_name = common.filename_from_url(file_url)
@@ -60,8 +63,11 @@ async def cover(pic_url: str, site: str, book_id: str, session: ClientSession):
     }
     if site == "masiro" and pic_url.startswith("/images"):
         pic_url = config.read("url_config")[site]["pic"] % pic_url
+    if "lightnovel.fun" in pic_url:
+        headers["referer"] = "https://www.lightnovel.fun/"
     if "lightnovel.us" in pic_url:
-        headers["referer"] = "https://www.lightnovel.us/"
+        pic_url = pic_url.replace("lightnovel.us", "lightnovel.fun")
+        headers["referer"] = "https://www.lightnovel.fun/"
     if 'i.noire.cc:332' in pic_url:
         pic_url = pic_url.replace("i.noire.cc:332", "i.noire.cc")
     file_name = "book_cover.jpg"
