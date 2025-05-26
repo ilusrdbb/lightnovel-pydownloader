@@ -202,7 +202,6 @@ class Mairo(BaseSite):
         book.chapters = chapters
 
     async def build_content(self, chapter: Chapter):
-        # todo 打钱
         log.info(f"{chapter.chapter_name} 真白萌开始获取章节内容...")
         url = f"{self.domain}/admin/novelReading?cid={chapter.chapter_id}"
         log.debug(url)
