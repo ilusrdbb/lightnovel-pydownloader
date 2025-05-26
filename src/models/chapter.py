@@ -34,6 +34,8 @@ class Chapter(BaseDB):
         super().__init__(**kwargs)
         # 书籍id 用于拼接章节路径和url地址
         self.book_id: str = None
+        # 花费金币
+        self.cost: int = 0
         # 图片列表
         self.pics: List[Pic] = []
 

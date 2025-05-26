@@ -8,7 +8,7 @@ black_list: []
 # 爬虫线程数 不要设置的过大 小心被ban 建议设置为1单线程执行
 # 真白萌由于并发会ban号在程序中强制单线程执行
 max_thread: 1
-# 是否只爬取收藏页
+# 是否默认只爬取收藏页
 get_collection: true
 # 请求超时时间 单位秒
 time_out: 15
@@ -55,22 +55,6 @@ domain:
   yuri: 'https://bbs.yamibo.com'
 # 地址配置
 url_config:
-  esj:
-    user: 'https://www.esjzone.one/my/profile.html'
-    login: 'https://www.esjzone.one/inc/mem_login.php'
-    page: 'https://www.esjzone.one/list-11/%d.html'
-    book: 'https://www.esjzone.one%s'
-    collection: 'https://www.esjzone.one/my/favorite/%d'
-  masiro:
-    user: 'https://masiro.me/admin/userCenterShow'
-    login: 'https://masiro.me/admin/auth/login'
-    page: 'https://masiro.me/admin/loadMoreNovels?ori=0&page=%d'
-    book: 'https://masiro.me/admin/novelView?novel_id=%d'
-    chapter: 'https://masiro.me/admin/novelReading?cid=%s'
-    pic: 'https://masiro.me%s'
-    collection: 'https://masiro.me/admin/loadMoreNovels?page=%d&collection=1'
-    referer: 'https://masiro.me'
-    cost: 'https://masiro.me/admin/pay'
   lk:
     user: 'https://api.lightnovel.fun/api/user/info'
     login: 'https://api.lightnovel.fun/api/user/login'
@@ -110,7 +94,7 @@ xpath_config:
     chapter: '//script[@id=''chapters-json'']//text()'
     parent_chapter: '//script[@id=''f-chapters-json'']//text()'
     content: '//div[@class=''box-body nvl-content'']/*'
-    pic: '//div[@class=''box-body nvl-content'']//img/@src'
+    pic: '//img/@src'
     collection: '//div[@class=''layui-card'']/a[1]/@href'
   yuri:
     page: '//table[@summary=''forum_55'']/tbody/tr/th/a[2]/@href'

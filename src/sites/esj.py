@@ -179,8 +179,10 @@ class Esj(BaseSite):
     async def build_content(self, chapter: Chapter):
         log.info(f"{chapter.chapter_name} esj开始获取章节内容...")
         url = f"{self.domain}/forum/{chapter.book_id}/{chapter.chapter_id}.html"
-        log.debug(url)
         text = await request.get(url, self.header, self.session)
+        if not text:
+            log.debug(url)
+            return
         chapter.content = common.get_html(text, "esj", "content")
         if not chapter.content or "btn-send-pw" in chapter.content or "內文目前施工中" in chapter.content:
             # 密码章节跳过
