@@ -18,7 +18,7 @@ from src.utils.config import read_config
 from src.utils.log import log
 
 
-class Mairo(BaseSite):
+class Masiro(BaseSite):
 
     def __init__(self, session: ClientSession):
         super().__init__(session)
@@ -144,8 +144,6 @@ class Mairo(BaseSite):
             await request.download_pic(cover_url, self.pic_header, cover_path, self.session)
 
     async def build_chapter_list(self, book: Book):
-        if not book.chapter_xpaths:
-            return
         # 数据库已存章节
         old_chapters = await get_chapter_list(book.id)
         chapters = []
@@ -236,7 +234,7 @@ class Mairo(BaseSite):
                 if not pic.pic_path:
                     # 下载图片
                     if pic_url.startswith("/images"):
-                        pic_url = f"{self.domain}/{pic_url}"
+                        pic_url = f"{self.domain}{pic_url}"
                     pic_path = await request.download_pic(pic_url, self.pic_header, save_path, self.session)
                     if pic_path:
                         pic.pic_path = pic_path
@@ -247,7 +245,7 @@ class Mairo(BaseSite):
                 pic.pic_url = pic_url
                 pic.chapter_table_id = chapter.id
                 if pic_url.startswith("/images"):
-                    pic_url = f"{self.domain}/{pic_url}"
+                    pic_url = f"{self.domain}{pic_url}"
                 # 下载图片
                 pic_path = await request.download_pic(pic_url, self.pic_header, save_path, self.session)
                 if pic_path:

@@ -32,7 +32,7 @@ class Book(BaseDB):
     def __init__(self, **kwargs):
         # SQLAlchemy的默认初始化方法
         super().__init__(**kwargs)
-        # 缓存章节xpath列表
+        # esj缓存章节xpath列表
         self.chapter_xpaths: List = []
         # 真白萌缓存章节列表内容
         self.page_text: str = None

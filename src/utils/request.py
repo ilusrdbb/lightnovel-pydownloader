@@ -68,7 +68,7 @@ async def post_json(url: str, headers: dict, json: dict, session: ClientSession)
 
 async def sleep(url: str):
     if 'masiro.' in url:
-        await asyncio.sleep(10)
+        await asyncio.sleep(6)
     elif read_config("sleep_time") > 0:
         await asyncio.sleep(random.random() * read_config("sleep_time"))
 

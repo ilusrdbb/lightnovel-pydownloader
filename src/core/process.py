@@ -1,7 +1,7 @@
 import aiohttp
 
-from sites.masiro import Masiro
 from src.sites.esj import Esj
+from src.sites.masiro import Masiro
 from src.utils.config import read_config
 
 
