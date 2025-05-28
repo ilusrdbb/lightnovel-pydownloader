@@ -88,7 +88,7 @@ class LK(BaseSite):
 
     async def get_book_list(self):
         page_param = copy.deepcopy(self.param)
-        # todo 白名单
+        # 白名单
         if read_config("white_list"):
             for white_book_id in common.handle_url_list(read_config("white_list"), "lk"):
                 book = Book()

@@ -33,8 +33,6 @@ def get_html(text: str, site: str, name: str) -> str:
     return join([html.tostring(xpath, pretty_print=True, encoding="unicode") for xpath in xpaths], "\n")
 
 def get_book_id(url: str, site: str) -> str:
-    if site == "esj":
-        return re.search(r"\d+", url).group()
     if site == "masiro":
         return url.split("?novel_id=")[-1]
     return re.search(r'\d+', url).group()
