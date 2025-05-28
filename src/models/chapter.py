@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Dict
 
 from sqlalchemy import Column, String, Integer, Index
 
@@ -38,6 +38,8 @@ class Chapter(BaseDB):
         self.cost: int = 0
         # 图片列表
         self.pics: List[Pic] = []
+        # 轻国缓存图片信息
+        self.pic_datas: List[Dict[str, str]] = []
 
     def __str__(self):
         return (f"<Chapter(id={self.id}, book_table_id={self.book_table_id}, chapter_id={self.chapter_id}, "

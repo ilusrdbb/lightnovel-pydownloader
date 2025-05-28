@@ -2,7 +2,7 @@ import asyncio
 import os
 import random
 import traceback
-from PIL import Image
+from typing import Dict
 
 from aiohttp import ClientSession
 from tenacity import retry, stop_after_attempt
@@ -13,7 +13,7 @@ from src.utils.log import log
 
 
 @retry(stop=stop_after_attempt(3))
-async def get(url: str, headers: dict, session: ClientSession) -> str:
+async def get(url: str, headers: Dict, session: ClientSession) -> str:
     await sleep(url)
     proxy = read_config("proxy_url") if read_config("proxy_url") and "/v1" not in url else None
     timeout = read_config("time_out")
@@ -30,7 +30,7 @@ async def get(url: str, headers: dict, session: ClientSession) -> str:
 
 
 @retry(stop=stop_after_attempt(3))
-async def post_data(url: str, headers: dict, data: dict, session: ClientSession) -> dict:
+async def post_data(url: str, headers: Dict, data: Dict, session: ClientSession) -> dict:
     await sleep(url)
     proxy = read_config("proxy_url") if read_config("proxy_url") and "/v1" not in url else None
     timeout = read_config("time_out")
@@ -50,7 +50,7 @@ async def post_data(url: str, headers: dict, data: dict, session: ClientSession)
 
 
 @retry(stop=stop_after_attempt(3))
-async def post_json(url: str, headers: dict, json: dict, session: ClientSession) -> str:
+async def post_json(url: str, headers: Dict, json: Dict, session: ClientSession) -> str:
     await sleep(url)
     proxy = read_config("proxy_url") if read_config("proxy_url") and "/v1" not in url else None
     timeout = 120 if "/v1" in url else read_config("time_out")
@@ -73,7 +73,7 @@ async def sleep(url: str):
         await asyncio.sleep(random.random() * read_config("sleep_time"))
 
 
-async def download_pic(url: str, headers: dict, path: str, session: ClientSession) -> str:
+async def download_pic(url: str, headers: Dict, path: str, session: ClientSession) -> str:
     if 'i.noire.cc:332' in url:
         url = url.replace("i.noire.cc:332", "i.noire.cc")
     file_name = common.filename_from_url(url)

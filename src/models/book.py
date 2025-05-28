@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Dict, Any
 
 from sqlalchemy import Column, String, Index
 
@@ -36,6 +36,8 @@ class Book(BaseDB):
         self.chapter_xpaths: List = []
         # 真白萌缓存章节列表内容
         self.page_text: str = None
+        # 轻国缓存章节列表内容
+        self.chapter_datas: List[Dict[str, Any]] = []
         # 章节列表
         self.chapters: List[Chapter] = []
 
