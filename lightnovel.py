@@ -53,6 +53,4 @@ if __name__ == '__main__':
     except Exception as e:
         log.info(str(e))
     finally:
-        if not scheduler_config["enabled"]:
-            input("按回车键退出...")
         scheduler.shutdown()

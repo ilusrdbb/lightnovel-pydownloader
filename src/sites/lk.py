@@ -30,7 +30,7 @@ class LK(BaseSite):
             "host": self.domain.replace("https://", ""),
             "user-agent": "Dart/2.10 (dart:io)"
         }
-        self.pic_header["referer"] = self.domain
+        self.pic_header["referer"] = f"{self.domain}/".replace("api.", "www.")
         self.param: Dict[str, Any] = {
             "platform": "android",
             "client": "app",
@@ -201,7 +201,7 @@ class LK(BaseSite):
         chapters = []
         order = 1
         for chapter_data in book.chapter_datas:
-            chapter_id = chapter_data["aid"]
+            chapter_id = str(chapter_data["aid"])
             chapter_name = chapter_data["title"]
             last_update_time =  common.get_timestamp(chapter_data["time"])
             # 匹配数据库已存章节
@@ -209,6 +209,7 @@ class LK(BaseSite):
             if chapter:
                 chapter.book_id = book.book_id
                 chapter.pics = []
+                chapter.pic_datas = []
                 if chapter.chapter_order != order or chapter.chapter_name != chapter_name:
                     # 标题或顺序改变 更新数据库
                     chapter.chapter_order = order
