@@ -1,3 +1,4 @@
+import asyncio
 import copy
 import json
 import os
@@ -27,6 +28,8 @@ class Masiro(BaseSite):
         self.token:str = None
         self.header["Referer"] = f"{self.domain}/admin"
         self.header["Origin"] = self.domain
+        # 真白萌防ban号强制单线程
+        self.threads = asyncio.Semaphore(1)
 
     async def valid_cookie(self) -> bool:
         url = f"{self.domain}/admin/userCenterShow"
@@ -297,3 +300,7 @@ class Masiro(BaseSite):
             return text
         log.info(f"{chapter.chapter_name} 真白萌打钱失败")
         return None
+
+    async def sign(self):
+        # todo
+        pass

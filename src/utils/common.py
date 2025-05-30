@@ -34,7 +34,9 @@ def get_html(text: str, site: str, name: str) -> str:
 
 def get_book_id(url: str, site: str) -> str:
     if site == "masiro":
-        return url.split("?novel_id=")[-1]
+        return url.split("?novel_id=")[-1] if "?novel_id=" in url else url
+    if site == "yuri":
+        return url.split("-")[1] if "-" in url else url
     return re.search(r'\d+', url).group()
 
 def handle_url_list(url_list: List[Any], site: str) -> Optional[List[str]]:

@@ -221,3 +221,6 @@ class Esj(BaseSite):
                 # 数据库新增图片信息
                 await insert_pic(pic)
             chapter.pics.append(pic)
+
+    async def sign(self):
+        pass

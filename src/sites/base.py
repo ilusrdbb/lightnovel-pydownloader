@@ -70,6 +70,9 @@ class BaseSite(ABC):
             # 多线程开启爬虫
             tasks = [asyncio.create_task(self.start_task(book)) for book in self.books]
             await asyncio.gather(*tasks)
+            # 签到
+            if read_config("sign"):
+                await self.sign()
         except Exception as e:
             log.info(str(e))
 
@@ -124,4 +127,8 @@ class BaseSite(ABC):
 
     @abstractmethod
     async def build_content(self, chapter: Chapter):
+        pass
+
+    @abstractmethod
+    async def sign(self):
         pass

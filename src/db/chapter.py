@@ -18,13 +18,13 @@ async def update_chapter(chapter: Chapter):
     async with session_scope() as session:
         if chapter.id:
             # 更新
-            stmt = update(Chapter).where(Chapter.id == chapter.id).update({
-                Chapter.chapter_name: chapter.chapter_name,
-                Chapter.chapter_order: chapter.chapter_order,
-                Chapter.content: chapter.content,
-                Chapter.last_update_time: chapter.last_update_time,
-                Chapter.purchase_fail_flag: chapter.purchase_fail_flag,
-            })
+            stmt = update(Chapter).where(Chapter.id == chapter.id).values(
+                chapter_name=chapter.chapter_name,
+                chapter_order=chapter.chapter_order,
+                content=chapter.content,
+                last_update_time=chapter.last_update_time,
+                purchase_fail_flag=chapter.purchase_fail_flag,
+            )
             await session.execute(stmt)
             log.debug(f"db update {str(chapter)}")
         else:

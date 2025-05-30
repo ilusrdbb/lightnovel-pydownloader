@@ -29,6 +29,8 @@ push_calibre:
   absolute_path: '/epub'
   # 书籍目录 填docker映射路径而不是真实路径
   library_path: '/library'
+# 实验功能 是否开启签到
+sign: true
 
 # 下面四个配置项只能在非定时模式下使用，且开启时会停止正常爬取
 # 是否重新下载全部之前爬取失败的图片
@@ -53,23 +55,6 @@ domain:
   masiro: 'https://masiro.me'
   lk: 'https://api.lightnovel.fun'
   yuri: 'https://bbs.yamibo.com'
-# 地址配置
-url_config:
-  lk:
-    user: 'https://api.lightnovel.fun/api/user/info'
-    login: 'https://api.lightnovel.fun/api/user/login'
-    page: 'https://api.lightnovel.fun/api/category/get-article-by-cate'
-    book: 'https://api.lightnovel.fun/api/series/get-info'
-    chapter: 'https://api.lightnovel.fun/api/article/get-detail'
-    collection: 'https://api.lightnovel.fun/api/history/get-collections'
-    cost: 'https://api.lightnovel.fun/api/coin/use'
-  yuri:
-    user: 'https://bbs.yamibo.com/home.php?mod=spacecp&ac=usergroup'
-    page: 'https://bbs.yamibo.com/forum-55-%d.html'
-    book: 'https://bbs.yamibo.com/%s'
-    dsign: 'https://bbs.yamibo.com%s'
-    chapter: 'https://bbs.yamibo.com/forum.php?mod=viewthread&tid=%s&page=%s&authorid=%s'
-    collection: 'https://bbs.yamibo.com/home.php?mod=space&do=favorite&type=thread&page=%d'
 # xpath配置
 xpath_config:
   esj:
@@ -104,3 +89,4 @@ xpath_config:
     size: '//div[@class=''pg'']//span/@title'
     collection: '//ul[@id=''favorite_ul'']/li/a[2]/@href'
     pic: '//img/@file'
+    sign: '//input[@name=''formhash'']/@value'

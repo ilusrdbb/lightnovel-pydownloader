@@ -22,11 +22,11 @@ async def update_book(data: Book) -> bool:
             data.id = book.id
             # 更新
             if book.book_name != data.book_name:
-                stmt = update(Book).where(Book.id == book.id).values({Book.book_name: data.book_name})
+                stmt = update(Book).where(Book.id == book.id).values(book_name=data.book_name)
                 await session.execute(stmt)
                 log.debug(f"db update Book book_name {data.book_name}")
             if data.cover_url and book.cover_url != data.cover_url:
-                stmt = update(Book).where(Book.id == book.id).values({Book.cover_url: data.cover_url})
+                stmt = update(Book).where(Book.id == book.id).values(cover_url=data.cover_url)
                 await session.execute(stmt)
                 log.debug(f"db update Book cover_url {data.cover_url}")
                 return True

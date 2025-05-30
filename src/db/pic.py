@@ -17,7 +17,7 @@ async def get_pic_list(chapter_table_id: str) -> Pic:
 async def update_pic(pic: Pic):
     async with session_scope() as session:
         # 更新路径
-        stmt = update(Pic).where(Pic.id == pic.id).values({Pic.pic_path: pic.pic_path})
+        stmt = update(Pic).where(Pic.id == pic.id).values(pic_path=pic.pic_path)
         await session.execute(stmt)
         log.debug(f"db update Pic pic_path {pic.pic_path}")
 

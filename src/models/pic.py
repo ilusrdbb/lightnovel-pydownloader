@@ -1,5 +1,3 @@
-from typing import Dict
-
 from sqlalchemy import Column, String, Index
 
 from src.db import BaseDB

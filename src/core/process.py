@@ -3,6 +3,7 @@ import aiohttp
 from src.sites.esj import Esj
 from src.sites.lk import LK
 from src.sites.masiro import Masiro
+from src.sites.yuri import Yuri
 from src.utils.config import read_config
 
 
@@ -20,5 +21,5 @@ class Process(object):
                     await LK(session).run()
                 if site == "masiro":
                     await Masiro(session).run()
-                # if site == "yuri":
-                #     await Yuri(session).run()
+                if site == "yuri":
+                    await Yuri(session).run()

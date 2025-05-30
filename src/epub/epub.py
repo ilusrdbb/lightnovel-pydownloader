@@ -118,4 +118,8 @@ def replace_pics(chapter: Chapter, pics: List[Pic], epub_book: EpubBook):
         except Exception as e:
             log.debug(f"{pic.pic_path} 替换图片失败 {str(e)}")
             log.debug(traceback.print_exc())
+    # 百合会特殊处理
+    if "static/image/common/none.gif" in content and 'file="Image/' in content:
+        content = content.replace("src=\"static/image/common/none.gif\"", "")
+        content = content.replace('file="Image/', 'src="Image/')
     chapter.content = content

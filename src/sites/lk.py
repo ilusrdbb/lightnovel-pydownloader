@@ -341,3 +341,7 @@ class LK(BaseSite):
             chapter.content = common.bbcode_to_html(chapter_dict["content"], chapter_dict, pic_urls)
         else:
             log.info(f"{chapter.chapter_name} 轻国打钱失败！")
+
+    async def sign(self):
+        # todo
+        pass
