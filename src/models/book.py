@@ -46,3 +46,4 @@ class Book(BaseDB):
                 f"author={self.author}, tags={self.tags}, cover_url={self.cover_url})>")
 
 
+

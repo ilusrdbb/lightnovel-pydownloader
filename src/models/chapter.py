@@ -44,3 +44,4 @@ class Chapter(BaseDB):
     def __str__(self):
         return (f"<Chapter(id={self.id}, book_table_id={self.book_table_id}, chapter_id={self.chapter_id}, "
                 f"chapter_name={self.chapter_name}, chapter_order={self.chapter_order}, last_update_time={self.last_update_time})>")
+

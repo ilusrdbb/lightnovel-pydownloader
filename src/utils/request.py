@@ -102,3 +102,4 @@ async def download_pic(url: str, headers: Dict, path: str, session: ClientSessio
         log.info(f"{url}图片下载失败 {str(e)}")
         log.debug(traceback.print_exc())
         return None
+
