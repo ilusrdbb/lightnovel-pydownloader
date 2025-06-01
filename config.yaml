@@ -21,6 +21,8 @@ login_info:
     password: ''
   yuri:
     cookie: ''
+  fish:
+    cookie: ''
 # 开始页
 start_page: 1
 # 结束页 不建议一次抓取过多

@@ -8,7 +8,7 @@ def load_config():
     with open("config.yaml", "r", encoding="utf-8") as f:
         _CONFIG.update(yaml.safe_load(f))
     # 开发者配置
-    with open("lightnovel.yaml", "r", encoding="utf-8") as f:
+    with open("advance.yaml", "r", encoding="utf-8") as f:
         _CONFIG.update(yaml.safe_load(f))
 
 def read_config(key: str):
