@@ -103,3 +103,21 @@ async def download_pic(url: str, headers: Dict, path: str, session: ClientSessio
         log.debug(traceback.print_exc())
         return None
 
+
+async def download_file(url: str, headers: Dict, path: str, session: ClientSession):
+    proxy = read_config("proxy_url") if read_config("proxy_url") and "/v1" not in url else None
+    timeout = read_config("time_out")
+    try:
+        res = await session.get(url=url, proxy=proxy, headers=headers, timeout=timeout)
+        if not res.status == 200:
+            raise Exception(res.status)
+        file_data = await res.read()
+        # 写入
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, 'wb') as f:
+            f.write(file_data)
+            log.debug(f"{url}文件下载成功 保存路径{path}")
+    except Exception as e:
+        log.info(f"{url}文件下载失败 {str(e)}")
+        log.debug(traceback.print_exc())
+

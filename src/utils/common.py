@@ -103,7 +103,7 @@ def handle_title(book: Book):
         book.book_name = book.book_name.replace(char, replacement)
     # linux 85 windows 127
     if len(book.book_name) > 85:
-        book.book_name = book.book_name[:80] + '...'
+        book.book_name = book.book_name[:80] + "..."
 
 def bbcode_to_html(text: str, lk_res: Dict[str, str], pic_datas: List[Dict[str, str]]) -> str:
     text = lk_bbcode_handler(text, lk_res, pic_datas)

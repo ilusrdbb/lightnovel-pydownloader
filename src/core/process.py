@@ -1,6 +1,7 @@
 import aiohttp
 
 from src.sites.esj import Esj
+from src.sites.fish import Fish
 from src.sites.lk import LK
 from src.sites.masiro import Masiro
 from src.sites.yuri import Yuri
@@ -23,3 +24,5 @@ class Process(object):
                     await Masiro(session).run()
                 if site == "yuri":
                     await Yuri(session).run()
+                if site == "fish":
+                    await Fish(session).run()

@@ -89,17 +89,17 @@ class Esj(BaseSite):
             if not res:
                 return
             if read_config("get_collection"):
-                book_xpaths = common.get_xpath(res, "esj", "collection")
+                book_urls = common.get_xpath(res, "esj", "collection")
             else:
-                book_xpaths = common.get_xpath(res, "esj", "page")
-            if not book_xpaths:
+                book_urls = common.get_xpath(res, "esj", "page")
+            if not book_urls:
                 log.info("esj列表解析失败")
                 log.debug(res)
                 return
-            for book_xpath in book_xpaths:
+            for book_url in book_urls:
                 book = Book()
                 book.source = "esj"
-                book.book_id = common.get_book_id(book_xpath, "esj")
+                book.book_id = common.get_book_id(book_url, "esj")
                 # 黑名单跳过
                 if book.book_id in common.handle_url_list(read_config("black_list"), "esj"):
                     continue

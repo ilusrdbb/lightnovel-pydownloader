@@ -71,20 +71,20 @@ class Yuri(BaseSite):
             if not res:
                 return
             if read_config("get_collection"):
-                book_xpaths = common.get_xpath(res, "yuri", "collection")
+                book_urls = common.get_xpath(res, "yuri", "collection")
             else:
-                book_xpaths = common.get_xpath(res, "yuri", "page")
-            if not book_xpaths:
+                book_urls = common.get_xpath(res, "yuri", "page")
+            if not book_urls:
                 log.info("百合会列表解析失败")
                 log.debug(res)
                 return
-            for book_xpath in book_xpaths:
-                if "javascript" in book_xpath or "thread-535989-" in book_xpath:
+            for book_url in book_urls:
+                if "javascript" in book_url or "thread-535989-" in book_url:
                     # 排除置顶专楼
                     continue
                 book = Book()
                 book.source = "yuri"
-                book.book_id = common.get_book_id(book_xpath, "yuri")
+                book.book_id = common.get_book_id(book_url, "yuri")
                 # 黑名单跳过
                 if book.book_id in common.handle_url_list(read_config("black_list"), "yuri"):
                     continue
