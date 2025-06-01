@@ -22,7 +22,7 @@
 
 ## 关于V2版本
 V2版本（2.x.x）不再更新维护，建议迁移至V3版本（3.x.x），V2版本相关的issue也不再受理  
-如何迁移：将V3程序（lightnovel.exe）和配置文件（config.yaml），覆盖至V2版本根目录中即可  
+如何迁移：将V3程序（lightnovel.exe）和配置文件（config.yaml，需自行重新更改），覆盖至V2版本根目录中即可  
 
 ## 使用说明
 ### Windows
@@ -97,7 +97,7 @@ V3版本将一部分一般用户不需要更改的配置移至高级配置yaml�
 |      txt      | txt保存目录，高级配置中convert_txt开启时才会出现 |
 | lightnovel.db |   数据库文件，删除会导致爬取数据全部丢失，千万不要删除    |
 |  config.yaml  |              配置文件               |
-| advance.yaml  |             高级配置文件              |
+| advance.yaml  |           （可选）高级配置文件            |
 
 ## TODO
 添加前端ui界面，更方便的修改配置  
