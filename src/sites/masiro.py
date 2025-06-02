@@ -302,5 +302,4 @@ class Masiro(BaseSite):
         return None
 
     async def sign(self):
-        # todo
         pass

@@ -176,6 +176,7 @@ class Yuri(BaseSite):
             chapter.pics.append(pic)
 
     async def sign(self):
+        log.info("百合会开始签到...")
         hash_url = f"{self.domain}/plugin.php?id=zqlj_sign"
         hash_res = await request.get(hash_url, headers=self.header, session=self.session)
         if not hash_res:
