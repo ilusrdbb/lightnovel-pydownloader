@@ -4,7 +4,6 @@ from contextlib import asynccontextmanager
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
 from sqlalchemy.ext.declarative import declarative_base
 
-from src.utils.config import read_config
 from src.utils.log import log
 
 # 创建异步数据库引擎

@@ -32,13 +32,11 @@ push_calibre:
 # 实验功能 是否开启签到
 sign: true
 
-# 下面四个配置项只能在非定时模式下使用，且开启时会停止正常爬取
+# 下面三个配置项开启时会停止正常爬取
 # 是否重新下载全部之前爬取失败的图片
 download_pic_again: false
 # 危险！清空数据库中的图片信息，此选项只应该在误删图片保存目录的时候开启
-delete_pic_table: false
-# 危险！是否统一支付之前支付失败的章节，开启此项可能会大量消耗账号内的金币
-purchase_again: false
+clear_pic_table: false
 # 是否重新导出全部数据库内数据到epub
 export_epub_again: false
 

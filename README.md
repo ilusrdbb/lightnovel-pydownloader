@@ -77,8 +77,7 @@ V3版本将一部分一般用户不需要更改的配置移至高级配置yaml�
 |    push_calibre    |          推送calibre-web设置           |    见配置文件内注释说明     |
 |        sign        | 是否开启签到，仅适配轻国和百合会，真白萌由于ban号风险过高不做适配 |       false       |
 | download_pic_again |        是否重新下载全部之前爬取失败的图片，慎用        |       false       |
-|  delete_pic_table  |          是否清空数据库中的图片信息，慎用          |       false       |
-|   purchase_again   |         是否统一支付之前支付失败的章节，慎用         |       false       |
+|  clear_pic_table   |          是否清空数据库中的图片信息，慎用          |       false       |
 | export_epub_again  |       是否重新导出全部数据库内数据到epub，慎用       |       false       |
 |      txt_dir       |         txt保存目录，一般情况下不应修改          |      './txt'      |
 |      epub_dir      |         epub保存目录，一般情况下不应修改         |     './epub'      |

@@ -32,3 +32,15 @@ async def update_chapter(chapter: Chapter):
             chapter.id = str(uuid.uuid4())
             session.add(chapter)
             log.debug(f"db insert {str(chapter)}")
+
+async def get_chapter(id: str) -> Chapter:
+    async with session_scope() as session:
+        stmt = select(Chapter).where(Chapter.id == id)
+        result = await session.execute(stmt)
+        return result.scalars().first()
+
+async def get_nopay_chapters() -> List[Chapter]:
+    async with session_scope() as session:
+        stmt = select(Chapter).where(Chapter.purchase_fail_flag == 1)
+        result = await session.execute(stmt)
+        return result.scalars().all()

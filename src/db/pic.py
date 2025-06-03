@@ -1,13 +1,14 @@
 import uuid
+from typing import List
 
-from sqlalchemy import select, update
+from sqlalchemy import select, update, delete
 
 from src.db import session_scope
 from src.models.pic import Pic
 from src.utils.log import log
 
 
-async def get_pic_list(chapter_table_id: str) -> Pic:
+async def get_pic_list(chapter_table_id: str) -> List[Pic]:
     async with session_scope() as session:
         stmt = select(Pic).where(Pic.chapter_table_id == chapter_table_id)
         result = await session.execute(stmt)
@@ -27,3 +28,15 @@ async def insert_pic(pic: Pic):
         pic.id = str(uuid.uuid4())
         session.add(pic)
         log.debug(f"db insert {str(pic)}")
+
+async def clear_all_pic():
+    async with session_scope() as session:
+        stmt = delete(Pic)
+        await session.execute(stmt)
+
+async def fail_pic_list() -> List[Pic]:
+    async with session_scope() as session:
+        stmt = select(Pic).where(Pic.pic_path.is_(None))
+        result = await session.execute(stmt)
+        pic = result.scalars().all()
+        return pic
