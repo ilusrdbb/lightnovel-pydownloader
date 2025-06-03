@@ -8,13 +8,13 @@ from src.utils.log import log
 
 def push_calibre(book: Book):
     abs_path = read_config("push_calibre")["absolute_path"]
-    container_id = read_config("push_calibre")["container_id"]
+    container_name = read_config("push_calibre")["container_name"]
     library_path = read_config("push_calibre")["library_path"]
-    if not container_id or not abs_path or not library_path:
+    if not container_name or not abs_path or not library_path:
         return
     full_path = abs_path + "/" + book.source + "/" + book.book_name + ".epub"
     log.info(f"{book.book_name} 开始推送calibre...")
-    docker_command = ["docker", "exec", "-it", container_id]
+    docker_command = ["docker", "exec", "-it", container_name]
     try:
         # calibre search
         calibre_search_command = f"calibredb search publisher:{book.source} 'title:\"{book.book_name}\"'"

@@ -23,7 +23,7 @@ convert_txt: false
 # 实验功能 推送calibre-web设置 下方默认配置仅做示例请根据自身docker的calibre-web填写
 push_calibre:
   enabled: false
-  # docker容器名称
+  # docker容器名称或容器id
   container_name: ''
   # 爬虫的epub目录 填docker映射路径而不是真实路径 需要在calibre-web中额外映射爬虫的epub目录
   absolute_path: '/epub'
