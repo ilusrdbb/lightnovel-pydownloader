@@ -2,7 +2,7 @@
 # 版本号
 version: '3.0.0'
 # 日志级别 INFO 默认 DEBUG 完整日志
-log_level: 'DEBUG'
+log_level: 'INFO'
 # 黑名单，爬取过程中会绕过黑名单内的书籍，填入书籍地址或id具体格式同白名单，黑名单优先级低于白名单
 black_list: []
 # 爬虫线程数 不要设置的过大 小心被ban 建议设置为1单线程执行
