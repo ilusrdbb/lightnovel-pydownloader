@@ -11,7 +11,7 @@ max_thread: 1
 # 是否默认只爬取收藏页
 get_collection: true
 # 请求超时时间 单位秒
-time_out: 15
+time_out: 10
 # 每次请求睡眠时间 比如设置2则每次请求前睡随机0~2秒 设置0不睡眠
 # 真白萌由于频繁请求会报错，每次请求强制睡6秒
 sleep_time: 1
@@ -19,7 +19,7 @@ sleep_time: 1
 least_words: 0
 
 # 实验功能 是否同时导出txt
-convert_txt: true
+convert_txt: false
 # 实验功能 推送calibre-web设置 下方默认配置仅做示例请根据自身docker的calibre-web填写
 push_calibre:
   enabled: false
@@ -30,7 +30,7 @@ push_calibre:
   # 书籍目录 填docker映射路径而不是真实路径
   library_path: '/library'
 # 实验功能 是否开启签到
-sign: true
+sign: false
 
 # 下面三个配置项开启时会停止正常爬取
 # 是否重新下载全部之前爬取失败的图片
@@ -54,7 +54,8 @@ domain:
   lk: 'https://api.lightnovel.fun'
   yuri: 'https://bbs.yamibo.com'
   fish: 'https://books.fishhawk.top'
-# xpath配置
+
+# xpath配置 不要动
 xpath_config:
   esj:
     page: '//a[@class=''card-img-tiles'']/@href'

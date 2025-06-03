@@ -30,11 +30,11 @@ end_page: 1
 # 代理地址 仅支持http代理 例'http://127.0.0.1:1081' 注意esj只能挂非日韩节点的代理
 proxy_url: ''
 # 轻国或真白萌是否花费金币购买章节
-is_purchase: true
+is_purchase: false
 # 章节花费上限，高于配置值的章节不购买
-max_purchase: 100
+max_purchase: 20
 # 生成epub时是否全局繁转简
-convert_hans: true
+convert_hans: false
 # 定时执行设置 enabled定时开关hour时minute分
 scheduler_config:
   enabled: false
