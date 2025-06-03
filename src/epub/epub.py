@@ -6,6 +6,7 @@ from ebooklib import epub
 from ebooklib.epub import EpubBook
 from zhconv import zhconv
 
+from src.epub.calibre import push_calibre
 from src.models.book import Book
 from src.models.chapter import Chapter
 from src.models.pic import Pic
@@ -62,6 +63,9 @@ def build_epub(book: Book):
         log.info(f"{book.book_name} epub导出失败! {str(e)}")
         log.debug(traceback.print_exc())
         return
+    # calibre-web
+    if read_config("push_calibre")["enabled"]:
+        push_calibre(book)
 
 def build_epub_metadata(epub_book, book):
     # 元数据

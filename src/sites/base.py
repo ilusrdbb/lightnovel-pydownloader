@@ -6,7 +6,6 @@ from typing import List, Dict
 from aiohttp import ClientSession
 
 from src.db import cookie
-from src.epub.calibre import push_calibre
 from src.epub.epub import build_epub
 from src.epub.txt import build_txt
 from src.models.book import Book
@@ -98,9 +97,6 @@ class BaseSite(ABC):
             # txt
             if read_config("convert_txt"):
                 await loop.run_in_executor(None, build_txt, book)
-            # calibre-web
-            if read_config("push_calibre")["enabled"]:
-                await loop.run_in_executor(None, push_calibre, book)
 
     @abstractmethod
     async def valid_cookie(self) -> bool:
