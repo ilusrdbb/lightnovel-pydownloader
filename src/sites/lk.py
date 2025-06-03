@@ -54,7 +54,6 @@ class LK(BaseSite):
         self.param["d"]["security_key"] = self.cookie.token
         res = await request.post_json(url, self.header, self.param, self.session)
         if res and common.unzip(res).get("code") == 0:
-            log.info("轻国校验cookie成功")
             self.user_info["coin"] = common.unzip(res)["data"]["balance"]["coin"]
             self.user_info["exp"] = common.unzip(res)["data"]["level"]["exp"]
             return True
@@ -351,114 +350,94 @@ class LK(BaseSite):
     async def sign(self):
         log.info("轻国开始签到...")
         log.info(f"轻币：{self.user_info['coin']} 经验：{self.user_info['exp']}")
-        param = copy.deepcopy(self.param)
         # 登录签到
-        sign_url = f"{self.domain}/api/task/complete"
-        sign_res = await request.post_json(sign_url, self.header, param, self.session)
-        if not sign_res:
-            log.info("轻国签到失败！")
-            return
-        sign_res = common.unzip(sign_res)
-        log.debug(sign_res)
+        await self.complete_task(8)
         # 获取个人任务
         task_url = f"{self.domain}/api/task/list"
-        task_res = await request.post_json(task_url, self.header, param, self.session)
-        if not task_res:
-            log.info("轻国签到失败！")
+        task_res = await request.post_json(task_url, self.header, self.param, self.session)
+        if not task_res or common.unzip(task_res)["code"] != 0:
+            log.info("轻国获取任务失败！")
             return
         task_list = common.unzip(task_res)
         log.debug(task_list)
         # 阅读任务
-        read_url = f"{self.domain}/api/history/add-history"
-        param["d"]["fid"] = 2408
-        param["d"]["class"] = 2
-        param["d"]["id"] = 1
-        await request.post_json(read_url, self.header, param, self.session)
-        task_param = copy.deepcopy(self.param)
-        task_param["d"]["id"] = 1
-        read_res = await request.post_json(self.sign_url, self.header, task_param, self.session)
-        log.debug(common.unzip(read_res))
-        log.info("阅读任务成功！") if read_res else log.info("阅读任务失败！")
+        if task_list["data"]["items"][0]["status"] == 0:
+            await self.complete_task(1)
         # 收藏任务
         if task_list["data"]["items"][1]["status"] == 0:
-            collection_url = f"{self.domain}/api/history/add-collection"
+            param = copy.deepcopy(self.param)
+            url = f"{self.domain}/api/history/add-collection"
             param["d"]["fid"] = 1123305
             param["d"]["class"] = 1
-            param["d"]["id"] = 2
-            await request.post_json(collection_url, self.header, param, self.session)
-            task_param = copy.deepcopy(self.param)
-            task_param["d"]["id"] = 2
-            collection_res = await request.post_json(self.sign_url, self.header, task_param, self.session)
-            log.debug(common.unzip(collection_res))
-            log.info("收藏任务成功！") if collection_res else log.info("收藏任务失败！")
+            await request.post_json(url, self.header, param, self.session)
+            await self.complete_task(2)
         # 点赞任务
         if task_list["data"]["items"][2]["status"] == 0:
             await self.sign_like()
         # 分享任务
         if task_list["data"]["items"][3]["status"] == 0:
-            task_param = copy.deepcopy(self.param)
-            task_param["d"]["id"] = 5
-            share_res = await request.post_json(self.sign_url, self.header, task_param, self.session)
-            log.debug(common.unzip(share_res))
-            log.info("分享任务成功！") if share_res else log.info("分享任务失败！")
+            await self.complete_task(5)
         # 投币任务
         if task_list["data"]["items"][4]["status"] == 0:
             await self.sign_pay()
         # 全部完成
         if task_list["data"]["status"] == 0:
-            task_param = copy.deepcopy(self.param)
-            task_param["d"]["id"] = 7
-            final_res = await request.post_json(self.sign_url, self.header, task_param, self.session)
-            log.debug(common.unzip(final_res))
-            log.info("全部任务成功！") if final_res else log.info("全部任务失败！")
+            await self.complete_task(7)
+        log.info("轻国签到完成！")
+
+    async def complete_task(self, task_id: int) -> bool:
+        param = copy.deepcopy(self.param)
+        param["d"]["id"] = task_id
+        url = f"{self.domain}/api/task/complete"
+        res = await request.post_json(url, self.header, param, self.session)
+        if res and common.unzip(res)["code"] == 0:
+            log.info(f"轻国任务完成，任务id：{task_id}")
+            # 刷新
+            await self.valid_cookie()
+            log.info(f"轻币：{self.user_info['coin']} 经验：{self.user_info['exp']}")
+            return True
         else:
-            log.info("已完成全部任务！")
-        # 刷新
-        self.valid_cookie()
-        log.info("轻国签到成功！")
-        log.info(f"轻币：{self.user_info['coin']} 经验：{self.user_info['exp']}")
+            if res:
+                log.debug(common.unzip(res))
+            log.info(f"轻国任务失败，任务id：{task_id}")
+            return False
 
     async def sign_like(self, retry_time: int = 0):
         # 点赞
         random_aid = random.randint(1000000, 1125000)
-        like_url = f"{self.domain}/api/article/like"
-        like_param = copy.deepcopy(self.param)
-        like_param["d"]["aid"] = random_aid
-        like_param["d"]["id"] = 3
+        url = f"{self.domain}/api/article/like"
+        param = copy.deepcopy(self.param)
+        param["d"]["aid"] = random_aid
+        log.debug(f"点赞aid{random_aid}")
         # 执行两次 取消点赞
-        await request.post_json(like_url, self.header, like_param, self.session)
-        await request.post_json(like_url, self.header, like_param, self.session)
+        await request.post_json(url, self.header, param, self.session)
+        await request.post_json(url, self.header, param, self.session)
         # 任务
-        task_param = copy.deepcopy(self.param)
-        task_param["d"]["id"] = 3
-        res = await request.post_json(self.sign_url, self.header, task_param, self.session)
-        if not res or common.unzip(res)["code"] != 0:
-            log.info("点赞任务失败！重试...")
+        success = await self.complete_task(3)
+        if not success:
+            log.info("轻国点赞任务失败，重试...")
             retry_time += 1
             if retry_time < 3:
                 await self.sign_like(retry_time)
             return
-        log.info("点赞任务成功！")
 
     async def sign_pay(self, retry_time: int = 0):
         # 投币
         random_aid = random.randint(1000000, 1125000)
-        coin_url = f"{self.domain}/api/coin/use"
-        coin_param = copy.deepcopy(self.param)
-        coin_param["d"]["goods_id"] = 2
-        coin_param["d"]["params"] = random_aid
-        coin_param["d"]["price"] = 1
-        coin_param["d"]["number"] = 10
-        coin_param["d"]["total_price"] = 10
-        await request.post_json(coin_url, self.header, coin_param, self.session)
+        url = f"{self.domain}/api/coin/use"
+        param = copy.deepcopy(self.param)
+        param["d"]["goods_id"] = 2
+        param["d"]["params"] = random_aid
+        param["d"]["price"] = 1
+        param["d"]["number"] = 10
+        param["d"]["total_price"] = 10
+        log.debug(f"投币aid{random_aid}")
+        await request.post_json(url, self.header, param, self.session)
         # 任务
-        task_param = copy.deepcopy(self.param)
-        task_param["d"]["id"] = 6
-        res = await request.post_json(self.sign_url, self.header, task_param, self.session)
-        if not res or common.unzip(res)["code"] != 0:
-            log.info("投币任务失败！重试...")
+        success = await self.complete_task(6)
+        if not success:
+            log.info("轻国投币任务失败，重试...")
             retry_time += 1
             if retry_time < 3:
                 await self.sign_like(retry_time)
             return
-        log.info("投币任务成功！")
