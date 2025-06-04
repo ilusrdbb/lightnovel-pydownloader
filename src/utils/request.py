@@ -5,14 +5,21 @@ import traceback
 from typing import Dict
 
 from aiohttp import ClientSession
-from tenacity import retry, stop_after_attempt
+from tenacity import retry, stop_after_attempt, retry_if_exception_type
 
 from src.utils import common
 from src.utils.config import read_config
 from src.utils.log import log
 
+# 定义哪些异常应该触发重试
+RETRYABLE_EXCEPTIONS = (
+    asyncio.TimeoutError
+)
 
-@retry(stop=stop_after_attempt(3))
+@retry(
+    stop=stop_after_attempt(3),
+    retry=retry_if_exception_type(RETRYABLE_EXCEPTIONS)
+)
 async def get(url: str, headers: Dict, session: ClientSession) -> str:
     await sleep(url)
     proxy = read_config("proxy_url") if read_config("proxy_url") and "/v1" not in url else None
@@ -23,13 +30,19 @@ async def get(url: str, headers: Dict, session: ClientSession) -> str:
             raise Exception(res.status)
         text = await res.text("utf-8", "ignore")
         return text
+    except RETRYABLE_EXCEPTIONS as e:
+        log.info(f"{url}请求超时，重试...")
+        raise e
     except Exception as e:
         log.info(f"{url}请求失败 {str(e)}")
         log.debug(traceback.print_exc())
         return None
 
 
-@retry(stop=stop_after_attempt(3))
+@retry(
+    stop=stop_after_attempt(3),
+    retry=retry_if_exception_type(RETRYABLE_EXCEPTIONS)
+)
 async def post_data(url: str, headers: Dict, data: Dict, session: ClientSession) -> dict:
     await sleep(url)
     proxy = read_config("proxy_url") if read_config("proxy_url") and "/v1" not in url else None
@@ -43,13 +56,19 @@ async def post_data(url: str, headers: Dict, data: Dict, session: ClientSession)
             "text": text,
             "headers": res.headers
         }
+    except RETRYABLE_EXCEPTIONS as e:
+        log.info(f"{url}请求超时，重试...")
+        raise e
     except Exception as e:
         log.info(f"{url}请求失败 {str(e)}")
         log.debug(traceback.print_exc())
         return None
 
 
-@retry(stop=stop_after_attempt(3))
+@retry(
+    stop=stop_after_attempt(3),
+    retry=retry_if_exception_type(RETRYABLE_EXCEPTIONS)
+)
 async def post_json(url: str, headers: Dict, json: Dict, session: ClientSession) -> str:
     await sleep(url)
     proxy = read_config("proxy_url") if read_config("proxy_url") and "/v1" not in url else None
@@ -60,6 +79,9 @@ async def post_json(url: str, headers: Dict, json: Dict, session: ClientSession)
             raise Exception(res.status)
         text = await res.text()
         return text
+    except RETRYABLE_EXCEPTIONS as e:
+        log.info(f"{url}请求超时，重试...")
+        raise e
     except Exception as e:
         log.info(f"{url}请求失败 {str(e)}")
         log.debug(traceback.print_exc())
