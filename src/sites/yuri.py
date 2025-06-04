@@ -1,3 +1,4 @@
+import asyncio
 import re
 from typing import List
 
@@ -25,6 +26,8 @@ class Yuri(BaseSite):
         super().__init__(session)
         self.site: str = "yuri"
         self.domain: str = read_config("domain")["yuri"]
+        # 容易触发discuz反爬强制单线程
+        self.threads = asyncio.Semaphore(1)
 
     async def valid_cookie(self) -> bool:
         url = f"{self.domain}/home.php?mod=spacecp&ac=usergroup"
