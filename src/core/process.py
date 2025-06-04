@@ -75,7 +75,7 @@ class Process(object):
                 # 获取书籍
                 book = await get_book_by_id(chapter.book_table_id)
                 # 下载图片
-                save_path = f"{read_config('image_dir')}/{book.source}/{chapter.book_id}/{chapter.chapter_id}"
+                save_path = f"{read_config('image_dir')}/{book.source}/{book.book_id}/{chapter.chapter_id}"
                 pic_path = await request.download_pic(pic.pic_url, pic_header, save_path, session)
                 if pic_path:
                     pic.pic_path = pic_path
@@ -103,9 +103,9 @@ class Process(object):
                 if not pics:
                     continue
                 chapter.pics = pics
-        # epub
-        build_epub(book)
-        # txt
-        if read_config("convert_txt"):
-            build_txt(book)
+            # epub
+            build_epub(book)
+            # txt
+            if read_config("convert_txt"):
+                build_txt(book)
         log.info("重新导出epub结束")
