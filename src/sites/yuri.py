@@ -144,6 +144,8 @@ class Yuri(BaseSite):
         pass
 
     async def build_pic_list(self, chapter: Chapter):
+        self.pic_header["Cookie"] = self.header["Cookie"]
+        self.pic_header["Referer"] = f"{self.domain}/thread-{chapter.book_id}-1-1.html"
         pic_urls = common.get_xpath(chapter.content, "yuri", "pic")
         if not pic_urls:
             return
