@@ -201,7 +201,7 @@ class Yuri(BaseSite):
     async def handle_dsign(self, url: str) -> str:
         _url = url
         res = await request.get(url, self.header, self.session)
-        if res.startswith("<script"):
+        if res and res.startswith("<script"):
             # 反爬处理
             _url = f"{self.domain}{get_dsign(res)}"
             res = await request.get(_url, self.header, self.session)
