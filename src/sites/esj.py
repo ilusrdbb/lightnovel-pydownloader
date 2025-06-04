@@ -82,9 +82,9 @@ class Esj(BaseSite):
         for page in range(self.start_page, self.end_page + 1):
             log.info(f"esj开始爬取第{page}页...")
             if read_config("get_collection"):
-                url = f"{self.domain}/list-11/{page}.html"
-            else:
                 url = f"{self.domain}/my/favorite/udate/{page}"
+            else:
+                url = f"{self.domain}/list-11/{page}.html"
             res = await request.get(url, self.header, self.session)
             if not res:
                 return

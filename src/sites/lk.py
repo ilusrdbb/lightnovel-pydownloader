@@ -109,7 +109,7 @@ class LK(BaseSite):
                 page_param["d"]["type"] = 1
                 page_param["d"]["class"] = 1
             else:
-                url = f"{self.domain}/my/favorite/{page}"
+                url = f"{self.domain}/api/category/get-article-by-cate"
                 page_param["d"]["parent_gid"] = 3
                 # gid 106 最新 gid 107 整卷
                 page_param["d"]["gid"] = 106

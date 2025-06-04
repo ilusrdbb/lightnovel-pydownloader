@@ -67,7 +67,7 @@ xpath_config:
     chapter: '//div[@id=''chapterList'']//a'
     content: '//div[contains(@class,''forum-content'')]/*'
     pic: '//img/@src'
-    collection: '//h5[@class=''card-title'']/a/@href'
+    collection: '//h5[@class=''product-title'']/a/@href'
   masiro:
     token: '//input[@class=''csrf'']/@value'
     page: '//div[@class=''layui-card'']/a[1]/@href'
