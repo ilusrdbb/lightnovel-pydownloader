@@ -104,6 +104,8 @@ class LK(BaseSite):
         # 收藏单本或列表页面
         for page in range(self.start_page, self.end_page + 1):
             log.info(f"轻国开始爬取第{page}页...")
+            page_param["d"]["page"] = page
+            page_param["d"]["pageSize"] = 20
             if read_config("get_collection"):
                 url = f"{self.domain}/api/history/get-collections"
                 page_param["d"]["type"] = 1
@@ -138,6 +140,8 @@ class LK(BaseSite):
                 url = f"{self.domain}/api/history/get-collections"
                 page_param["d"]["type"] = 1
                 page_param["d"]["class"] = 2
+                page_param["d"]["page"] = page
+                page_param["d"]["pageSize"] = 20
                 res = await request.post_json(url, self.header, page_param, self.session)
                 if not res or common.unzip(res)["code"] != 0:
                     log.debug(page_param)
