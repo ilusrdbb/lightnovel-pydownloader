@@ -64,5 +64,5 @@ if __name__ == '__main__':
     except Exception as e:
         log.info(str(e))
     finally:
-        log.info("爬取结束，退出程序")
+        input("Press Enter to exit...")
 

@@ -84,7 +84,7 @@ class Esj(BaseSite):
             if read_config("get_collection"):
                 url = f"{self.domain}/list-11/{page}.html"
             else:
-                url = f"{self.domain}/my/favorite/{page}"
+                url = f"{self.domain}/my/favorite/udate/{page}"
             res = await request.get(url, self.header, self.session)
             if not res:
                 return
