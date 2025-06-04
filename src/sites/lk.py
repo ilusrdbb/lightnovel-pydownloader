@@ -361,8 +361,7 @@ class LK(BaseSite):
         task_list = common.unzip(task_res)
         log.debug(task_list)
         # 阅读任务
-        if task_list["data"]["items"][0]["status"] == 0:
-            await self.complete_task(1)
+        await self.complete_task(1)
         # 收藏任务
         if task_list["data"]["items"][1]["status"] == 0:
             param = copy.deepcopy(self.param)
