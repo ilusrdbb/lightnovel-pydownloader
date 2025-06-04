@@ -59,7 +59,10 @@ def find(in_list: List[Any], attr_name: str, attr_value: Any) -> Optional[Any]:
     return None
 
 def filename_from_url(url: str) -> str:
-    return basename(urlparse(url).path) if url else None
+    path = urlparse(url).path
+    filename = os.path.basename(path)
+    # 一部分cdn带@的特殊处理
+    return filename.split('@')[0]
 
 def unzip(text: str) -> Dict:
     return json.loads(zlib.decompress(base64.b64decode(text)).decode()) if text else None
