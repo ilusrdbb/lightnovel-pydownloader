@@ -88,7 +88,7 @@ class Fish:
             log.info(f"轻小说机翻站开始爬取第{page}页...")
             url = f"{self.domain}/api/user/favored-web/default?page={page-1}&pageSize=30&sort=update"
             res = await request.get(url, self.header, self.session)
-            if not res:
+            if not res or not res.startswith("{"):
                 return
             book_datas = json.loads(res)["items"]
             if not book_datas:
