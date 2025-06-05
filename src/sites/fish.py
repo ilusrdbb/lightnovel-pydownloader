@@ -49,8 +49,8 @@ class Fish:
                 log.info(f"{self.site}未获取到书籍")
                 return
             # 下载
-            tasks = [asyncio.create_task(self.download(book)) for book in self.books]
-            await asyncio.gather(*tasks)
+            for book in self.books:
+                await self.download(book)
         except Exception as e:
             log.info(str(e))
 
@@ -106,27 +106,26 @@ class Fish:
                 await update_book(book)
 
     async def download(self, book: Book):
-        async with asyncio.Semaphore(1):
-            url = f"{self.domain}/api/novel/syosetu/n2906ji/file?mode=zh&translationsMode=priority&type=epub&filename={quote(book.book_name, safe='', encoding='utf-8')}.epub&translations=sakura"
-            # windows 文件名限制
-            char_map = {
-                '/': ' ',
-                '<': '《',
-                '>': '》',
-                ':': '：',
-                '\\': ' ',
-                '|': ' ',
-                '?': '？',
-                '*': ' '
-            }
-            # 替换不合法字符
-            for char, replacement in char_map.items():
-                book.book_name = book.book_name.replace(char, replacement)
-            # linux 85 windows 127
-            if len(book.book_name) > 85:
-                book.book_name = book.book_name[:80] + "..."
-            path = f"{read_config('epub_dir')}/{book.source}/{book.book_name}.epub"
-            header = {
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
-            }
-            await request.download_file(url, header, path, self.session)
+        url = f"{self.domain}/api{book.book_id}/file?mode=zh&translationsMode=priority&type=epub&filename={quote(book.book_name, safe='', encoding='utf-8')}.epub&translations=sakura"
+        # windows 文件名限制
+        char_map = {
+            '/': ' ',
+            '<': '《',
+            '>': '》',
+            ':': '：',
+            '\\': ' ',
+            '|': ' ',
+            '?': '？',
+            '*': ' '
+        }
+        # 替换不合法字符
+        for char, replacement in char_map.items():
+            book.book_name = book.book_name.replace(char, replacement)
+        # linux 85 windows 127
+        if len(book.book_name) > 85:
+            book.book_name = book.book_name[:80] + "..."
+        path = f"{read_config('epub_dir')}/{book.source}/{book.book_name}.epub"
+        header = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+        }
+        await request.download_file(url, header, path, self.session)
