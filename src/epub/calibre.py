@@ -19,16 +19,19 @@ def push_calibre(book: Book):
         # calibre search
         calibre_search_command = f"calibredb search publisher:{book.source} 'title:\"{book.book_name}\"'"
         docker_search_command = docker_command + ["/bin/sh", "-c", calibre_search_command]
+        log.debug(f"docker_search_command: {docker_search_command}")
         search_result = subprocess.run(docker_search_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         calibre_id = search_result.stdout
         if calibre_id and calibre_id.isdigit():
             # calibre remove
-            calibre_remove_command = f"calibredb remove {calibre_id}"
+            calibre_remove_command = f"calibredb remove {str(calibre_id, encoding='utf-8')}"
             docker_remove_command = docker_command + ["/bin/sh", "-c", calibre_remove_command]
+            log.debug(f"docker_remove_command: {docker_remove_command}")
             subprocess.run(docker_remove_command)
         # calibre add
         calibre_add_command = f"calibredb add \"{full_path}\" --with-library {library_path}"
         docker_add_command = docker_command + ["/bin/sh", "-c", calibre_add_command]
+        log.debug(f"docker_add_command: {docker_add_command}")
         subprocess.run(docker_add_command)
         log.info(f"{book.book_name} 推送calibre成功！")
     except Exception as e:
