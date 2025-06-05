@@ -52,8 +52,6 @@ async def main_async():
         await task_runner()
 
 if __name__ == '__main__':
-    # 初始化数据库
-    asyncio.run(init_db())
     # 初始化配置
     load_config()
     # 初始化日志
