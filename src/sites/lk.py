@@ -442,5 +442,5 @@ class LK(BaseSite):
             log.info("轻国投币任务失败，重试...")
             retry_time += 1
             if retry_time < 3:
-                await self.sign_like(retry_time)
+                await self.sign_pay(retry_time)
             return
