@@ -106,6 +106,7 @@ class Fish:
                 await update_book(book)
 
     async def download(self, book: Book):
+        log.info(f"{book.book_name} 开始下载epub...")
         url = f"{self.domain}/api{book.book_id}/file?mode=zh&translationsMode=priority&type=epub&filename={quote(book.book_name, safe='', encoding='utf-8')}.epub&translations=sakura"
         # windows 文件名限制
         char_map = {
@@ -129,3 +130,4 @@ class Fish:
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
         }
         await request.download_file(url, header, path, self.session)
+        log.info(f"{book.book_name} epub下载成功!")

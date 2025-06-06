@@ -47,6 +47,7 @@ class Process(object):
                     await Yuri(session).run()
                 if site == "fish":
                     await Fish(session).run()
+        log.info("本次爬取任务结束")
 
     @staticmethod
     async def clear_pic_table():
