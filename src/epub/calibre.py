@@ -14,7 +14,7 @@ def push_calibre(book: Book):
         return
     full_path = abs_path + "/" + book.source + "/" + book.book_name + ".epub"
     log.info(f"{book.book_name} 开始推送calibre...")
-    docker_command = ["docker", "exec", "-it", container_name]
+    docker_command = ["docker", "exec", container_name]
     try:
         # calibre search
         calibre_search_command = f"calibredb search publisher:{book.source} 'title:\"{book.book_name}\"'"

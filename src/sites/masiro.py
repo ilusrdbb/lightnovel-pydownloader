@@ -74,7 +74,6 @@ class Masiro(BaseSite):
             res = await request.post_data(url=url, headers=self.header, data=login_data, session=self.session)
             if res:
                 self.header["Cookie"] = self.header["Cookie"] + "; ".join(res["headers"].getall("Set-Cookie"))
-                log.debug(res)
             else:
                 raise Exception("真白萌登录失败")
         # 再校验一次cookie
