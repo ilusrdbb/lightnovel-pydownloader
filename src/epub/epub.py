@@ -11,6 +11,7 @@ from src.models.book import Book
 from src.models.chapter import Chapter
 from src.models.pic import Pic
 from src.utils import common
+from src.epub import css
 from src.utils.config import read_config
 from src.utils.log import log
 
@@ -48,6 +49,8 @@ def build_epub(book: Book):
         epub_chapter = epub.EpubHtml(title=chapter.chapter_name, file_name=f"{chapter.chapter_id}.xhtml", lang="cn")
         # 繁转简
         content = zhconv.convert(chapter.content, "zh-hans") if read_config("convert_hans") else chapter.content
+        # 字体反爬处理
+        css.build_epub_css(content, epub_book, epub_chapter)
         # 标准html
         epub_chapter.content = f"<html><body>{content}</body></html>"
         epub_chapters.append(epub_chapter)
@@ -57,11 +60,6 @@ def build_epub(book: Book):
     epub_book.spine = epub_chapters
     epub_book.add_item(epub.EpubNcx())
     epub_book.add_item(epub.EpubNav())
-    # css
-    style = "body { font-family: Times, Times New Roman, serif; }"
-    nav_css = epub.EpubItem(uid="style_nav", file_name="style/nav.css",
-                            media_type="text/css", content=style)
-    epub_book.add_item(nav_css)
     # 保存
     try:
         path = f"{read_config('epub_dir')}/{book.source}/{book.book_name}.epub"

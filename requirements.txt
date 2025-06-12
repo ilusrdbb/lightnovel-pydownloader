@@ -10,3 +10,4 @@ aiosqlite
 tenacity
 APScheduler
 PyExecJS
+requests
