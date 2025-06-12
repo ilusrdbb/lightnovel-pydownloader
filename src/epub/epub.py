@@ -26,7 +26,14 @@ def build_epub(book: Book):
     # 元数据
     build_epub_metadata(epub_book, book)
     epub_chapters = []
+    # 移除网站id相同的章节
+    unique_chapters = []
+    chapter_id_set = set()
     for chapter in chapters:
+        if chapter.chapter_id not in chapter_id_set:
+            unique_chapters.append(chapter)
+            chapter_id_set.add(chapter.chapter_id)
+    for chapter in unique_chapters:
         if not chapter.content:
             continue
         # 跳过打钱失败的章节
@@ -38,9 +45,11 @@ def build_epub(book: Book):
         if not pics and read_config("least_words") > 0 and read_config("least_words") > len(chapter.content):
             continue
         replace_pics(chapter, pics, epub_book)
-        epub_chapter = epub.EpubHtml(title=chapter.chapter_name, file_name=chapter.chapter_id + ".xhtml", lang="cn")
+        epub_chapter = epub.EpubHtml(title=chapter.chapter_name, file_name=f"{chapter.chapter_id}.xhtml", lang="cn")
         # 繁转简
-        epub_chapter.content = zhconv.convert(chapter.content, "zh-hans") if read_config("convert_hans") else chapter.content
+        content = zhconv.convert(chapter.content, "zh-hans") if read_config("convert_hans") else chapter.content
+        # 标准html
+        epub_chapter.content = f"<html><body>{content}</body></html>"
         epub_chapters.append(epub_chapter)
         epub_book.add_item(epub_chapter)
     # 目录和书脊
