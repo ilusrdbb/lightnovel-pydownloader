@@ -7,7 +7,7 @@ from aiohttp import ClientSession
 
 from src.db.book import update_book
 from src.db.chapter import get_chapter_list, update_chapter
-from src.db.cookie import update_cookie
+from src.db.cookie import update_cookie, update_token
 from src.db.pic import get_pic_list, update_pic, insert_pic
 from src.models.book import Book
 from src.models.chapter import Chapter
@@ -48,9 +48,9 @@ class Masiro(BaseSite):
         if (not read_config("login_info")["masiro"]["username"]
                 or not read_config("login_info")["masiro"]["password"]
                 or not read_config("login_info")["masiro"]["flaresolverr_url"]):
-            if read_config("login_info")["masiro"]["cookie"] and read_config("login_info")["masiro"]["useragent"]:
+            if read_config("login_info")["masiro"]["cookie"] and read_config("ua"):
                 self.header["Cookie"] = read_config("login_info")["masiro"]["cookie"]
-                self.header["User-Agent"] = read_config("login_info")["masiro"]["useragent"]
+                self.header["User-Agent"] = read_config("ua")
                 # 拿token
                 await self.get_token(f"{self.domain}/admin/userCenterShow")
             else:
@@ -279,8 +279,9 @@ class Masiro(BaseSite):
         res = await request.get(url, self.header, self.session)
         if res:
             self.token = common.first(common.get_xpath(res, "masiro", "token"))
+            log.debug(f"token:{self.token}")
 
-    async def pay(self, chapter: Chapter) -> str:
+    async def pay(self, chapter: Chapter, retry_time: int = 1) -> str:
         log.info(f"真白萌开始打钱..花费:{chapter.cost}金币")
         cost_param = {
             "type": 2,
@@ -288,8 +289,18 @@ class Masiro(BaseSite):
             "cost": chapter.cost
         }
         cost_header = copy.deepcopy(self.header)
-        cost_header['x-csrf-token'] = self.token
+        cost_header['x-csrf-token'] = self.cookie.token
         cost_res = await request.post_json(f"{self.domain}/admin/pay", self.header, cost_param, self.session)
+        if not cost_res and retry_time < 3:
+            # 可能是token过期尝试刷新token
+            await self.get_token(f"{self.domain}/admin/userCenterShow")
+            if self.token:
+                await update_token("masiro", self.token)
+                self.cookie.token = self.token
+                text = await self.pay(chapter, retry_time + 1)
+                return text
+            else:
+                return None
         if cost_res and json.loads(cost_res)["code"] == 1:
             chapter.purchase_fail_flag = 0
             # 打钱成功 刷新文本

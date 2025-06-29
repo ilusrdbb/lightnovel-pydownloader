@@ -63,27 +63,28 @@ python3 lightnovel.py &
 ## 关于高级配置
 V3版本将一部分一般用户不需要更改的配置移至高级配置yaml文件中，位于程序根目录下advance.yaml文件，  
 
-|        配置项         |                 说明                 |        示例        |
-|:------------------:|:----------------------------------:|:----------------:|
-|      version       |            版本号，非开发者不需修改            |      3.0.0       |
-|     log_level      |           日志级别，非开发者不需修改            |    INFO或DEBUG    |
-|     black_list     |        黑名单，爬取过程中会绕过黑名单配置的书籍        | 类似于白名单white_list |
-|     max_thread     |       线程数，不建议多线程执行，会有ban账号风险       |   最大值8，真白萌强制1    |
-|   get_collection   |  是否爬取收藏，如果为false会爬取全站，一般情况下不建议关闭   |       true       |
-|      time_out      |               请求超时时间               |        15        |
-|     sleep_time     |              每次请求睡眠时间              |   0不睡眠，真白萌强制6    |
-|    least_words     |       字数小于此值且无图片的章节不生成epub章节       |       0不限制       |
-|    convert_txt     |         是否同时导出txt，未做精细适配慎用         |      false       |
-|    push_calibre    |          推送calibre-web设置           |    见配置文件内注释说明    |
-|        sign        | 是否开启签到，仅适配轻国和百合会，真白萌由于ban号风险过高不做适配 |      false       |
-| download_pic_again |        是否重新下载全部之前爬取失败的图片，慎用        |      false       |
-|  clear_pic_table   |          是否清空数据库中的图片信息，慎用          |      false       |
-| export_epub_again  |       是否重新导出全部数据库内数据到epub，慎用       |      false       |
-|      txt_dir       |         txt保存目录，一般情况下不应修改          |     './txt'      |
-|      epub_dir      |         epub保存目录，一般情况下不应修改         |     './epub'     |
-|     image_dir      |          图片保存目录，一般情况下不应修改          |    './images'    |
-|       domain       |    域名配置，如站点域名变更且本项目未及时更新时可以尝试更改    |                  |
-|      xpath配置       |   xpath配置，除非站点页面结构发生改变，一般情况下不应修改   |                  |
+|        配置项         |                     说明                     |        示例        |
+|:------------------:|:------------------------------------------:|:----------------:|
+|      version       |                版本号，非开发者不需修改                |      3.0.0       |
+|     log_level      |               日志级别，非开发者不需修改                |    INFO或DEBUG    |
+|     black_list     |            黑名单，爬取过程中会绕过黑名单配置的书籍            | 类似于白名单white_list |
+|     max_thread     |           线程数，不建议多线程执行，会有ban账号风险           |   最大值8，真白萌强制1    |
+|   get_collection   |      是否爬取收藏，如果为false会爬取全站，一般情况下不建议关闭       |       true       |
+|      time_out      |                   请求超时时间                   |        15        |
+|     sleep_time     |                  每次请求睡眠时间                  |   0不睡眠，真白萌强制6    |
+|    least_words     |           字数小于此值且无图片的章节不生成epub章节           |       0不限制       |
+|    convert_txt     |             是否同时导出txt，未做精细适配慎用             |      false       |
+|    push_calibre    |              推送calibre-web设置               |    见配置文件内注释说明    |
+|        sign        |     是否开启签到，仅适配轻国和百合会，真白萌由于ban号风险过高不做适配     |      false       |
+| download_pic_again |            是否重新下载全部之前爬取失败的图片，慎用            |      false       |
+|  clear_pic_table   |              是否清空数据库中的图片信息，慎用              |      false       |
+| export_epub_again  |           是否重新导出全部数据库内数据到epub，慎用           |      false       |
+|      txt_dir       |             txt保存目录，一般情况下不应修改              |     './txt'      |
+|      epub_dir      |             epub保存目录，一般情况下不应修改             |     './epub'     |
+|     image_dir      |              图片保存目录，一般情况下不应修改              |    './images'    |
+|       domain       |        域名配置，如站点域名变更且本项目未及时更新时可以尝试更改        |                  |
+|         ua         | 浏览器user-agent，如果正确抓取cookie但是依旧无法登陆可能需要更新ua |                  |
+|      xpath配置       |       xpath配置，除非站点页面结构发生改变，一般情况下不应修改       |                  |
 
 
 ## 文件结构说明

@@ -1,6 +1,6 @@
 import uuid
 
-from sqlalchemy import select, delete
+from sqlalchemy import select, delete, update
 
 from src.db import session_scope
 from src.models.cookie import Cookie
@@ -29,3 +29,8 @@ async def update_cookie(cookie: Cookie):
         cookie.id = str(uuid.uuid4())
         session.add(cookie)
         log.debug(f"db insert {str(cookie)}")
+
+async def update_token(source: str, token: str):
+    async with session_scope() as session:
+        stmt = update(Cookie).where(Cookie.source == source).values(token=token)
+        await session.execute(stmt)

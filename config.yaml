@@ -13,9 +13,8 @@ login_info:
     flaresolverr_url: ''
     username: ''
     password: ''
-    # 真白萌cookie登录需要额外抓User-Agent
+    # 真白萌cookie登录
     cookie: ''
-    useragent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36'
   lk:
     username: ''
     password: ''

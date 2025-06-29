@@ -1,6 +1,6 @@
 # 一些一般用户不需要动的配置
 # 版本号
-version: '3.0.4'
+version: '3.0.5'
 # 日志级别 INFO 默认 DEBUG 完整日志
 log_level: 'INFO'
 # 黑名单，爬取过程中会绕过黑名单内的书籍，填入书籍地址或id具体格式同白名单，黑名单优先级低于白名单
@@ -53,7 +53,9 @@ domain:
   masiro: 'https://masiro.me'
   lk: 'https://api.lightnovel.fun'
   yuri: 'https://bbs.yamibo.com'
-  fish: 'https://books.fishhawk.top'
+  fish: 'https://n.novelia.cc'
+# ua 如果正确抓取cookie但是依旧无法登陆可能需要更新ua
+ua: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36'
 
 # xpath配置 不要动
 xpath_config:

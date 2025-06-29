@@ -28,7 +28,7 @@ class Fish:
             "Accept": "application/json",
             "Accept-Encoding": "gzip, deflate, zstd",
             "Accept-Language": "zh-CN,zh;q=0.9,zh-HK;q=0.8,en-US;q=0.7,en;q=0.6",
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+            "User-Agent": read_config("ua")
         }
 
     async def run(self):
@@ -55,7 +55,7 @@ class Fish:
             log.info(str(e))
 
     async def valid_cookie(self) -> bool:
-        url = f"{self.domain}/api/user/favored-web/default?page=0&pageSize=30&sort=update"
+        url = f"{self.domain}/api/user/favored-web/default?page=0&pageSize=30&query=&provider=kakuyomu%2Csyosetu%2Cnovelup%2Chameln%2Cpixiv%2Calphapolis&type=0&level=0&translate=0&sort=create"
         res = await request.get(url, self.header, self.session)
         if res and res.startswith("{"):
             log.info("轻小说机翻站校验cookie成功")
@@ -86,7 +86,7 @@ class Fish:
             end_page = start_page
         for page in range(start_page, end_page + 1):
             log.info(f"轻小说机翻站开始爬取第{page}页...")
-            url = f"{self.domain}/api/user/favored-web/default?page={page-1}&pageSize=30&sort=update"
+            url = f"{self.domain}/api/user/favored-web/default?page={page-1}&pageSize=30&query=&provider=kakuyomu%2Csyosetu%2Cnovelup%2Chameln%2Cpixiv%2Calphapolis&type=0&level=0&translate=0&sort=create"
             res = await request.get(url, self.header, self.session)
             if not res or not res.startswith("{"):
                 return
@@ -127,7 +127,7 @@ class Fish:
             book.book_name = book.book_name[:80] + "..."
         path = f"{read_config('epub_dir')}/{book.source}/{book.book_name}.epub"
         header = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+            "User-Agent": read_config("ua")
         }
         await request.download_file(url, header, path, self.session)
         log.info(f"{book.book_name} epub下载成功!")
