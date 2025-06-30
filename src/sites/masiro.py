@@ -292,14 +292,17 @@ class Masiro(BaseSite):
         cost_header['x-csrf-token'] = self.cookie.token
         cost_res = await request.post_json(f"{self.domain}/admin/pay", self.header, cost_param, self.session)
         if not cost_res and retry_time < 3:
+            log.info("token失效，尝试刷新...")
             # 可能是token过期尝试刷新token
             await self.get_token(f"{self.domain}/admin/userCenterShow")
             if self.token:
                 await update_token("masiro", self.token)
                 self.cookie.token = self.token
+                log.info("token刷新成功！")
                 text = await self.pay(chapter, retry_time + 1)
                 return text
             else:
+                log.info("token刷新失败！")
                 return None
         if cost_res and json.loads(cost_res)["code"] == 1:
             chapter.purchase_fail_flag = 0

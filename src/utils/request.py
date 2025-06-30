@@ -27,16 +27,13 @@ async def get(url: str, headers: Dict, session: ClientSession) -> str:
     try:
         res = await session.get(url=url, headers=headers, proxy=proxy, timeout=timeout)
         if not res.status == 200:
-            raise Exception(res.status)
+            log.info(f"{url}请求失败 {res.status}")
+            return None
         text = await res.text("utf-8", "ignore")
         return text
     except RETRYABLE_EXCEPTIONS as e:
         log.info(f"{url}请求超时，重试...")
         raise e
-    except Exception as e:
-        log.info(f"{url}请求失败 {str(e)}")
-        log.debug(traceback.print_exc())
-        return None
 
 
 @retry(
@@ -50,7 +47,8 @@ async def post_data(url: str, headers: Dict, data: Dict, session: ClientSession)
     try:
         res = await session.post(url=url, headers=headers, proxy=proxy, data=data, timeout=timeout)
         if not res.status == 200:
-            raise Exception(res.status)
+            log.info(f"{url}请求失败 {res.status}")
+            return None
         text = await res.text()
         return {
             "text": text,
@@ -59,10 +57,6 @@ async def post_data(url: str, headers: Dict, data: Dict, session: ClientSession)
     except RETRYABLE_EXCEPTIONS as e:
         log.info(f"{url}请求超时，重试...")
         raise e
-    except Exception as e:
-        log.info(f"{url}请求失败 {str(e)}")
-        log.debug(traceback.print_exc())
-        return None
 
 
 @retry(
@@ -76,17 +70,13 @@ async def post_json(url: str, headers: Dict, json: Dict, session: ClientSession)
     try:
         res = await session.post(url=url, headers=headers, proxy=proxy, json=json, timeout=timeout)
         if not res.status == 200:
-            raise Exception(res.status)
+            log.info(f"{url}请求失败 {res.status}")
+            return None
         text = await res.text()
         return text
     except RETRYABLE_EXCEPTIONS as e:
         log.info(f"{url}请求超时，重试...")
         raise e
-    except Exception as e:
-        log.info(f"{url}请求失败 {str(e)}")
-        log.debug(traceback.print_exc())
-        return None
-
 
 async def sleep(url: str):
     if 'masiro.' in url:
