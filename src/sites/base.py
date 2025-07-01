@@ -1,4 +1,5 @@
 import asyncio
+import traceback
 from abc import ABC, abstractmethod
 from asyncio import Semaphore
 from typing import List, Dict
@@ -74,29 +75,34 @@ class BaseSite(ABC):
                 await self.sign()
         except Exception as e:
             log.info(str(e))
+            log.debug(traceback.print_exc())
 
     async def start_task(self, book: Book):
-        loop = asyncio.get_running_loop()
-        async with self.threads:
-            # 构造完整书籍信息
-            await self.build_book_info(book)
-            log.info(f"{book.book_name} {self.site}书籍信息已获取")
-            # 构造章节列表
-            log.info(f"{self.site}开始获取章节列表...")
-            await self.build_chapter_list(book)
-            if not book.chapters:
-                log.info(f"{self.site}未获取到章节")
-                return
-            log.info(f"{book.book_name} {self.site}章节信息已全部获取")
-            # 构造图片
-            for chapter in book.chapters:
-                if chapter.content:
-                    await self.build_pic_list(chapter)
-            # epub
-            await loop.run_in_executor(None, build_epub, book)
-            # txt
-            if read_config("convert_txt"):
-                await loop.run_in_executor(None, build_txt, book)
+        try:
+            loop = asyncio.get_running_loop()
+            async with self.threads:
+                # 构造完整书籍信息
+                await self.build_book_info(book)
+                log.info(f"{book.book_name} {self.site}书籍信息已获取")
+                # 构造章节列表
+                log.info(f"{self.site}开始获取章节列表...")
+                await self.build_chapter_list(book)
+                if not book.chapters:
+                    log.info(f"{self.site}未获取到章节")
+                    return
+                log.info(f"{book.book_name} {self.site}章节信息已全部获取")
+                # 构造图片
+                for chapter in book.chapters:
+                    if chapter.content:
+                        await self.build_pic_list(chapter)
+                # epub
+                await loop.run_in_executor(None, build_epub, book)
+                # txt
+                if read_config("convert_txt"):
+                    await loop.run_in_executor(None, build_txt, book)
+        except Exception as e:
+            log.info(str(e))
+            log.debug(traceback.print_exc())
 
     @abstractmethod
     async def valid_cookie(self) -> bool:

@@ -281,8 +281,17 @@ class Masiro(BaseSite):
             self.token = common.first(common.get_xpath(res, "masiro", "token"))
             log.debug(f"token:{self.token}")
 
-    async def pay(self, chapter: Chapter, retry_time: int = 1) -> str:
+    async def pay(self, chapter: Chapter) -> str:
         log.info(f"真白萌开始打钱..花费:{chapter.cost}金币")
+        # 刷新token
+        await self.get_token(f"{self.domain}/admin/userCenterShow")
+        if self.token:
+            await update_token("masiro", self.token)
+            self.cookie.token = self.token
+            log.info("token刷新成功！")
+        else:
+            log.info("token刷新失败！")
+            return None
         cost_param = {
             "type": 2,
             "object_id": chapter.chapter_id,
@@ -291,19 +300,6 @@ class Masiro(BaseSite):
         cost_header = copy.deepcopy(self.header)
         cost_header['x-csrf-token'] = self.cookie.token
         cost_res = await request.post_json(f"{self.domain}/admin/pay", self.header, cost_param, self.session)
-        if not cost_res and retry_time < 3:
-            log.info("token失效，尝试刷新...")
-            # 可能是token过期尝试刷新token
-            await self.get_token(f"{self.domain}/admin/userCenterShow")
-            if self.token:
-                await update_token("masiro", self.token)
-                self.cookie.token = self.token
-                log.info("token刷新成功！")
-                text = await self.pay(chapter, retry_time + 1)
-                return text
-            else:
-                log.info("token刷新失败！")
-                return None
         if cost_res and json.loads(cost_res)["code"] == 1:
             chapter.purchase_fail_flag = 0
             # 打钱成功 刷新文本
