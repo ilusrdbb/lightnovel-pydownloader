@@ -53,7 +53,7 @@ domain:
   yuri: 'https://bbs.yamibo.com'
   fish: 'https://n.novelia.cc'
 # ua 如果正确抓取cookie但是依旧无法登陆可能需要更新ua
-ua: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36'
+ua: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36'
 
 # xpath配置 不要动
 xpath_config:

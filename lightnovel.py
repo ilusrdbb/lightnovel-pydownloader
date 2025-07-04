@@ -56,7 +56,7 @@ if __name__ == '__main__':
     load_config()
     # 初始化日志
     log.init_log()
-    log.info(f"lightnovel-pydownloader version 3.0.7")
+    log.info(f"lightnovel-pydownloader version 3.0.8")
     try:
         asyncio.run(main_async())
     except Exception as e:

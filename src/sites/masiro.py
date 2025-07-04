@@ -283,8 +283,9 @@ class Masiro(BaseSite):
 
     async def pay(self, chapter: Chapter) -> str:
         log.info(f"真白萌开始打钱..花费:{chapter.cost}金币")
+        url = f"{self.domain}/admin/novelReading?cid={chapter.chapter_id}"
         # 刷新token
-        await self.get_token(f"{self.domain}/admin/userCenterShow")
+        await self.get_token(url)
         if self.token:
             await update_token("masiro", self.token)
             self.cookie.token = self.token
@@ -299,12 +300,12 @@ class Masiro(BaseSite):
         }
         cost_header = copy.deepcopy(self.header)
         cost_header['x-csrf-token'] = self.cookie.token
-        cost_res = await request.post_json(f"{self.domain}/admin/pay", self.header, cost_param, self.session)
+        cost_header['referer'] = url
+        cost_res = await request.post_json(f"{self.domain}/admin/pay", cost_header, cost_param, self.session)
         if cost_res and json.loads(cost_res)["code"] == 1:
             chapter.purchase_fail_flag = 0
             # 打钱成功 刷新文本
             log.info(f"{chapter.chapter_name} 真白萌打钱成功！")
-            url = f"{self.domain}/admin/novelReading?cid={chapter.chapter_id}"
             text = await request.get(url, self.header, self.session)
             return text
         log.info(f"{chapter.chapter_name} 真白萌打钱失败")
