@@ -298,9 +298,12 @@ class Masiro(BaseSite):
             "object_id": chapter.chapter_id,
             "cost": chapter.cost
         }
-        cost_header = copy.deepcopy(self.header)
-        cost_header['x-csrf-token'] = self.cookie.token
-        cost_header['referer'] = url
+        cost_header = {
+            "cookie": self.header["Cookie"],
+            "x-csrf-token": self.cookie.token,
+            "user-agent": self.header["User-Agent"],
+            "content-type": "application/json; charset=UTF-8"
+        }
         cost_res = await request.post_json(f"{self.domain}/admin/pay", cost_header, cost_param, self.session)
         if cost_res and json.loads(cost_res)["code"] == 1:
             chapter.purchase_fail_flag = 0
