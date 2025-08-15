@@ -86,7 +86,7 @@ class Fish:
             end_page = start_page
         for page in range(start_page, end_page + 1):
             log.info(f"轻小说机翻站开始爬取第{page}页...")
-            url = f"{self.domain}/api/user/favored-web/default?page={page-1}&pageSize=30&query=&provider=kakuyomu%2Csyosetu%2Cnovelup%2Chameln%2Cpixiv%2Calphapolis&type=0&level=0&translate=0&sort=create"
+            url = f"{self.domain}/api/user/favored-web/default?page={page-1}&pageSize=30&query=&provider=kakuyomu%2Csyosetu%2Cnovelup%2Chameln%2Cpixiv%2Calphapolis&type=0&level=0&translate=0&sort=update"
             res = await request.get(url, self.header, self.session)
             if not res or not res.startswith("{"):
                 return
