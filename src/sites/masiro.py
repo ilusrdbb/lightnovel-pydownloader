@@ -71,7 +71,7 @@ class Masiro(BaseSite):
                 "remember": "1",
                 "_token": self.token
             }
-            res = await request.post_data(url=url, headers=self.header, data=login_data, session=self.session)
+            res = await request.post_data(url, self.header, login_data, self.session)
             if res:
                 self.header["Cookie"] = self.header["Cookie"] + "; ".join(res["headers"].getall("Set-Cookie"))
             else:

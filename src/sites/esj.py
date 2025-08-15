@@ -184,11 +184,29 @@ class Esj(BaseSite):
             log.debug(url)
             return
         chapter.content = common.get_html(text, "esj", "content")
-        if not chapter.content or "btn-send-pw" in chapter.content or "內文目前施工中" in chapter.content:
-            # 密码章节跳过
-            log.info(f"esj密码章节，跳过本章 {chapter.chapter_name}")
+        if not chapter.content:
+            log.info(f"esj章节无内容 {chapter.chapter_name}")
+            return
+        if "btn-send-pw" in chapter.content or "內文目前施工中" in chapter.content:
+            # 使用配置的密码
+            await self.build_pwd_content(chapter)
             return
         log.info(f"{chapter.chapter_name} esj新获取章节内容")
+
+    async def build_pwd_content(self, chapter: Chapter):
+        pwd = read_config("esj_book_pwd").get(chapter.book_id)
+        if not pwd:
+            pwd = read_config("esj_book_pwd").get(chapter.chapter_id)
+        if not pwd:
+            log.info(f"esj密码章节，跳过本章 {chapter.chapter_name}")
+            return
+        url = f"{self.domain}/inc/forum_pw.php"
+        text = await request.post_data(url, self.header, {"pw": pwd}, self.session)
+        if not text or json.loads(text).get("status") != 200:
+            log.info(f"esj密码错误 {chapter.chapter_name}")
+            return
+        log.info(f"esj密码正确，重新获取本章内容 {chapter.chapter_name}")
+        await self.build_content(chapter)
 
     async def build_pic_list(self, chapter: Chapter):
         pic_urls = common.get_xpath(chapter.content, "esj", "pic")

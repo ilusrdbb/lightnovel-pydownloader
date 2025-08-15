@@ -53,7 +53,12 @@ domain:
   yuri: 'https://bbs.yamibo.com'
   fish: 'https://n.novelia.cc'
 # ua 如果正确抓取cookie但是依旧无法登陆可能需要更新ua
-ua: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36'
+ua: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36'
+
+# esj书籍密码配置 格式书籍或章节id: 密码
+# 书籍id对应一本书的所有章节匹配优先级最高
+esj_book_pwd:
+  1560270007: '1919810'
 
 # xpath配置 不要动
 xpath_config:
