@@ -55,7 +55,7 @@ class Fish:
             log.info(str(e))
 
     async def valid_cookie(self) -> bool:
-        url = f"{self.domain}/api/user/favored-web/default?page=0&pageSize=30&query=&provider=kakuyomu%2Csyosetu%2Cnovelup%2Chameln%2Cpixiv%2Calphapolis&type=0&level=0&translate=0&sort=create"
+        url = f"{self.domain}/api/user/favored-web/default?page=0&pageSize=30&query=&provider=kakuyomu%2Csyosetu%2Cnovelup%2Chameln%2Cpixiv%2Calphapolis&type=0&level=0&translate=0&sort=update"
         res = await request.get(url, self.header, self.session)
         if res and res.startswith("{"):
             log.info("轻小说机翻站校验cookie成功")

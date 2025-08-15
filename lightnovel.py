@@ -5,6 +5,7 @@ from apscheduler.executors.asyncio import AsyncIOExecutor
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 from src.core.process import Process
+from src.db import engine
 from src.db.create import init_db
 from src.utils.config import load_config, read_config
 from src.utils.log import log
@@ -51,6 +52,9 @@ async def main_async():
         # 直接运行
         await task_runner()
 
+async def close_engine():
+    await engine.dispose()
+
 if __name__ == '__main__':
     # 初始化配置
     load_config()
@@ -62,5 +66,7 @@ if __name__ == '__main__':
     except Exception as e:
         log.info(str(e))
     finally:
+        # 关闭数据库WAL
+        asyncio.run(close_engine())
         input("Press Enter to exit...")
 
