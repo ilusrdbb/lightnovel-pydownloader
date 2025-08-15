@@ -58,7 +58,7 @@ ua: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like G
 # esj书籍密码配置 格式书籍或章节id: 密码
 # 书籍id对应一本书的所有章节匹配优先级最高
 esj_book_pwd:
-  1560270007: '1919810'
+  114514: '1919810'
 
 # xpath配置 不要动
 xpath_config:

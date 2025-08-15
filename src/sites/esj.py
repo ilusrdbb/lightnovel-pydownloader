@@ -194,15 +194,24 @@ class Esj(BaseSite):
         log.info(f"{chapter.chapter_name} esj新获取章节内容")
 
     async def build_pwd_content(self, chapter: Chapter):
-        pwd = read_config("esj_book_pwd").get(chapter.book_id)
+        pwd = read_config("esj_book_pwd").get(int(chapter.book_id))
         if not pwd:
-            pwd = read_config("esj_book_pwd").get(chapter.chapter_id)
+            pwd = read_config("esj_book_pwd").get(int(chapter.chapter_id))
         if not pwd:
             log.info(f"esj密码章节，跳过本章 {chapter.chapter_name}")
             return
-        url = f"{self.domain}/inc/forum_pw.php"
-        text = await request.post_data(url, self.header, {"pw": pwd}, self.session)
-        if not text or json.loads(text).get("status") != 200:
+        # 获取auth
+        auth_url = f"{self.domain}/forum/{chapter.chapter_id}/{chapter.book_id}.html"
+        auth_res = await request.post_data(auth_url, self.header, {"plxf": "getAuthToken"}, self.session)
+        if not auth_res:
+            log.debug(auth_res)
+            log.info(f"esj密码章节，跳过本章 {chapter.chapter_name}")
+            return
+        self.header["authorization"] = auth_res["text"].replace("<JinJing>", "").replace("</JinJing>", "")
+        pwd_url = f"{self.domain}/inc/forum_pw.php"
+        pwd_text = await request.post_data(pwd_url, self.header, {"pw": pwd}, self.session)
+        if not pwd_text or json.loads(pwd_text["text"]).get("status") != 200:
+            log.debug(pwd_text)
             log.info(f"esj密码错误 {chapter.chapter_name}")
             return
         log.info(f"esj密码正确，重新获取本章内容 {chapter.chapter_name}")
