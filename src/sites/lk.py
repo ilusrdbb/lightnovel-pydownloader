@@ -294,7 +294,10 @@ class LK(BaseSite):
                     save_path = f"{read_config('image_dir')}/lk/{chapter.book_id}/{chapter.chapter_id}"
                     # 旧域名处理
                     pic_url = pic.pic_url.replace("lightnovel.us", self.domain.replace("https://api.", ""))
-                    pic_path = await request.download_pic(pic_url, self.pic_header, save_path, self.session)
+                    pic_header = copy.deepcopy(self.pic_header)
+                    if "res.lightnovel" in pic_url:
+                        pic_header.pop("User-Agent")
+                    pic_path = await request.download_pic(pic_url, pic_header, save_path, self.session, self.param)
                     if pic_path:
                         pic.pic_path = pic_path
                         # 更新数据库

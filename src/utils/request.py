@@ -84,8 +84,7 @@ async def sleep(url: str):
     elif read_config("sleep_time") > 0:
         await asyncio.sleep(random.random() * read_config("sleep_time"))
 
-
-async def download_pic(url: str, headers: Dict, path: str, session: ClientSession) -> str:
+async def download_pic(url: str, headers: Dict, path: str, session: ClientSession, json: Dict=None) -> str:
     if 'i.noire.cc:332' in url:
         url = url.replace("i.noire.cc:332", "i.noire.cc")
     file_name = common.filename_from_url(url)
@@ -96,7 +95,7 @@ async def download_pic(url: str, headers: Dict, path: str, session: ClientSessio
     proxy = read_config("proxy_url") if read_config("proxy_url") and "/v1" not in url else None
     timeout = read_config("time_out")
     try:
-        res = await session.get(url=url, proxy=proxy, headers=headers, timeout=timeout)
+        res = await session.get(url=url, proxy=proxy, headers=headers, json=json, timeout=timeout)
         if not res.status == 200:
             raise Exception(res.status)
         image_data = await res.read()
