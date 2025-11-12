@@ -202,7 +202,11 @@ class LK(BaseSite):
                         os.remove(file_path)
             # 下载封面
             cover_url = book.cover_url.replace("lightnovel.us", self.domain.replace("https://api.", ""))
-            await request.download_pic(cover_url, self.pic_header, cover_path, self.session)
+            # 绕cf
+            pic_header = copy.deepcopy(self.pic_header)
+            if "res.lightnovel" in cover_url:
+                pic_header["User-Agent"] = self.header["user-agent"]
+            await request.download_pic(cover_url, pic_header, cover_path, self.session, self.param)
 
     async def build_chapter_list(self, book: Book):
         # 数据库已存章节
@@ -285,6 +289,7 @@ class LK(BaseSite):
     async def build_pic_list(self, chapter: Chapter):
         # 数据库已存图片列表
         pics = await get_pic_list(chapter.id)
+        pic_header = copy.deepcopy(self.pic_header)
         if pics:
             for pic in pics:
                 if pic.pic_path:
@@ -294,9 +299,9 @@ class LK(BaseSite):
                     save_path = f"{read_config('image_dir')}/lk/{chapter.book_id}/{chapter.chapter_id}"
                     # 旧域名处理
                     pic_url = pic.pic_url.replace("lightnovel.us", self.domain.replace("https://api.", ""))
-                    pic_header = copy.deepcopy(self.pic_header)
+                    # 绕cf
                     if "res.lightnovel" in pic_url:
-                        pic_header.pop("User-Agent")
+                        pic_header["User-Agent"] = self.header["user-agent"]
                     pic_path = await request.download_pic(pic_url, pic_header, save_path, self.session, self.param)
                     if pic_path:
                         pic.pic_path = pic_path
@@ -319,7 +324,10 @@ class LK(BaseSite):
             save_path = f"{read_config('image_dir')}/lk/{chapter.book_id}/{chapter.chapter_id}"
             # 旧域名处理
             pic_url = pic_data["url"].replace("lightnovel.us", self.domain.replace("https://api.", ""))
-            pic_path = await request.download_pic(pic_url, self.pic_header, save_path, self.session)
+            # 绕cf
+            if "res.lightnovel" in pic_url:
+                pic_header["User-Agent"] = self.header["user-agent"]
+            pic_path = await request.download_pic(pic_url, pic_header, save_path, self.session, self.param)
             if pic_path:
                 pic.pic_path = pic_path
             # 数据库新增图片信息
