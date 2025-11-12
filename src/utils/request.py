@@ -23,6 +23,9 @@ RETRYABLE_EXCEPTIONS = (
 async def get(url: str, headers: Dict, session: ClientSession) -> str:
     await sleep(url)
     proxy = read_config("proxy_url") if read_config("proxy_url") and "/v1" not in url else None
+    if read_config("domain")["yuri"] in url:
+        # 百合会开启代理签到会报错
+        proxy = None
     timeout = read_config("time_out")
     try:
         res = await session.get(url=url, headers=headers, proxy=proxy, timeout=timeout)
