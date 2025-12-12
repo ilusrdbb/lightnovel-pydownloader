@@ -10,6 +10,8 @@ from src.db.create import init_db
 from src.utils.config import load_config, read_config
 from src.utils.log import log
 
+VERSION = "3.0.11"
+
 async def task_runner():
     await Process().run()
 
@@ -60,7 +62,7 @@ if __name__ == '__main__':
     load_config()
     # 初始化日志
     log.init_log()
-    log.info(f"lightnovel-pydownloader version 3.0.10")
+    log.info(f"lightnovel-pydownloader version {VERSION}")
     try:
         asyncio.run(main_async())
     except Exception as e:

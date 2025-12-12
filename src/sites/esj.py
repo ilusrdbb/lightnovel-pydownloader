@@ -230,7 +230,7 @@ class Esj(BaseSite):
             # 匹配数据库
             pic = common.find(pics, "pic_url", pic_url)
             if pic:
-                if not pic.pic_path:
+                if not pic.pic_path or pic.pic_path.endswith(".file"):
                     # 下载图片
                     pic_path = await request.download_pic(pic.pic_url, self.pic_header, save_path, self.session)
                     if pic_path:

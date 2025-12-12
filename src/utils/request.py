@@ -16,6 +16,7 @@ RETRYABLE_EXCEPTIONS = (
     asyncio.TimeoutError
 )
 
+
 @retry(
     stop=stop_after_attempt(3),
     retry=retry_if_exception_type(RETRYABLE_EXCEPTIONS)
@@ -43,7 +44,7 @@ async def get(url: str, headers: Dict, session: ClientSession) -> str:
     stop=stop_after_attempt(3),
     retry=retry_if_exception_type(RETRYABLE_EXCEPTIONS)
 )
-async def post_data(url: str, headers: Dict, data: Dict, session: ClientSession) -> dict:
+async def post_data(url: str, headers: Dict, data: Dict, session: ClientSession) -> Dict:
     await sleep(url)
     proxy = read_config("proxy_url") if read_config("proxy_url") and "/v1" not in url else None
     timeout = read_config("time_out")
@@ -81,18 +82,22 @@ async def post_json(url: str, headers: Dict, json: Dict, session: ClientSession)
         log.info(f"{url}请求超时，重试...")
         raise e
 
+
 async def sleep(url: str):
     if 'masiro.' in url:
         await asyncio.sleep(6)
     elif read_config("sleep_time") > 0:
         await asyncio.sleep(random.random() * read_config("sleep_time"))
 
-async def download_pic(url: str, headers: Dict, path: str, session: ClientSession, json: Dict=None) -> str:
+
+async def download_pic(url: str, headers: Dict, path: str, session: ClientSession, json: Dict = None) -> str:
     if 'i.noire.cc:332' in url:
         url = url.replace("i.noire.cc:332", "i.noire.cc")
     file_name = common.filename_from_url(url)
     if file_name.endswith(".i"):
         file_name = file_name.replace(".i", ".avif")
+    if file_name.endswith(".file"):
+        file_name = file_name.replace(".file", ".png")
     if "." not in file_name:
         file_name = file_name + ".png"
     proxy = read_config("proxy_url") if read_config("proxy_url") and "/v1" not in url else None
@@ -134,4 +139,3 @@ async def download_file(url: str, headers: Dict, path: str, session: ClientSessi
     except Exception as e:
         log.info(f"{url}文件下载失败 {str(e)}")
         log.debug(traceback.print_exc())
-
