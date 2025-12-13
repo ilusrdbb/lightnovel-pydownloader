@@ -123,9 +123,9 @@ def replace_pics(chapter: Chapter, pics: List[Pic], epub_book: EpubBook):
             epub_book.add_item(image)
             if pic.pic_id:
                 # 轻国特殊处理
-                content = content.replace(pic.pic_id, f"Image/{image_name}")
+                content = content.replace(pic.pic_id, f"Image/{chapter.chapter_id}/{image_name}")
             else:
-                content = content.replace(pic.pic_url, f"Image/{image_name}")
+                content = content.replace(pic.pic_url, f"Image/{chapter.chapter_id}/{image_name}")
         except Exception as e:
             log.debug(f"{pic.pic_path} 替换图片失败 {str(e)}")
             log.debug(traceback.print_exc())
