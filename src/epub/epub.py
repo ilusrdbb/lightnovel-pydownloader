@@ -118,8 +118,8 @@ def replace_pics(chapter: Chapter, pics: List[Pic], epub_book: EpubBook):
             image_data = open(pic.pic_path, "rb").read()
             image_name = common.filename_from_url(pic.pic_path)
             image_type = image_name.split(".")[-1]
-            image = epub.EpubImage(uid=image_name, file_name="Image/" + image_name,
-                                   media_type="image/" + image_type, content=image_data)
+            image = epub.EpubImage(uid=image_name, file_name=f"Image/{chapter.chapter_id}/{image_name}",
+                                   media_type=f"image/{image_type}", content=image_data)
             epub_book.add_item(image)
             if pic.pic_id:
                 # 轻国特殊处理
