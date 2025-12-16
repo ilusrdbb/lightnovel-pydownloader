@@ -1,10 +1,13 @@
 import re
 import traceback
+import urllib
+import uuid
 
 import requests
 from ebooklib import epub
 from ebooklib.epub import EpubBook, EpubHtml
 
+from lxml import html
 from src.utils import common
 from src.utils.log import log
 
@@ -34,6 +37,8 @@ def build_epub_css(text: str, epub_book: EpubBook, epub_chapter: EpubHtml):
     # 获取字体地址
     font_url = get_font_url(text)
     if not font_url:
+        # 再尝试从html找data
+        get_font_from_content(text, epub_book, epub_chapter)
         return
     log.debug(font_url)
     # 下载
@@ -76,4 +81,26 @@ def build_epub_css(text: str, epub_book: EpubBook, epub_chapter: EpubHtml):
         epub_chapter.add_item(css_item)
     except Exception as e:
         log.info(f"css解析失败: {e}")
+        log.debug(traceback.print_exc())
+
+
+def get_font_from_content(text, epub_book, epub_chapter):
+    try:
+        page_body = html.fromstring(text)
+        font_uri = common.first(page_body.xpath("//link/@href"))
+        if not font_uri or not font_uri.startswith("data:text/css"):
+            return
+        # 直接添加css数据
+        with urllib.request.urlopen(font_uri) as response:
+            font_data = response.read()
+            css_item = epub.EpubItem(
+                uid="style_main",
+                file_name=f"style/{str(uuid.uuid4())}.css",
+                media_type="text/css",
+                content=font_data
+            )
+            epub_book.add_item(css_item)
+            epub_chapter.add_item(css_item)
+    except Exception as e:
+        log.info(f"css数据解析失败: {e}")
         log.debug(traceback.print_exc())

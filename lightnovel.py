@@ -10,7 +10,7 @@ from src.db.create import init_db
 from src.utils.config import load_config, read_config
 from src.utils.log import log
 
-VERSION = "3.0.12"
+VERSION = "3.0.13"
 
 async def task_runner():
     await Process().run()
