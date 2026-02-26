@@ -36,4 +36,4 @@ def push_calibre(book: Book):
         log.info(f"{book.book_name} 推送calibre成功！")
     except Exception as e:
         log.info(f"{book.book_name} 推送calibre失败！ {str(e)}")
-        log.debug(traceback.print_exc())
+        log.debug(traceback.format_exc())

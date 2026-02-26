@@ -75,7 +75,7 @@ class BaseSite(ABC):
                 await self.sign()
         except Exception as e:
             log.info(str(e))
-            log.debug(traceback.print_exc())
+            log.debug(traceback.format_exc())
 
     async def start_task(self, book: Book):
         try:
@@ -102,7 +102,7 @@ class BaseSite(ABC):
                     await loop.run_in_executor(None, build_txt, book)
         except Exception as e:
             log.info(str(e))
-            log.debug(traceback.print_exc())
+            log.debug(traceback.format_exc())
 
     @abstractmethod
     async def valid_cookie(self) -> bool:

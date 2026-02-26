@@ -6,7 +6,7 @@ a = Analysis(
     ['lightnovel.py'],
     pathex=[],
     binaries=[],
-    datas=[(zhconv_data_path, 'zhconv')],
+    datas=[(zhconv_data_path, 'zhconv'), ('config.yaml', '.'), ('advance.yaml', '.')],
     hiddenimports=['aiosqlite'],
     hookspath=[],
     hooksconfig={},

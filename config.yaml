@@ -9,11 +9,8 @@ login_info:
     password: ''
     cookie: ''
   masiro:
-    # 真白萌账密登录需要配置flaresolverr 请拉取此镜像alexfozor/flaresolverr:pr-1300-experimental 例http://127.0.0.1:8191/v1
-    flaresolverr_url: ''
     username: ''
     password: ''
-    # 真白萌cookie登录
     cookie: ''
   lk:
     username: ''

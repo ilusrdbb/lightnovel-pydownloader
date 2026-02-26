@@ -29,7 +29,7 @@ def get_font_url(text: str) -> str:
         return common.first(re.findall(font_pattern, css_text))
     except Exception as e:
         log.info(f"提取字体地址失败: {e}")
-        log.debug(traceback.print_exc())
+        log.debug(traceback.format_exc())
         return None
 
 
@@ -81,7 +81,7 @@ def build_epub_css(text: str, epub_book: EpubBook, epub_chapter: EpubHtml):
         epub_chapter.add_item(css_item)
     except Exception as e:
         log.info(f"css解析失败: {e}")
-        log.debug(traceback.print_exc())
+        log.debug(traceback.format_exc())
 
 
 def get_font_from_content(text, epub_book, epub_chapter):
@@ -103,4 +103,4 @@ def get_font_from_content(text, epub_book, epub_chapter):
             epub_chapter.add_item(css_item)
     except Exception as e:
         log.info(f"css数据解析失败: {e}")
-        log.debug(traceback.print_exc())
+        log.debug(traceback.format_exc())

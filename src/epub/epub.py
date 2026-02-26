@@ -68,7 +68,7 @@ def build_epub(book: Book):
         log.info(f"{book.book_name} epub导出成功!")
     except Exception as e:
         log.info(f"{book.book_name} epub导出失败! {str(e)}")
-        log.debug(traceback.print_exc())
+        log.debug(traceback.format_exc())
         return
     # calibre-web
     if read_config("push_calibre")["enabled"]:
@@ -95,7 +95,8 @@ def build_epub_metadata(epub_book, book):
         for file_name in os.listdir(cover_dir):
             file_path = os.path.join(cover_dir, file_name)
             if os.path.isfile(file_path):
-                epub_book.set_cover(file_name, open(file_path, 'rb').read())
+                with open(file_path, 'rb') as f:
+                    epub_book.set_cover(file_name, f.read())
                 break
 
 def handle_source(code: str):
@@ -115,7 +116,8 @@ def replace_pics(chapter: Chapter, pics: List[Pic], epub_book: EpubBook):
         if not pic.pic_path:
             continue
         try:
-            image_data = open(pic.pic_path, "rb").read()
+            with open(pic.pic_path, "rb") as f:
+                image_data = f.read()
             image_name = common.filename_from_url(pic.pic_path)
             image_type = image_name.split(".")[-1]
             image = epub.EpubImage(uid=image_name, file_name=f"Image/{chapter.chapter_id}/{image_name}",
@@ -128,7 +130,7 @@ def replace_pics(chapter: Chapter, pics: List[Pic], epub_book: EpubBook):
                 content = content.replace(pic.pic_url, f"Image/{chapter.chapter_id}/{image_name}")
         except Exception as e:
             log.debug(f"{pic.pic_path} 替换图片失败 {str(e)}")
-            log.debug(traceback.print_exc())
+            log.debug(traceback.format_exc())
     # 百合会特殊处理
     if "static/image/common/none.gif" in content and 'file="Image/' in content:
         content = content.replace("src=\"static/image/common/none.gif\"", "")

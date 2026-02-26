@@ -16,17 +16,15 @@
 |:------:|:------:|:----------------------------------:|
 |  esj   |  esj   |          如挂代理，不能挂日韩节点的代理           |
 |  轻之国度  |   lk   |  并非通过网页而是app的api爬取，国内部分地区可能需要挂代理   |
-|  真白萌   | masiro | 账密登录暂时需要配置flaresolverr，可选择cookie登录 |
+|  真白萌   | masiro | 账密登录需要使用带chrome的版本绕过cf，可选择cookie登录 |
 |  百合会   |  yuri  |        一部分特殊格式的文章未适配，不建议使用         |
 | 轻小说机翻站 |  fish  |  纯自用，仅支持收藏里直接下载epub，不接受任何相关issue   |
 
-## 关于V2版本
-V2版本（2.x.x）不再更新维护，建议迁移至V3版本（3.x.x），V2版本相关的issue也不再受理  
-如何迁移：将V3程序（lightnovel.exe）和配置文件（config.yaml和advance.yaml，需自行重新更改），覆盖至V2版本根目录中即可
-
 ## 使用说明
+### 关于发布版本
+分有chrome和无chrome两个版本，有chrome版本支持真白萌账密登录但是文件体积较大，如果不需要建议使用不带chrome的版本
 ### Windows
-解压release最新版本的压缩包，根据自身需要修改config.yaml配置文件，双击lightnovel.exe运行  
+解压release最新版本的压缩包，根据自身需要修改config.yaml和advance.yaml配置文件，双击lightnovel.exe运行  
 或直接从源码中运行，见下方Linux说明
 ### Linux
 Linux下暂时只能从源代码运行  
@@ -39,12 +37,25 @@ pip install -r requirements.txt
 ~~~bash
 git clone https://github.com/ilusrdbb/lightnovel-pydownloader.git
 ~~~
-根据自身需要修改config.yaml配置文件，运行
+（如果需要真白萌账密登录）下载linux版chrome并解压放入程序根目录下的chrome文件夹
 ~~~bash
-python3 lightnovel.py &
+mkdir chrome
+wget https://storage.googleapis.com/chrome-for-testing-public/145.0.7632.117/linux64/chrome-linux64.zip
+unzip chrome-linux64.zip -d chrome
+rm chrome-linux64.zip
 ~~~
+根据自身需要修改config.yaml和advance.yaml配置文件，运行
+~~~bash
+nohup python lightnovel.py > /dev/null 2>&1 &
+~~~
+### 更新
+覆盖新版本的lightnovel.exe即可
+### 关于V2版本
+V2版本（2.x.x）不再更新维护，建议迁移至V3版本（3.x.x），V2版本相关的issue也不再受理  
+如何迁移：将V3程序（lightnovel.exe）和配置文件（config.yaml和advance.yaml，需自行重新更改），覆盖至V2版本根目录中即可
 
-## 一般配置说明
+## 配置项说明
+### 一般配置
 位于程序根目录下config.yaml文件，也可参考文件内注释说明  
 
 |         配置项         |                   说明                    |                                示例                                |
@@ -59,8 +70,7 @@ python3 lightnovel.py &
 |    max_purchase     |           章节花费上限，高于配置值的章节不购买            |                                20                                |
 |    convert_hans     |             是否将标题和内容的繁体转为简体             |                               true                               |
 |  scheduler_config   |                 定时执行配置                  |                            见配置文件内注释说明                            |
-
-## 关于高级配置
+### 高级配置
 V3版本将一部分一般用户不需要更改的配置移至高级配置yaml文件中，位于程序根目录下advance.yaml文件，  
 
 |        配置项         |                     说明                     |        示例         |
@@ -88,19 +98,20 @@ V3版本将一部分一般用户不需要更改的配置移至高级配置yaml�
 
 
 ## 文件结构说明
-如果使用默认配置，程序运行后会在程序目录下生成一系列的文件夹和文件，正常情况不要删除  
+程序默认或运行后在程序目录下有一系列的文件夹和文件，正常情况都不应删除  
 
-|   文件或文件夹名称    |               说明                |
-|:-------------:|:-------------------------------:|
-|     logs      |              日志文件夹              |
-|    images     |   下载插图的文件夹，删除会导致下次导出的epub没有插图   |
-|     epub      |            epub保存目录             |
-|      txt      | txt保存目录，高级配置中convert_txt开启时才会出现 |
-| lightnovel.db |   数据库文件，删除会导致爬取数据全部丢失，千万不要删除    |
-|  config.yaml  |              配置文件               |
-| advance.yaml  |             高级配置文件              |
+|    文件或文件夹名称    |               说明                |
+|:--------------:|:-------------------------------:|
+|     chrome     |          真白萌账密登录绕过cf使用          |
+|      logs      |              日志文件夹              |
+|     images     |   下载插图的文件夹，删除会导致下次导出的epub没有插图   |
+|      epub      |            epub保存目录             |
+|      txt       | txt保存目录，高级配置中convert_txt开启时才会出现 |
+| lightnovel.db  |       数据库文件，删除会导致爬取数据全部丢失       |
+|  config.yaml   |              配置文件               |
+|  advance.yaml  |             高级配置文件              |
+| lightnovel.exe |               主程序               |
 
 ## TODO
 添加前端ui界面，更方便的修改配置  
-真白萌账密登录绕过cf不借助于第三方改用自身程序实现  
-代码优化  
+自动化打包发布  

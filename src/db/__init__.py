@@ -2,7 +2,7 @@ import traceback
 from contextlib import asynccontextmanager
 
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import declarative_base
 
 from src.utils.log import log
 
@@ -20,8 +20,8 @@ async def session_scope():
         yield session
         await session.commit()
     except Exception as e:
-        log.info(str(e))
-        log.debug(traceback.print_exc())
+        log.info(f"db session error: {str(e)}")
+        log.debug(traceback.format_exc())
         await session.rollback()
         raise
     finally:

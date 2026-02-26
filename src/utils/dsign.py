@@ -69,7 +69,7 @@ def get_dsign(js_code: str) -> str:
         result = ctx.eval("tempfunction")
     except Exception as e:
         log.info(f"dsign解析失败 {str(e)}")
-        log.debug(traceback.print_exc())
+        log.debug(traceback.format_exc())
         return None
     # 在替换前确保输出是字符串
     if isinstance(result, str):

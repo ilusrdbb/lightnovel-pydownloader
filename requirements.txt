@@ -11,3 +11,4 @@ tenacity
 APScheduler
 PyExecJS
 requests
+DrissionPage

@@ -8,17 +8,20 @@ from src.models.book import Book
 from src.utils.log import log
 
 
+async def _query_book(book_id: str, source: str, session) -> Book:
+    stmt = select(Book).where(Book.source == source).where(Book.book_id == book_id)
+    result = await session.execute(stmt)
+    return result.scalars().first()
+
 async def get_book(book_id: str, source: str) -> Book:
     async with session_scope() as session:
-        stmt = select(Book).where(Book.source == source).where(Book.book_id == book_id)
-        result = await session.execute(stmt)
-        book = result.scalars().first()
+        book = await _query_book(book_id, source, session)
         log.debug(f"db query {str(book)}")
         return book
 
 async def update_book(data: Book) -> bool:
-    book = await get_book(data.book_id, data.source)
     async with session_scope() as session:
+        book = await _query_book(data.book_id, data.source, session)
         if book:
             data.id = book.id
             # 更新

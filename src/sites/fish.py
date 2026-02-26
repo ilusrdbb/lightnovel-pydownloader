@@ -10,7 +10,7 @@ from src.db.book import update_book
 from src.db.cookie import update_cookie
 from src.models.book import Book
 from src.models.cookie import Cookie
-from src.utils import request
+from src.utils import request, common
 from src.utils.config import read_config
 from src.utils.log import log
 
@@ -108,23 +108,8 @@ class Fish:
     async def download(self, book: Book):
         log.info(f"{book.book_name} 开始下载epub...")
         url = f"{self.domain}/api{book.book_id}/file?mode=zh&translationsMode=priority&type=epub&filename={quote(book.book_name, safe='', encoding='utf-8')}.epub&translations=sakura"
-        # windows 文件名限制
-        char_map = {
-            '/': ' ',
-            '<': '《',
-            '>': '》',
-            ':': '：',
-            '\\': ' ',
-            '|': ' ',
-            '?': '？',
-            '*': ' '
-        }
-        # 替换不合法字符
-        for char, replacement in char_map.items():
-            book.book_name = book.book_name.replace(char, replacement)
-        # linux 85 windows 127
-        if len(book.book_name) > 85:
-            book.book_name = book.book_name[:80] + "..."
+        # 处理文件名
+        common.handle_title(book)
         path = f"{read_config('epub_dir')}/{book.source}/{book.book_name}.epub"
         header = {
             "User-Agent": read_config("ua")

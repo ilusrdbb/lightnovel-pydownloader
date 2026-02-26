@@ -13,7 +13,7 @@ from src.utils.log import log
 
 # 定义哪些异常应该触发重试
 RETRYABLE_EXCEPTIONS = (
-    asyncio.TimeoutError
+    asyncio.TimeoutError,
 )
 
 
@@ -23,7 +23,7 @@ RETRYABLE_EXCEPTIONS = (
 )
 async def get(url: str, headers: Dict, session: ClientSession) -> str:
     await sleep(url)
-    proxy = read_config("proxy_url") if read_config("proxy_url") and "/v1" not in url else None
+    proxy = read_config("proxy_url") if read_config("proxy_url") else None
     if read_config("domain")["yuri"] in url:
         # 百合会开启代理签到会报错
         proxy = None
@@ -46,7 +46,7 @@ async def get(url: str, headers: Dict, session: ClientSession) -> str:
 )
 async def post_data(url: str, headers: Dict, data: Dict, session: ClientSession) -> Dict:
     await sleep(url)
-    proxy = read_config("proxy_url") if read_config("proxy_url") and "/v1" not in url else None
+    proxy = read_config("proxy_url") if read_config("proxy_url") else None
     timeout = read_config("time_out")
     try:
         res = await session.post(url=url, headers=headers, proxy=proxy, data=data, timeout=timeout)
@@ -69,8 +69,8 @@ async def post_data(url: str, headers: Dict, data: Dict, session: ClientSession)
 )
 async def post_json(url: str, headers: Dict, json: Dict, session: ClientSession) -> str:
     await sleep(url)
-    proxy = read_config("proxy_url") if read_config("proxy_url") and "/v1" not in url else None
-    timeout = 120 if "/v1" in url else read_config("time_out")
+    proxy = read_config("proxy_url") if read_config("proxy_url") else None
+    timeout = read_config("time_out")
     try:
         res = await session.post(url=url, headers=headers, proxy=proxy, json=json, timeout=timeout)
         if not res.status == 200:
@@ -100,7 +100,7 @@ async def download_pic(url: str, headers: Dict, path: str, session: ClientSessio
         file_name = file_name.replace(".file", ".png")
     if "." not in file_name:
         file_name = file_name + ".png"
-    proxy = read_config("proxy_url") if read_config("proxy_url") and "/v1" not in url else None
+    proxy = read_config("proxy_url") if read_config("proxy_url") else None
     timeout = read_config("time_out")
     try:
         res = await session.get(url=url, proxy=proxy, headers=headers, json=json, timeout=timeout)
@@ -115,16 +115,16 @@ async def download_pic(url: str, headers: Dict, path: str, session: ClientSessio
             log.debug(f"{url}图片下载成功 保存路径{full_path}")
         # 轻国avif处理
         if file_name.endswith(".avif"):
-            return common.handle_avif(path)
+            return common.handle_avif(full_path)
         return full_path
     except Exception as e:
         log.info(f"{url}图片下载失败 {str(e)}")
-        log.debug(traceback.print_exc())
+        log.debug(traceback.format_exc())
         return None
 
 
 async def download_file(url: str, headers: Dict, path: str, session: ClientSession):
-    proxy = read_config("proxy_url") if read_config("proxy_url") and "/v1" not in url else None
+    proxy = read_config("proxy_url") if read_config("proxy_url") else None
     timeout = read_config("time_out")
     try:
         res = await session.get(url=url, proxy=proxy, headers=headers, timeout=timeout)
@@ -138,4 +138,4 @@ async def download_file(url: str, headers: Dict, path: str, session: ClientSessi
             log.debug(f"{url}文件下载成功 保存路径{path}")
     except Exception as e:
         log.info(f"{url}文件下载失败 {str(e)}")
-        log.debug(traceback.print_exc())
+        log.debug(traceback.format_exc())

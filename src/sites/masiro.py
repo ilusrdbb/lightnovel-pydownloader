@@ -15,6 +15,7 @@ from src.models.cookie import Cookie
 from src.models.pic import Pic
 from src.sites.base import BaseSite
 from src.utils import request, common
+from src.utils.cf import bypass_cf
 from src.utils.config import read_config
 from src.utils.log import log
 
@@ -46,8 +47,7 @@ class Masiro(BaseSite):
         cookie = Cookie()
         cookie.source = "masiro"
         if (not read_config("login_info")["masiro"]["username"]
-                or not read_config("login_info")["masiro"]["password"]
-                or not read_config("login_info")["masiro"]["flaresolverr_url"]):
+                or not read_config("login_info")["masiro"]["password"]):
             if read_config("login_info")["masiro"]["cookie"] and read_config("ua"):
                 self.header["Cookie"] = read_config("login_info")["masiro"]["cookie"]
                 self.header["User-Agent"] = read_config("ua")
@@ -258,21 +258,13 @@ class Masiro(BaseSite):
 
     async def fuck_cf(self) -> bool:
         log.info("真白萌开始破cf盾...")
-        url = read_config("login_info")["masiro"]["flaresolverr_url"]
-        data = {
-            "cmd": "request.get",
-            "url": f"{self.domain}/admin/auth/login",
-            "maxTimeout": 60000
-        }
-        res = await request.post_json(url, {"content-type": "application/json"}, data, self.session)
-        if res:
-            res_json = json.loads(res)
-            self.header["User-Agent"] = res_json["solution"]["userAgent"]
-            for cf_cookie in res_json["solution"]["cookies"]:
-                if cf_cookie["name"] == "cf_clearance":
-                    self.header["Cookie"] = f"cf_clearance={cf_cookie['value']};"
-                    log.info("真白萌破cf盾成功！")
-                    return True
+        url = f"{self.domain}/admin/auth/login"
+        result = await bypass_cf(url)
+        if result:
+            self.header["User-Agent"] = result["user_agent"]
+            self.header["Cookie"] = f"cf_clearance={result['cf_clearance']};"
+            log.info("真白萌破cf盾成功！")
+            return True
         return False
 
     async def get_token(self, url: str):

@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+*.spec
+
+# Virtual environment
+.venv/
+venv/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# Runtime
+log/
+*.db
+epub/
+txt/
+images/
+
+# Binary
+upx.exe
+
+# Chrome
+chrome/

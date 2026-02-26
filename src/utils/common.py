@@ -81,7 +81,7 @@ def handle_avif(in_path: str) -> str:
         png_image.close()
     except Exception as e:
         log.debug(f"avif转换失败 {str(e)} 路径{in_path}")
-        log.debug(traceback.print_exc())
+        log.debug(traceback.format_exc())
         return in_path
     # 删除源avif图片
     os.remove(in_path)
