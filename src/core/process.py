@@ -33,20 +33,19 @@ class Process(object):
             flag = False
         if not flag:
             return
+        site_map = {
+            "esj": Esj,
+            "lk": LK,
+            "masiro": Masiro,
+            "yuri": Yuri,
+            "fish": Fish,
+        }
         for site in read_config("sites"):
             jar = aiohttp.CookieJar()
             conn = aiohttp.TCPConnector(ssl=False)
             async with aiohttp.ClientSession(connector=conn, cookie_jar=jar) as session:
-                if site == "esj":
-                    await Esj(session).run()
-                if site == "lk":
-                    await LK(session).run()
-                if site == "masiro":
-                    await Masiro(session).run()
-                if site == "yuri":
-                    await Yuri(session).run()
-                if site == "fish":
-                    await Fish(session).run()
+                if site in site_map:
+                    await site_map[site](session).run()
         log.info("本次爬取任务结束")
 
     @staticmethod

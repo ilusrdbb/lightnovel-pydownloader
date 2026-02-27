@@ -40,7 +40,7 @@ def get_book_id(url: str, site: str) -> str:
     return re.search(r'\d+', url).group()
 
 def handle_url_list(url_list: List[Any], site: str) -> Optional[List[str]]:
-    if not list:
+    if not url_list:
         return []
     return [get_book_id(str(url), site) for url in url_list]
 
