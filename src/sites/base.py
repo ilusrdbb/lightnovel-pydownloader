@@ -12,6 +12,7 @@ from src.epub.txt import build_txt
 from src.models.book import Book
 from src.models.chapter import Chapter
 from src.models.cookie import Cookie
+from src.services.models import UpdateStrategy
 from src.utils.config import read_config
 from src.utils.log import log
 
@@ -28,6 +29,10 @@ class BaseSite(ABC):
         if read_config("push_calibre")["enabled"] or read_config("max_thread") < 1:
             thread_counts = 1
         self.threads: Semaphore = asyncio.Semaphore(thread_counts)
+        try:
+            self.update_strategy = UpdateStrategy(str(read_config("update_strategy") or UpdateStrategy.ONLY_NEW.value))
+        except ValueError:
+            self.update_strategy = UpdateStrategy.ONLY_NEW
         # 白名单
         self.white_list: List[str] = [] if len(read_config("sites")) > 1 else read_config("white_list")
         # 默认请求头
@@ -49,6 +54,15 @@ class BaseSite(ABC):
         self.end_page: int = 1 if read_config("end_page") < 1 else read_config("end_page")
         if self.end_page < self.start_page:
             self.end_page = self.start_page
+
+    def is_only_new(self) -> bool:
+        return self.update_strategy == UpdateStrategy.ONLY_NEW
+
+    def is_refresh_changed(self) -> bool:
+        return self.update_strategy == UpdateStrategy.REFRESH_CHANGED
+
+    def is_full_refetch(self) -> bool:
+        return self.update_strategy == UpdateStrategy.FULL_REFETCH
 
     async def run(self):
         try:

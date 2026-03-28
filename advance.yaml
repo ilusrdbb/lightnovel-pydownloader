@@ -38,6 +38,12 @@ clear_pic_table: false
 # 是否重新导出全部数据库内数据到epub
 export_epub_again: false
 
+# GUI配置 Chrome可执行文件路径 留空时自动尝试查找系统Chrome或数据目录内的chrome
+chrome_path: ''
+# GUI配置 输出根目录 GUI保存后会自动同步下方的epub/txt/images目录
+output_root: ''
+# GUI配置 单本更新策略 默认只抓取新章节
+update_strategy: 'only_new'
 # txt保存目录 txt完整路径：配置目录/站点/书名.txt
 txt_dir: './txt'
 # epub保存目录 epub完整路径：配置目录/站点/书名.epub

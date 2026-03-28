@@ -1,0 +1,13 @@
+# 在这里填写你想覆盖的界面文案。只需要写你想改动的部分。
+# 例如：
+#
+# strategy:
+#   only_new: '只提取新章节'
+#   full_refetch: '整本重新提取'
+#
+# button:
+#   start_task: '开始提取'
+#
+# label:
+#   task_name: '任务名称'
+

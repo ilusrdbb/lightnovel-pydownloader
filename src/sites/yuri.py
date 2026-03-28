@@ -122,9 +122,16 @@ class Yuri(BaseSite):
             if chapter:
                 chapter.book_id = book.book_id
                 chapter.pics = []
-                # 无脑更新
-                chapter.content = content
-                await update_chapter(chapter)
+                if chapter.chapter_order != order or chapter.chapter_name != chapter_name:
+                    chapter.chapter_order = order
+                    chapter.chapter_name = chapter_name
+                    await update_chapter(chapter)
+                if self.is_full_refetch():
+                    chapter.content = content
+                    await update_chapter(chapter)
+                elif self.is_refresh_changed() and chapter.content != content:
+                    chapter.content = content
+                    await update_chapter(chapter)
             else:
                 # 新章节
                 chapter = Chapter()
@@ -245,4 +252,3 @@ class Yuri(BaseSite):
             content = html.tostring(content_xpath, pretty_print=True, encoding="unicode")
             result_list.append(content)
         return result_list
-

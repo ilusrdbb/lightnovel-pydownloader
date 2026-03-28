@@ -59,7 +59,76 @@ pip install -r requirements-gui.txt
 ~~~bash
 python lightnovel_gui.py
 ~~~
-GUI 会复用现有配置文件与运行入口，但运行时会统一使用程序根目录下的 config、日志、数据库、输出目录。  
+GUI 会复用现有配置文件与运行入口，但运行时会统一使用程序根目录下的 config、日志、数据库、输出目录。
+### GUI 账号密码保存
+第二轮开始，GUI 支持“记住账号”和“记住密码”。
+- 账号会继续保存到配置中的 `login_info.<site>.username`
+- 密码在 macOS 上会优先保存到系统钥匙串（Keychain）
+- GUI 保存配置时，不再默认把账号密码登录的密码明文写回 YAML
+
+GUI 额外状态文件位于：
+~~~text
+~/Library/Application Support/lightnovel-pydownloader/gui_state.yaml
+~~~
+如果系统钥匙串当前不可用，GUI 会明确提示“本次可以运行，但密码不会被安全保存”，而不会悄悄退回明文写配置。
+
+如果你以前已经把密码明文写进 YAML，这一轮开始在 GUI 中重新保存并勾选“记住密码”后，程序会尝试把密码迁到 Keychain，并清空 YAML 中对应密码字段。
+### GUI 文案覆盖
+第二轮开始，主要 GUI 文案支持“默认文案 + 用户覆盖文案”。
+默认文案模板打包在程序资源中，用户覆盖文件位于：
+~~~text
+~/Library/Application Support/lightnovel-pydownloader/gui_text_overrides.yaml
+~~~
+首次运行相关界面时，如果该文件不存在，程序会自动从示例模板生成一份骨架。
+
+你可以只覆盖自己想改的部分，例如：
+~~~yaml
+strategy:
+  only_new: '只提取新章节'
+  full_refetch: '整本重新提取'
+
+button:
+  start_task: '开始提取'
+~~~
+本轮已经支持覆盖的主要类别包括：
+- 抓取策略名称
+- 主要按钮名称
+- 常用表单标签
+- 表单校验提示
+- 常见弹窗提示
+### macOS GUI 打包
+第二轮增加了 macOS `.app` 打包方案，应用名称为 `抓书姬.app`。
+安装打包依赖：
+~~~bash
+pip install -r requirements-build.txt
+~~~
+执行打包：
+~~~bash
+bash scripts/build_macos_app.sh
+~~~
+也可以指定 Python 环境：
+~~~bash
+PYTHON=/path/to/python bash scripts/build_macos_app.sh
+~~~
+打包完成后产物位于：
+~~~text
+dist/抓书姬.app
+~~~
+`.app` 内会带上 `config.yaml` 和 `advance.yaml` 作为默认模板资源。
+第一次启动时，程序会把它们复制到：
+~~~text
+~/Library/Application Support/lightnovel-pydownloader/
+~~~
+后续运行只会读写这个目录中的配置、日志和数据库，不会把 `.app` 包内文件当作可写配置。
+默认文案模板和 GUI 状态模板也会随 `.app` 一起打包；用户修改仍然只发生在 `Application Support` 目录中，不会写回 `.app` 包内。
+默认输出目录位于：
+~~~text
+~/Documents/lightnovel-pydownloader/
+~~~
+程序会在该目录下自动管理：
+- `epub/`
+- `txt/`
+- `images/`
 ### 更新
 覆盖新版本的lightnovel.exe即可
 ### 关于V2版本

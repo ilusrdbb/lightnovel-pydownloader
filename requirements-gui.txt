@@ -1,3 +1,4 @@
 -r requirements.txt
 PySide6
 ruamel.yaml
+keyring

@@ -1,24 +1,40 @@
 import asyncio
 import platform
 import time
+from pathlib import Path
 from typing import Optional, Dict
 
 from DrissionPage import Chromium, ChromiumOptions
 
 from src.utils.config import read_config
 from src.utils.log import log
-from src.utils.paths import get_app_root, get_chrome_root
+from src.utils.paths import get_chrome_root
 
 _MAX_RETRIES = 5
 _SLEEP_TIME = 7
 
+def _get_configured_chrome_path() -> Optional[str]:
+    configured_path = read_config("chrome_path")
+    if configured_path and Path(configured_path).is_file():
+        return configured_path
+    return None
 
-def _get_base_dir() -> str:
-    return str(get_app_root())
+
+def _get_system_chrome_path() -> Optional[str]:
+    candidates = []
+    if platform.system() == "Darwin":
+        candidates.extend([
+            Path("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"),
+            Path("/Applications/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing"),
+        ])
+    for path in candidates:
+        if path.is_file():
+            return str(path)
+    return None
 
 
 def _get_bundled_chrome_path() -> Optional[str]:
-    # 查找项目内置的Chrome路径
+    # 查找数据目录内置的Chrome路径
     base = get_chrome_root()
     candidates = []
     if platform.system() == 'Windows':
@@ -109,11 +125,20 @@ async def bypass_cf(url: str) -> Optional[Dict[str, str]]:
 def _bypass_cf_sync(url: str) -> Optional[Dict[str, str]]:
     co = ChromiumOptions()
     co.auto_port()
-    # 优先使用内置Chrome
-    bundled = _get_bundled_chrome_path()
-    if bundled:
-        co.set_browser_path(bundled)
-        log.info(f"使用内置Chrome: {bundled}")
+    browser_path = _get_configured_chrome_path()
+    if browser_path:
+        co.set_browser_path(browser_path)
+        log.info(f"使用手动配置的Chrome: {browser_path}")
+    else:
+        browser_path = _get_system_chrome_path()
+        if browser_path:
+            co.set_browser_path(browser_path)
+            log.info(f"使用系统Chrome: {browser_path}")
+        else:
+            browser_path = _get_bundled_chrome_path()
+            if browser_path:
+                co.set_browser_path(browser_path)
+                log.info(f"使用数据目录内的Chrome: {browser_path}")
     # Linux无头环境需要额外参数
     if platform.system() == 'Linux':
         co.set_argument('--no-sandbox')

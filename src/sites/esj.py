@@ -160,6 +160,9 @@ class Esj(BaseSite):
                     chapter.chapter_order = order
                     chapter.chapter_name = chapter_name
                     await update_chapter(chapter)
+                if self.is_full_refetch():
+                    await self.build_content(chapter)
+                    await update_chapter(chapter)
             else:
                 # 新章节
                 chapter = Chapter()

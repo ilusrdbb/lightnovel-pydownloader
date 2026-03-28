@@ -1,0 +1,22 @@
+version: 1
+sites:
+  esj:
+    remember_account: false
+    remember_password: false
+    password_storage: ''
+    password_account: ''
+  masiro:
+    remember_account: false
+    remember_password: false
+    password_storage: ''
+    password_account: ''
+  lk:
+    remember_account: false
+    remember_password: false
+    password_storage: ''
+    password_account: ''
+  yuri:
+    remember_account: false
+    remember_password: false
+    password_storage: ''
+    password_account: ''
