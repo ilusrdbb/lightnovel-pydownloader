@@ -35,7 +35,7 @@ pip install -r requirements.txt
 ~~~
 下载源代码  
 ~~~bash
-git clone https://github.com/ilusrdbb/lightnovel-pydownloader.git
+git clone https://github.com/fisher66616/lightnovel-pydownloader.git
 ~~~
 （如果需要真白萌账密登录）下载linux版chrome并解压放入程序根目录下的chrome文件夹
 ~~~bash
@@ -48,6 +48,18 @@ rm chrome-linux64.zip
 ~~~bash
 nohup python lightnovel.py > /dev/null 2>&1 &
 ~~~
+### GUI 原型
+第一轮提供一个最小可用的 PySide6 GUI，仍然保留原有 CLI 入口。  
+GUI 只支持单站点任务，覆盖 esj、masiro、lk、yuri 四个站点。  
+安装 GUI 依赖：
+~~~bash
+pip install -r requirements-gui.txt
+~~~
+启动 GUI：
+~~~bash
+python lightnovel_gui.py
+~~~
+GUI 会复用现有配置文件与运行入口，但运行时会统一使用程序根目录下的 config、日志、数据库、输出目录。  
 ### 更新
 覆盖新版本的lightnovel.exe即可
 ### 关于V2版本

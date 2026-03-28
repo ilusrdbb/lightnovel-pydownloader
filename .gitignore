@@ -18,6 +18,8 @@ venv/
 # Runtime
 log/
 *.db
+*.db-shm
+*.db-wal
 epub/
 txt/
 images/

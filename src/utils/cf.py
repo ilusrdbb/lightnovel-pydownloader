@@ -1,7 +1,5 @@
 import asyncio
-import os
 import platform
-import sys
 import time
 from typing import Optional, Dict
 
@@ -9,28 +7,36 @@ from DrissionPage import Chromium, ChromiumOptions
 
 from src.utils.config import read_config
 from src.utils.log import log
+from src.utils.paths import get_app_root, get_chrome_root
 
 _MAX_RETRIES = 5
 _SLEEP_TIME = 7
 
 
 def _get_base_dir() -> str:
-    # 获取程序所在目录 兼容打包exe和直接运行py
-    if getattr(sys, 'frozen', False):
-        return os.path.dirname(sys.executable)
-    return os.path.abspath('.')
+    return str(get_app_root())
 
 
 def _get_bundled_chrome_path() -> Optional[str]:
     # 查找项目内置的Chrome路径
-    base = _get_base_dir()
+    base = get_chrome_root()
+    candidates = []
     if platform.system() == 'Windows':
-        path = os.path.join(base, 'chrome', 'chrome-win64', 'chrome.exe')
+        candidates.append(base / 'chrome-win64' / 'chrome.exe')
     elif platform.system() == 'Linux':
-        path = os.path.join(base, 'chrome', 'chrome-linux64', 'chrome')
+        candidates.append(base / 'chrome-linux64' / 'chrome')
+    elif platform.system() == 'Darwin':
+        candidates.extend([
+            base / 'chrome-mac' / 'Google Chrome for Testing.app' / 'Contents' / 'MacOS' / 'Google Chrome for Testing',
+            base / 'chrome-mac-arm64' / 'Google Chrome for Testing.app' / 'Contents' / 'MacOS' / 'Google Chrome for Testing',
+            base / 'chrome-mac-x64' / 'Google Chrome for Testing.app' / 'Contents' / 'MacOS' / 'Google Chrome for Testing',
+        ])
     else:
         return None
-    return path if os.path.isfile(path) else None
+    for path in candidates:
+        if path.is_file():
+            return str(path)
+    return None
 
 
 def _locate_cf_button(tab):
