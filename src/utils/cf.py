@@ -1,37 +1,14 @@
 import asyncio
-import os
 import platform
-import sys
 import time
 from typing import Optional, Dict
 
 from DrissionPage import Chromium, ChromiumOptions
 
-from src.utils.config import read_config
 from src.utils.log import log
 
 _MAX_RETRIES = 5
 _SLEEP_TIME = 7
-
-
-def _get_base_dir() -> str:
-    # 获取程序所在目录 兼容打包exe和直接运行py
-    if getattr(sys, 'frozen', False):
-        return os.path.dirname(sys.executable)
-    return os.path.abspath('.')
-
-
-def _get_bundled_chrome_path() -> Optional[str]:
-    # 查找项目内置的Chrome路径
-    base = _get_base_dir()
-    if platform.system() == 'Windows':
-        path = os.path.join(base, 'chrome', 'chrome-win64', 'chrome.exe')
-    elif platform.system() == 'Linux':
-        path = os.path.join(base, 'chrome', 'chrome-linux64', 'chrome')
-    else:
-        return None
-    return path if os.path.isfile(path) else None
-
 
 def _locate_cf_button(tab):
     # 尝试通过turnstile hidden input定位
@@ -58,7 +35,6 @@ def _locate_cf_button(tab):
         pass
     return None
 
-
 def _search_shadow_root_iframe(ele):
     # 递归查找包含iframe的shadow root
     try:
@@ -73,7 +49,6 @@ def _search_shadow_root_iframe(ele):
     except Exception:
         pass
     return None
-
 
 def _search_shadow_root_input(ele):
     # 递归查找shadow root中的input元素
@@ -90,7 +65,6 @@ def _search_shadow_root_input(ele):
         pass
     return None
 
-
 async def bypass_cf(url: str) -> Optional[Dict[str, str]]:
     log.info("开始破cf盾...")
     try:
@@ -103,17 +77,17 @@ async def bypass_cf(url: str) -> Optional[Dict[str, str]]:
 def _bypass_cf_sync(url: str) -> Optional[Dict[str, str]]:
     co = ChromiumOptions()
     co.auto_port()
-    # 优先使用内置Chrome
-    bundled = _get_bundled_chrome_path()
-    if bundled:
-        co.set_browser_path(bundled)
-        log.info(f"使用内置Chrome: {bundled}")
     # Linux无头环境需要额外参数
     if platform.system() == 'Linux':
         co.set_argument('--no-sandbox')
     browser = None
     try:
-        browser = Chromium(co)
+        try:
+            browser = Chromium(co)
+        except Exception as e:
+            log.debug(f"Chrome启动失败: {e}")
+            log.info("未找到系统安装的 Chrome 浏览器，请先安装 Chrome。")
+            return None
         tab = browser.latest_tab
         tab.get(url)
         log.info("等待页面加载...")
