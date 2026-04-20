@@ -15,9 +15,11 @@ time_out: 15
 sleep_time: 1
 # 字数小于此值且无图片的章节不生成epub章节 设置0无限制
 least_words: 0
-
-# 实验功能 是否同时导出txt
+# 是否同时导出txt
 convert_txt: false
+# 是否同时导出txt且按照章节分割txt
+convert_txt_chapter: true
+
 # 实验功能 推送calibre-web设置 下方默认配置仅做示例请根据自身docker的calibre-web填写
 push_calibre:
   enabled: false
@@ -38,7 +40,7 @@ clear_pic_table: false
 # 是否重新导出全部数据库内数据到epub
 export_epub_again: false
 
-# txt保存目录 txt完整路径：配置目录/站点/书名.txt
+# txt保存目录 txt完整路径：配置目录/站点/书名.txt或配置目录/站点/书名/章节名.txt
 txt_dir: './txt'
 # epub保存目录 epub完整路径：配置目录/站点/书名.epub
 epub_dir: './epub'
@@ -52,8 +54,9 @@ domain:
   lk: 'https://api.lightnovel.fun'
   yuri: 'https://bbs.yamibo.com'
   fish: 'https://n.novelia.cc'
+  syosetu: 'https://syosetu.org'
 # ua 如果正确抓取cookie但是依旧无法登陆可能需要更新ua
-ua: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36'
+ua: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36'
 
 # esj书籍密码配置 格式书籍或章节id: 密码
 # 书籍id对应一本书的所有章节匹配优先级最高
@@ -95,3 +98,10 @@ xpath_config:
     collection: '//ul[@id=''favorite_ul'']/li/a[2]/@href'
     pic: '//img/@file'
     sign: '//input[@name=''formhash'']/@value'
+  syosetu:
+    collection: '//div[@class=''section3'']/h3/a[1]/@href'
+    title: '//span[@itemprop=''name'']/text()'
+    author: '//span[@itemprop=''author'']/a/text()'
+    describe: '//div[@id=''maind'']/div[2]/text()'
+    chapter: '//a[@style=''text-decoration:none;'']'
+    content: '//div[@id=''honbun'']/*'

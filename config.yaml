@@ -19,6 +19,8 @@ login_info:
     cookie: ''
   fish:
     authorization: 'Bearer '
+  syosetu:
+    cookie: ''
 # 开始页
 start_page: 1
 # 结束页 不建议一次抓取过多

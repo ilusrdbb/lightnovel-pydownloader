@@ -32,11 +32,19 @@ def build_txt(book: Book):
         raw_list = page_body.xpath("//text()")
         temp_list = (s.replace("\n", "") for s in raw_list)
         content_list = [s for s in temp_list if s]
-        txt_content += chapter.chapter_name + "\n\n"
-        txt_content += "\n".join(content_list) + "\n\n"
-    # 保存
-    path = f"{read_config('txt_dir')}/{book.source}/{book.book_name}.txt"
-    os.makedirs(os.path.dirname(path), exist_ok=True)
-    with open(path, 'w', encoding='utf-8') as f:
-        f.write(txt_content)
+        if read_config("convert_txt_chapter"):
+            # 按照章节分割保存
+            path = f"{read_config('txt_dir')}/{book.source}/{book.book_name}/{chapter.chapter_name}.txt"
+            os.makedirs(os.path.dirname(path), exist_ok=True)
+            with open(path, 'w', encoding='utf-8') as f:
+                f.write("\n".join(content_list))
+        else:
+            # 整体保存
+            txt_content += chapter.chapter_name + "\n\n"
+            txt_content += "\n".join(content_list) + "\n\n"
+    if not read_config("convert_txt_chapter"):
+        path = f"{read_config('txt_dir')}/{book.source}/{book.book_name}.txt"
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, 'w', encoding='utf-8') as f:
+            f.write(txt_content)
     log.info(f"{book.book_name} txt导出成功!")
