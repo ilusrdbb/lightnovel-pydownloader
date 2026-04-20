@@ -37,7 +37,7 @@ def get_book_id(url: str, site: str) -> str:
         return url.split("?novel_id=")[-1] if "?novel_id=" in url else url
     if site == "yuri":
         return url.split("-")[1] if "-" in url else url
-    if site == "syosetu":
+    if site == "hameln":
         return url.strip("/").split("/")[-1]
     return re.search(r'\d+', url).group()
 

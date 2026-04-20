@@ -84,14 +84,14 @@ async def post_json(url: str, headers: Dict, json: Dict, session: ClientSession)
 
 
 async def sleep(url: str):
-    if 'masiro.' in url:
+    if "masiro." in url or "syosetu.org" in url:
         await asyncio.sleep(6)
     elif read_config("sleep_time") > 0:
         await asyncio.sleep(random.random() * read_config("sleep_time"))
 
 
 async def download_pic(url: str, headers: Dict, path: str, session: ClientSession, json: Dict = None) -> str:
-    if 'i.noire.cc:332' in url:
+    if "i.noire.cc:332" in url:
         url = url.replace("i.noire.cc:332", "i.noire.cc")
     file_name = common.filename_from_url(url)
     if file_name.endswith(".i"):

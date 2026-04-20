@@ -9,7 +9,7 @@ from src.sites.esj import Esj
 from src.sites.fish import Fish
 from src.sites.lk import LK
 from src.sites.masiro import Masiro
-from src.sites.syosetu import Syosetu
+from src.sites.hameln import Hameln
 from src.sites.yuri import Yuri
 from src.utils import request
 from src.utils.config import read_config
@@ -40,7 +40,7 @@ class Process(object):
             "masiro": Masiro,
             "yuri": Yuri,
             "fish": Fish,
-            "syosetu": Syosetu,
+            "hameln": Hameln,
         }
         for site in read_config("sites"):
             jar = aiohttp.CookieJar()

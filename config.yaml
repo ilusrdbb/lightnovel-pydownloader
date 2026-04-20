@@ -19,7 +19,7 @@ login_info:
     cookie: ''
   fish:
     authorization: 'Bearer '
-  syosetu:
+  hameln:
     cookie: ''
 # 开始页
 start_page: 1

@@ -4,23 +4,22 @@ log_level: 'INFO'
 # 黑名单，爬取过程中会绕过黑名单内的书籍，填入书籍地址或id具体格式同白名单，黑名单优先级低于白名单
 black_list: []
 # 爬虫线程数 不要设置的过大 小心被ban 建议设置为1单线程执行
-# 真白萌由于并发会ban号在程序中强制单线程执行
+# 真白萌、hameln由于频繁请求会触发反爬 强制单线程执行
 max_thread: 1
 # 是否默认只爬取收藏页
 get_collection: true
 # 请求超时时间 单位秒
 time_out: 15
 # 每次请求睡眠时间 比如设置2则每次请求前睡随机0~2秒 设置0不睡眠
-# 真白萌由于频繁请求会报错，每次请求强制睡6秒
+# 真白萌、hameln由于频繁请求会触发反爬 每次请求强制睡6秒
 sleep_time: 1
 # 字数小于此值且无图片的章节不生成epub章节 设置0无限制
 least_words: 0
 # 是否同时导出txt
 convert_txt: false
 # 是否同时导出txt且按照章节分割txt
-convert_txt_chapter: true
-
-# 实验功能 推送calibre-web设置 下方默认配置仅做示例请根据自身docker的calibre-web填写
+convert_txt_chapter: false
+# 推送calibre-web设置 下方默认配置仅做示例请根据自身docker的calibre-web填写
 push_calibre:
   enabled: false
   # docker容器名称或容器id
@@ -29,7 +28,7 @@ push_calibre:
   absolute_path: '/epub'
   # 书籍目录 填docker映射路径而不是真实路径
   library_path: '/library'
-# 实验功能 是否开启签到
+# 是否开启签到
 sign: false
 
 # 下面三个配置项开启时会停止正常爬取
@@ -54,7 +53,7 @@ domain:
   lk: 'https://api.lightnovel.fun'
   yuri: 'https://bbs.yamibo.com'
   fish: 'https://n.novelia.cc'
-  syosetu: 'https://syosetu.org'
+  hameln: 'https://syosetu.org'
 # ua 如果正确抓取cookie但是依旧无法登陆可能需要更新ua
 ua: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36'
 
@@ -98,7 +97,7 @@ xpath_config:
     collection: '//ul[@id=''favorite_ul'']/li/a[2]/@href'
     pic: '//img/@file'
     sign: '//input[@name=''formhash'']/@value'
-  syosetu:
+  hameln:
     collection: '//div[@class=''section3'']/h3/a[1]/@href'
     title: '//span[@itemprop=''name'']/text()'
     author: '//span[@itemprop=''author'']/a/text()'
