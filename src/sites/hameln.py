@@ -1,6 +1,4 @@
 import asyncio
-import re
-from typing import List
 
 from aiohttp import ClientSession
 from lxml import html
@@ -8,15 +6,12 @@ from lxml import html
 from src.db.book import update_book
 from src.db.chapter import get_chapter_list, update_chapter
 from src.db.cookie import update_cookie
-from src.db.pic import get_pic_list, update_pic, insert_pic
 from src.models.book import Book
 from src.models.chapter import Chapter
 from src.models.cookie import Cookie
-from src.models.pic import Pic
 from src.sites.base import BaseSite
 from src.utils import request, common
 from src.utils.config import read_config
-from src.utils.dsign import get_dsign
 from src.utils.log import log
 
 
@@ -62,26 +57,25 @@ class Hameln(BaseSite):
                 book.book_id = white_book_id
                 self.books.append(book)
             return
-        # 正常爬取
-        for page in range(self.start_page, self.end_page + 1):
-            log.info(f"hameln开始爬取第{page}页...")
-            url = f"{self.domain}/?mode=favo"
-            res = await request.get(url, self.header, self.session)
-            if not res:
-                return
-            book_urls = common.get_xpath(res, "hameln", "collection")
-            if not book_urls:
-                log.info("hameln列表解析失败")
-                log.debug(res)
-                return
-            for book_url in book_urls:
-                book = Book()
-                book.source = "hameln"
-                book.book_id = common.get_book_id(book_url, "hameln")
-                # 黑名单跳过
-                if book.book_id in common.handle_url_list(read_config("black_list"), "hameln"):
-                    continue
-                self.books.append(book)
+        # 爬取收藏页
+        log.info(f"hameln开始爬取收藏页...")
+        url = f"{self.domain}/?mode=favo"
+        res = await request.get(url, self.header, self.session)
+        if not res:
+            return
+        book_urls = common.get_xpath(res, "hameln", "collection")
+        if not book_urls:
+            log.info("hameln列表解析失败")
+            log.debug(res)
+            return
+        for book_url in book_urls:
+            book = Book()
+            book.source = "hameln"
+            book.book_id = common.get_book_id(book_url, "hameln")
+            # 黑名单跳过
+            if book.book_id in common.handle_url_list(read_config("black_list"), "hameln"):
+                continue
+            self.books.append(book)
 
     async def build_book_info(self, book: Book):
         url = f"{self.domain}/novel/{book.book_id}/"

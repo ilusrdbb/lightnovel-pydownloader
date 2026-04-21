@@ -18,7 +18,8 @@ login_info:
   yuri:
     cookie: ''
   fish:
-    authorization: 'Bearer '
+    username: ''
+    password: ''
   hameln:
     cookie: ''
 # 开始页

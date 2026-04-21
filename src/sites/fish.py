@@ -1,4 +1,3 @@
-import asyncio
 import json
 from typing import List, Dict
 from urllib.parse import quote
@@ -26,8 +25,6 @@ class Fish:
         # 默认请求头
         self.header: Dict[str, str] = {
             "Accept": "application/json",
-            "Accept-Encoding": "gzip, deflate, zstd",
-            "Accept-Language": "zh-CN,zh;q=0.9,zh-HK;q=0.8,en-US;q=0.7,en;q=0.6",
             "User-Agent": read_config("ua")
         }
 
@@ -40,13 +37,13 @@ class Fish:
             is_effective_cookie = False if not self.cookie else await self.valid_cookie()
             if not is_effective_cookie:
                 # 登录
-                log.info(f"{self.site}开始登录...")
+                log.info("轻小说机翻站开始登录...")
                 await self.login()
-                log.info(f"{self.site}登录成功")
+                log.info("轻小说机翻站登录成功")
             # 获取书籍列表
             await self.get_book_list()
             if not self.books:
-                log.info(f"{self.site}未获取到书籍")
+                log.info(f"轻小说机翻站未获取到书籍")
                 return
             # 下载
             for book in self.books:
@@ -55,7 +52,7 @@ class Fish:
             log.info(str(e))
 
     async def valid_cookie(self) -> bool:
-        url = f"{self.domain}/api/user/favored-web/default?page=0&pageSize=30&query=&provider=kakuyomu%2Csyosetu%2Cnovelup%2Chameln%2Cpixiv%2Calphapolis&type=0&level=0&translate=0&sort=update"
+        url = f"{self.domain}/api/user/favored"
         res = await request.get(url, self.header, self.session)
         if res and res.startswith("{"):
             log.info("轻小说机翻站校验cookie成功")
@@ -67,9 +64,21 @@ class Fish:
     async def login(self):
         cookie = Cookie()
         cookie.source = "fish"
-        if not read_config("login_info")["fish"]["authorization"]:
+        if (not read_config("login_info")["fish"]["username"]
+                or not read_config("login_info")["fish"]["password"]):
             raise Exception("轻小说机翻站未配置登录信息")
-        cookie.token = read_config("login_info")["fish"]["authorization"]
+        else:
+            url = "https://auth.novelia.cc/api/v1/auth/login"
+            login_data = {
+                "username": read_config("login_info")["fish"]["username"],
+                "password": read_config("login_info")["fish"]["password"],
+                "app": "n"
+            }
+            res = await request.post_json(url, self.header, login_data, self.session)
+            if res:
+                cookie.token = f"Bearer {res}"
+            else:
+                raise Exception("轻小说机翻站登录失败")
         # 再校验一次cookie
         self.cookie = cookie
         self.header["Authorization"] = cookie.token

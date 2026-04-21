@@ -216,7 +216,7 @@ class LK(BaseSite):
         for chapter_data in book.chapter_datas:
             chapter_id = str(chapter_data["aid"])
             chapter_name = chapter_data["title"]
-            last_update_time =  common.get_timestamp(chapter_data["time"])
+            last_update_time = common.get_timestamp(chapter_data["time"])
             # 匹配数据库已存章节
             chapter = common.find(old_chapters, "chapter_id", chapter_id)
             if chapter:
