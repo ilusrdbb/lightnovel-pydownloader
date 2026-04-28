@@ -69,7 +69,10 @@ class BaseSite(ABC):
                 return
             # 多线程开启爬虫
             tasks = [asyncio.create_task(self.start_task(book)) for book in self.books]
-            await asyncio.gather(*tasks)
+            results = await asyncio.gather(*tasks, return_exceptions=True)
+            for i, result in enumerate(results):
+                if isinstance(result, Exception):
+                    log.debug(f"{self.books[i].book_id} 处理失败: {result}")
             # 签到
             if read_config("sign"):
                 await self.sign()

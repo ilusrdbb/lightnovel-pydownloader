@@ -172,14 +172,13 @@ class Masiro(BaseSite):
                         chapter.chapter_order = order
                         chapter.chapter_name = chapter_name
                         await update_chapter(chapter)
-                    if ((chapter.purchase_fail_flag and chapter.purchase_fail_flag == 1 and read_config("is_purchase")
-                            and chapter_data["cost"] <= read_config("max_purchase"))
-                            or not chapter.content):
+                    if (chapter.purchase_fail_flag and chapter.purchase_fail_flag == 1 and read_config("is_purchase")
+                            and chapter_data["cost"] <= read_config("max_purchase")):
                         # 打钱失败的 重新打钱并更新数据库
                         await self.build_content(chapter)
                         await update_chapter(chapter)
-                    if chapter.last_update_time < last_update_time:
-                        # 章节有更新 重新爬取文本并更新数据库
+                    if chapter.last_update_time < last_update_time or not chapter.content:
+                        # 章节有更新或之前爬取章节失败 重新爬取文本并更新数据库
                         chapter.last_update_time = last_update_time
                         await self.build_content(chapter)
                         await update_chapter(chapter)

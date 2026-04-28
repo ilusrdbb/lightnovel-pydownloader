@@ -103,20 +103,20 @@ async def download_pic(url: str, headers: Dict, path: str, session: ClientSessio
     proxy = read_config("proxy_url") if read_config("proxy_url") else None
     timeout = read_config("time_out")
     try:
-        res = await session.get(url=url, proxy=proxy, headers=headers, json=json, timeout=timeout)
-        if not res.status == 200:
-            raise Exception(res.status)
-        image_data = await res.read()
-        # 写入图片
-        full_path = f"{path}/{file_name}"
-        os.makedirs(os.path.dirname(full_path), exist_ok=True)
-        with open(full_path, 'wb') as f:
-            f.write(image_data)
-            log.debug(f"{url}图片下载成功 保存路径{full_path}")
-        # 轻国avif处理
-        if file_name.endswith(".avif"):
-            return common.handle_avif(full_path)
-        return full_path
+        async with session.get(url=url, proxy=proxy, headers=headers, json=json, timeout=timeout) as res:
+            if not res.status == 200:
+                raise Exception(res.status)
+            image_data = await res.read()
+            # 写入图片
+            full_path = f"{path}/{file_name}"
+            os.makedirs(os.path.dirname(full_path), exist_ok=True)
+            with open(full_path, 'wb') as f:
+                f.write(image_data)
+                log.debug(f"{url}图片下载成功 保存路径{full_path}")
+            # 轻国avif处理
+            if file_name.endswith(".avif"):
+                return common.handle_avif(full_path)
+            return full_path
     except Exception as e:
         log.info(f"{url}图片下载失败 {str(e)}")
         log.debug(traceback.format_exc())
