@@ -172,8 +172,9 @@ class Masiro(BaseSite):
                         chapter.chapter_order = order
                         chapter.chapter_name = chapter_name
                         await update_chapter(chapter)
-                    if (chapter.purchase_fail_flag and chapter.purchase_fail_flag == 1
-                            and read_config("is_purchase") and chapter_data["cost"] <= read_config("max_purchase")):
+                    if ((chapter.purchase_fail_flag and chapter.purchase_fail_flag == 1 and read_config("is_purchase")
+                            and chapter_data["cost"] <= read_config("max_purchase"))
+                            or not chapter.content):
                         # 打钱失败的 重新打钱并更新数据库
                         await self.build_content(chapter)
                         await update_chapter(chapter)
@@ -217,6 +218,10 @@ class Masiro(BaseSite):
                     log.debug(url)
                     return
         chapter.content = common.get_html(text, "masiro", "content")
+        if not chapter.content:
+            chapter.content = "章节无内容"
+            log.info(f"真白萌章节无内容 {chapter.chapter_name}")
+            return
         log.info(f"{chapter.chapter_name} 真白萌新获取章节内容")
 
     async def build_pic_list(self, chapter: Chapter):

@@ -228,7 +228,8 @@ class LK(BaseSite):
                     chapter.chapter_order = order
                     chapter.chapter_name = chapter_name
                     await update_chapter(chapter)
-                if chapter.purchase_fail_flag and chapter.purchase_fail_flag == 1 and read_config("is_purchase"):
+                if ((chapter.purchase_fail_flag and chapter.purchase_fail_flag == 1 and read_config("is_purchase"))
+                        or not chapter.content):
                     # 打钱失败的 重新打钱并更新数据库
                     await self.build_content(chapter)
                     await update_chapter(chapter)

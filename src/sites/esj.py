@@ -160,6 +160,10 @@ class Esj(BaseSite):
                     chapter.chapter_order = order
                     chapter.chapter_name = chapter_name
                     await update_chapter(chapter)
+                if not chapter.content:
+                    # 爬取章节文本失败重新爬取
+                    await self.build_content(chapter)
+                    await update_chapter(chapter)
             else:
                 # 新章节
                 chapter = Chapter()
@@ -185,6 +189,7 @@ class Esj(BaseSite):
             return
         chapter.content = common.get_html(text, "esj", "content")
         if not chapter.content:
+            chapter.content = "章节无内容"
             log.info(f"esj章节无内容 {chapter.chapter_name}")
             return
         if "btn-send-pw" in chapter.content or "內文目前施工中" in chapter.content:

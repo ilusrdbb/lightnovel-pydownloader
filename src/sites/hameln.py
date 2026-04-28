@@ -116,6 +116,10 @@ class Hameln(BaseSite):
                     chapter.chapter_order = order
                     chapter.chapter_name = chapter_name
                     await update_chapter(chapter)
+                if not chapter.content:
+                    # 爬取章节文本失败重新爬取
+                    await self.build_content(chapter)
+                    await update_chapter(chapter)
             else:
                 # 新章节
                 chapter = Chapter()
@@ -141,6 +145,7 @@ class Hameln(BaseSite):
             return
         chapter.content = common.get_html(text, "hameln", "content")
         if not chapter.content:
+            chapter.content = "章节无内容"
             log.info(f"hameln章节无内容 {chapter.chapter_name}")
             return
         log.info(f"{chapter.chapter_name} hameln新获取章节内容")
