@@ -12,3 +12,4 @@ APScheduler
 PyExecJS
 requests
 DrissionPage
+uvloop

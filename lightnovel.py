@@ -2,6 +2,12 @@ import asyncio
 import signal
 from zoneinfo import ZoneInfo
 
+try:
+    import uvloop
+    uvloop.install()
+except ImportError:
+    pass
+
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 from src.core.process import Process
@@ -10,7 +16,7 @@ from src.db.create import init_db
 from src.utils.config import load_config, read_config
 from src.utils.log import log
 
-VERSION = "3.2.3"
+VERSION = "3.2.4"
 
 # 退出标记
 shutdown_event = asyncio.Event()
@@ -62,7 +68,7 @@ async def main_async():
         else:
             await task_runner()
     except Exception as e:
-        log.error(f"运行出错: {e}")
+        log.info(f"运行出错: {e}")
     finally:
         await close_engine()
         log.info("程序已退出")

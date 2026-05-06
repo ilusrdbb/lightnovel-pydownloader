@@ -1,10 +1,12 @@
 import asyncio
 import platform
 import time
+from distutils.command.config import config
 from typing import Optional, Dict
 
 from DrissionPage import Chromium, ChromiumOptions
 
+from src.utils.config import read_config
 from src.utils.log import log
 
 _MAX_RETRIES = 5
@@ -77,6 +79,8 @@ async def bypass_cf(url: str) -> Optional[Dict[str, str]]:
 def _bypass_cf_sync(url: str) -> Optional[Dict[str, str]]:
     co = ChromiumOptions()
     co.auto_port()
+    if read_config("log_level") == "INFO":
+        co.headless(True)
     # Linux无头环境需要额外参数
     if platform.system() == 'Linux':
         co.set_argument('--no-sandbox')

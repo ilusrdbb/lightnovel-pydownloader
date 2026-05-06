@@ -56,7 +56,7 @@ class BaseSite(ABC):
             self.cookie = await cookie.get_cookie(self.site)
             if self.cookie and self.cookie.cookie:
                 self.header["Cookie"] = self.cookie.cookie
-            is_effective_cookie = False if not self.cookie else await self.valid_cookie()
+            is_effective_cookie = await self.valid_cookie() if self.cookie else False
             if not is_effective_cookie:
                 # 登录
                 log.info(f"{self.site}开始登录...")

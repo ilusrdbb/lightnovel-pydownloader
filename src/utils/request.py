@@ -4,7 +4,7 @@ import random
 import traceback
 from typing import Dict
 
-from aiohttp import ClientSession
+from aiohttp import ClientSession, ClientConnectionError, ServerDisconnectedError, ClientPayloadError
 from tenacity import retry, stop_after_attempt, retry_if_exception_type
 
 from src.utils import common
@@ -14,6 +14,9 @@ from src.utils.log import log
 # 定义哪些异常应该触发重试
 RETRYABLE_EXCEPTIONS = (
     asyncio.TimeoutError,
+    ClientConnectionError,
+    ServerDisconnectedError,
+    ClientPayloadError,
 )
 
 
@@ -104,7 +107,8 @@ async def download_pic(url: str, headers: Dict, path: str, session: ClientSessio
     timeout = read_config("time_out")
     try:
         async with session.get(url=url, proxy=proxy, headers=headers, json=json, timeout=timeout) as res:
-            if not res.status == 200:
+            if res.status != 200:
+                # 图片下载失败不做重试
                 raise Exception(res.status)
             image_data = await res.read()
             # 写入图片
@@ -128,8 +132,9 @@ async def download_file(url: str, headers: Dict, path: str, session: ClientSessi
     timeout = read_config("time_out")
     try:
         res = await session.get(url=url, proxy=proxy, headers=headers, timeout=timeout)
-        if not res.status == 200:
-            raise Exception(res.status)
+        if res.status != 200:
+            log.info(f"{url} 文件下载失败")
+            return
         file_data = await res.read()
         # 写入
         os.makedirs(os.path.dirname(path), exist_ok=True)

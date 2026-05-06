@@ -1,6 +1,7 @@
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 
-from sqlalchemy import Column, String, Index
+from sqlalchemy import String, Index
+from sqlalchemy.orm import Mapped, mapped_column
 
 from src.db import BaseDB
 from src.models.chapter import Chapter
@@ -13,21 +14,21 @@ class Book(BaseDB):
         Index('idx_book', 'book_id', 'source'),
     )
 
-    id: str =  Column(String, primary_key=True)
+    id: Mapped[str] = mapped_column(String, primary_key=True)
     # 书籍id
-    book_id: str = Column(String, nullable=True)
+    book_id: Mapped[Optional[str]] = mapped_column(String, default='')
     # 站点
-    source: str = Column(String, nullable=True)
+    source: Mapped[Optional[str]] = mapped_column(String, default='')
     # 书籍名称
-    book_name: str = Column(String)
+    book_name: Mapped[str] = mapped_column(String)
     # 书籍作者
-    author: str = Column(String)
+    author: Mapped[str] = mapped_column(String)
     # 书籍标签 英文逗号分隔
-    tags: str = Column(String)
+    tags: Mapped[str] = mapped_column(String)
     # 书籍描述
-    describe: str = Column(String)
+    describe: Mapped[str] = mapped_column(String)
     # 封面图片原始地址
-    cover_url: str = Column(String)
+    cover_url: Mapped[str] = mapped_column(String)
 
     def __init__(self, **kwargs):
         # SQLAlchemy的默认初始化方法
@@ -44,6 +45,3 @@ class Book(BaseDB):
     def __str__(self):
         return (f"<Book(id={self.id}, book_id={self.book_id}, source={self.source}, book_name={self.book_name}, "
                 f"author={self.author}, tags={self.tags}, cover_url={self.cover_url})>")
-
-
-
