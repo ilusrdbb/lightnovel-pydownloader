@@ -54,9 +54,9 @@ jobs:
           pyinstaller lightnovel_exe.spec
 
       - name: Create release zip
-        shell: bash
+        shell: pwsh
         run: |
-          zip -j lightnovel-pydownloader.zip dist/lightnovel.exe config.yaml advance.yaml
+          Compress-Archive -Path dist\lightnovel.exe, config.yaml, advance.yaml -DestinationPath lightnovel-pydownloader.zip
 
       - name: Delete existing tag if any
         shell: bash
