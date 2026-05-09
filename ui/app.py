@@ -1,5 +1,6 @@
 import os
 import queue
+import shutil
 import subprocess
 import sys
 import threading
@@ -26,7 +27,7 @@ from ui.widgets import (
     make_text_dict_widget,
 )
 
-VERSION = '3.3.0'
+VERSION = '3.3.1'
 
 _UI_ROOT = os.path.dirname(os.path.abspath(__file__))
 _PROJECT_ROOT = os.path.dirname(_UI_ROOT)
@@ -53,6 +54,33 @@ class ConfigForm:
         self._collect()
         with open(self.yaml_path, 'w', encoding='utf-8') as f:
             _yaml.dump(self.data, f)
+
+    def reload(self):
+        self._load()
+        self._update_vars()
+
+    def _update_vars(self):
+        for entry_key, (kind, path, ref) in self._vars.items():
+            cur = self._get_value(path)
+            if kind == 'str':
+                ref.set(str(cur) if cur else '')
+            elif kind == 'int':
+                ref.set(str(cur) if cur is not None else '')
+            elif kind == 'bool':
+                ref.set(bool(cur))
+            elif kind == 'multiselect':
+                selected_set = set(cur) if isinstance(cur, list) else set()
+                for label, bv in ref:
+                    bv.set(label in selected_set)
+            elif kind == 'text_list':
+                ref.delete('1.0', 'end')
+                if isinstance(cur, list):
+                    ref.insert('1.0', '\n'.join(str(i) for i in cur))
+            elif kind == 'text_dict':
+                ref.delete('1.0', 'end')
+                if isinstance(cur, dict):
+                    lines = [f'{k}: {v}' for k, v in cur.items()]
+                    ref.insert('1.0', '\n'.join(lines))
 
     def _get_value(self, path: tuple):
         cur = self.data
@@ -333,6 +361,9 @@ class MainApp:
         self.save_btn = ttk.Button(bottom, text='保存配置', command=self._save)
         self.save_btn.pack(side='left', padx=(0, 6))
 
+        self.reset_btn = ttk.Button(bottom, text='重置', command=self._reset)
+        self.reset_btn.pack(side='left', padx=(0, 6))
+
         self.run_btn = ttk.Button(bottom, text='▶ 运行', command=self._run)
         self.run_btn.pack(side='left', padx=(0, 6))
 
@@ -349,9 +380,30 @@ class MainApp:
         self.root.protocol('WM_DELETE_WINDOW', self._on_close)
 
     def _save(self):
+        # 备份当前文件
+        for yaml_file in ('config.yaml', 'advance.yaml'):
+            src = os.path.join(_PROJECT_ROOT, yaml_file)
+            dst = os.path.join(_PROJECT_ROOT, yaml_file + '.bak')
+            if os.path.exists(src):
+                shutil.copy2(src, dst)
         self.config_form.save()
         self.advance_form.save()
         self.status_lbl.config(text='配置已保存')
+
+    def _reset(self):
+        restored = False
+        for yaml_file in ('config.yaml', 'advance.yaml'):
+            src = os.path.join(_PROJECT_ROOT, yaml_file + '.bak')
+            dst = os.path.join(_PROJECT_ROOT, yaml_file)
+            if os.path.exists(src):
+                shutil.copy2(src, dst)
+                restored = True
+        if restored:
+            self.config_form.reload()
+            self.advance_form.reload()
+            self.status_lbl.config(text='已重置到上次保存前的状态')
+        else:
+            self.status_lbl.config(text='没有备份文件，无法重置')
 
     def _run(self):
         # 运行前始终先保存
