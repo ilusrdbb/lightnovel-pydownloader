@@ -29,8 +29,11 @@ from ui.widgets import (
 
 VERSION = '3.3.1'
 
-_UI_ROOT = os.path.dirname(os.path.abspath(__file__))
-_PROJECT_ROOT = os.path.dirname(_UI_ROOT)
+if getattr(sys, 'frozen', False):
+    _PROJECT_ROOT = os.path.dirname(sys.executable)
+else:
+    _UI_ROOT = os.path.dirname(os.path.abspath(__file__))
+    _PROJECT_ROOT = os.path.dirname(_UI_ROOT)
 
 
 class ConfigForm:
@@ -47,7 +50,12 @@ class ConfigForm:
         self._build()
 
     def _load(self):
-        with open(self.yaml_path, 'r', encoding='utf-8') as f:
+        src = self.yaml_path
+        if not os.path.exists(src) and getattr(sys, 'frozen', False):
+            bundled = os.path.join(sys._MEIPASS, os.path.basename(src))
+            if os.path.exists(bundled):
+                shutil.copy2(bundled, src)
+        with open(src, 'r', encoding='utf-8') as f:
             self.data = _yaml.load(f) or {}
 
     def save(self):
