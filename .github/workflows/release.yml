@@ -26,14 +26,9 @@ jobs:
           echo "value=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Extract commit message
-        id: commit
         shell: bash
         run: |
-          MSG=$(git log -1 --pretty=%B)
-          MSG="${MSG//'%'/'%25'}"
-          MSG="${MSG//$'\n'/'%0A'}"
-          MSG="${MSG//$'\r'/'%0D'}"
-          echo "message=$MSG" >> $GITHUB_OUTPUT
+          git log -1 --pretty=%B > commit-msg.txt
 
       - name: Install dependencies
         shell: bash
@@ -48,15 +43,20 @@ jobs:
         run: |
           choco install upx -y
 
-      - name: Build with PyInstaller
+      - name: Build CLI with PyInstaller
         shell: bash
         run: |
           pyinstaller lightnovel_exe.spec
 
+      - name: Build GUI with PyInstaller
+        shell: bash
+        run: |
+          pyinstaller --onefile --noconsole --name lightnovel-gui --add-data "config.yaml;." --add-data "advance.yaml;." lightnovel_gui.py
+
       - name: Create release zip
         shell: pwsh
         run: |
-          Compress-Archive -Path dist\lightnovel.exe, config.yaml, advance.yaml -DestinationPath lightnovel-pydownloader.zip
+          Compress-Archive -Path dist\lightnovel.exe, dist\lightnovel-gui.exe, config.yaml, advance.yaml -DestinationPath lightnovel-pydownloader.zip
 
       - name: Delete existing tag if any
         shell: bash
@@ -72,7 +72,7 @@ jobs:
         with:
           tag_name: ${{ steps.version.outputs.value }}
           name: ${{ steps.version.outputs.value }}
-          body: ${{ steps.commit.outputs.message }}
+          body_path: commit-msg.txt
           files: lightnovel-pydownloader.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
