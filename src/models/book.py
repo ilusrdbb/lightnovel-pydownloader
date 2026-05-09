@@ -16,19 +16,19 @@ class Book(BaseDB):
 
     id: Mapped[str] = mapped_column(String, primary_key=True)
     # 书籍id
-    book_id: Mapped[Optional[str]] = mapped_column(String, default='')
+    book_id: Mapped[str] = mapped_column(String)
     # 站点
-    source: Mapped[Optional[str]] = mapped_column(String, default='')
+    source: Mapped[str] = mapped_column(String)
     # 书籍名称
-    book_name: Mapped[str] = mapped_column(String)
+    book_name: Mapped[Optional[str]] = mapped_column(String)
     # 书籍作者
-    author: Mapped[str] = mapped_column(String)
+    author: Mapped[Optional[str]] = mapped_column(String)
     # 书籍标签 英文逗号分隔
-    tags: Mapped[str] = mapped_column(String)
+    tags: Mapped[Optional[str]] = mapped_column(String)
     # 书籍描述
-    describe: Mapped[str] = mapped_column(String)
+    describe: Mapped[Optional[str]] = mapped_column(String)
     # 封面图片原始地址
-    cover_url: Mapped[str] = mapped_column(String)
+    cover_url: Mapped[Optional[str]] = mapped_column(String)
 
     def __init__(self, **kwargs):
         # SQLAlchemy的默认初始化方法

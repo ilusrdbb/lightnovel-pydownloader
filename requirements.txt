@@ -2,6 +2,7 @@ aiohttp
 lxml
 zhconv
 PyYaml
+ruamel.yaml
 EbookLib
 pillow-avif-plugin
 Pillow

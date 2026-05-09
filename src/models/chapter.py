@@ -16,19 +16,19 @@ class Chapter(BaseDB):
 
     id: Mapped[str] = mapped_column(String, primary_key=True)
     # 关联数据库书籍表id
-    book_table_id: Mapped[Optional[str]] = mapped_column(String, default='')
+    book_table_id: Mapped[str] = mapped_column(String)
     # 章节id
-    chapter_id: Mapped[Optional[str]] = mapped_column(String, default='')
+    chapter_id: Mapped[str] = mapped_column(String)
     # 章节名称
-    chapter_name: Mapped[str] = mapped_column(String)
+    chapter_name: Mapped[Optional[str]] = mapped_column(String)
     # 顺序
     chapter_order: Mapped[Optional[int]] = mapped_column(Integer)
     # 爬取完整html章节内容
-    content: Mapped[str] = mapped_column(String)
+    content: Mapped[Optional[str]] = mapped_column(String)
     # 最后爬取时间 时间戳
-    last_update_time: Mapped[int] = mapped_column(Integer)
+    last_update_time: Mapped[Optional[int]] = mapped_column(Integer)
     # 是否购买失败 0否1是
-    purchase_fail_flag: Mapped[int] = mapped_column(Integer)
+    purchase_fail_flag: Mapped[Optional[int]] = mapped_column(Integer)
 
     def __init__(self, **kwargs):
         # SQLAlchemy的默认初始化方法

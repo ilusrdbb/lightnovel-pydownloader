@@ -16,13 +16,13 @@ class Pic(BaseDB):
 
     id: Mapped[str] = mapped_column(String, primary_key=True)
     # 关联数据库章节表id
-    chapter_table_id: Mapped[Optional[str]] = mapped_column(String, default='')
+    chapter_table_id: Mapped[str] = mapped_column(String)
     # 图片原始地址
-    pic_url: Mapped[Optional[str]] = mapped_column(String, default='')
+    pic_url: Mapped[str] = mapped_column(String)
     # 爬取后图片存放相对路径
-    pic_path: Mapped[str] = mapped_column(String)
+    pic_path: Mapped[Optional[str]] = mapped_column(String)
     # 图片id 仅轻国需要
-    pic_id: Mapped[str] = mapped_column(String)
+    pic_id: Mapped[Optional[str]] = mapped_column(String)
 
     def __str__(self):
         return (f"<Pic(id={self.id}, chapter_table_id={self.chapter_table_id}, pic_url={self.pic_url}, "
