@@ -7,6 +7,7 @@ from typing import Dict
 from aiohttp import ClientSession, ClientConnectionError, ServerDisconnectedError, ClientPayloadError
 from tenacity import retry, stop_after_attempt, retry_if_exception_type
 
+from src.core.constants import RETRY_COUNT
 from src.utils import common
 from src.utils.config import read_config
 from src.utils.log import log
@@ -21,7 +22,7 @@ RETRYABLE_EXCEPTIONS = (
 
 
 @retry(
-    stop=stop_after_attempt(3),
+    stop=stop_after_attempt(RETRY_COUNT),
     retry=retry_if_exception_type(RETRYABLE_EXCEPTIONS)
 )
 async def get(url: str, headers: Dict, session: ClientSession) -> str:
@@ -44,7 +45,7 @@ async def get(url: str, headers: Dict, session: ClientSession) -> str:
 
 
 @retry(
-    stop=stop_after_attempt(3),
+    stop=stop_after_attempt(RETRY_COUNT),
     retry=retry_if_exception_type(RETRYABLE_EXCEPTIONS)
 )
 async def post_data(url: str, headers: Dict, data: Dict, session: ClientSession) -> Dict:
@@ -67,7 +68,7 @@ async def post_data(url: str, headers: Dict, data: Dict, session: ClientSession)
 
 
 @retry(
-    stop=stop_after_attempt(3),
+    stop=stop_after_attempt(RETRY_COUNT),
     retry=retry_if_exception_type(RETRYABLE_EXCEPTIONS)
 )
 async def post_json(url: str, headers: Dict, json: Dict, session: ClientSession) -> str:

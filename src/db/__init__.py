@@ -4,10 +4,10 @@ from contextlib import asynccontextmanager
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
 from sqlalchemy.orm import declarative_base
 
+from src.core.constants import DATABASE_URL
 from src.utils.log import log
 
-# 创建异步数据库引擎
-engine = create_async_engine("sqlite+aiosqlite:///lightnovel.db")
+engine = create_async_engine(DATABASE_URL)
 # 创建异步会话工厂
 AsyncSessionFactory = async_sessionmaker(bind=engine, class_=AsyncSession, expire_on_commit=False)
 # 创建基类

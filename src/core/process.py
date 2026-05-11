@@ -1,5 +1,6 @@
 import aiohttp
 
+from src.core.constants import SITES
 from src.db.book import get_book_by_id, get_all_book, get_books_by_ids
 from src.db.chapter import get_chapter, get_chapter_list, get_nopay_chapters
 from src.db.pic import clear_all_pic, fail_pic_list, update_pic, get_pic_list
@@ -34,14 +35,7 @@ class Process(object):
             flag = False
         if not flag:
             return
-        site_map = {
-            "esj": Esj,
-            "lk": LK,
-            "masiro": Masiro,
-            "yuri": Yuri,
-            "fish": Fish,
-            "hameln": Hameln,
-        }
+        site_map = dict(zip(SITES, [Esj, Masiro, LK, Yuri, Fish, Hameln]))
         for site in read_config("sites"):
             jar = aiohttp.CookieJar()
             conn = aiohttp.TCPConnector(ssl=False)

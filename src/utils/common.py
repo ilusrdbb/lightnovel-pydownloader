@@ -14,6 +14,7 @@ from urllib.parse import urlparse
 from PIL import Image
 from lxml import html
 
+from src.core.constants import CHAR_MAP, NAME_TRIM_THRESHOLD, NAME_TRIM_LENGTH
 from src.models.book import Book
 from src.utils.config import read_config
 from src.utils.log import log
@@ -92,23 +93,10 @@ def handle_avif(in_path: str) -> str:
 def handle_title(book: Book):
     if not book.book_name:
         return
-    # windows 文件名限制
-    char_map = {
-        '/': ' ',
-        '<': '《',
-        '>': '》',
-        ':': '：',
-        '\\': ' ',
-        '|': ' ',
-        '?': '？',
-        '*': ' '
-    }
-    # 替换不合法字符
-    for char, replacement in char_map.items():
+    for char, replacement in CHAR_MAP.items():
         book.book_name = book.book_name.replace(char, replacement)
-    # linux 85 windows 127
-    if len(book.book_name) > 85:
-        book.book_name = book.book_name[:80] + "..."
+    if len(book.book_name) > NAME_TRIM_THRESHOLD:
+        book.book_name = book.book_name[:NAME_TRIM_LENGTH] + "..."
 
 def bbcode_to_html(text: str, lk_res: Dict[str, str], pic_datas: List[Dict[str, str]]) -> str:
     text = lk_bbcode_handler(text, lk_res, pic_datas)

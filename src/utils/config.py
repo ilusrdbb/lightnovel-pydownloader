@@ -6,10 +6,12 @@ from typing import Dict, Any, List, Tuple
 
 import yaml
 
+from src.core.constants import CONFIG_FILE, ADVANCE_FILE
+
 _CONFIG_DATA: Dict[str, Any] = {}
 
-_MAIN_CONFIG_FILE = "config.yaml"
-_ADVANCE_CONFIG_FILE = "advance.yaml"
+_MAIN_CONFIG_FILE = CONFIG_FILE
+_ADVANCE_CONFIG_FILE = ADVANCE_FILE
 
 
 def _get_bundled_path(filename: str) -> str:

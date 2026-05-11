@@ -3,6 +3,7 @@ import os
 import time
 from logging.handlers import TimedRotatingFileHandler
 
+from src.core.constants import LOG_DIR, LOG_RETENTION_DAYS
 from src.utils.config import read_config
 
 
@@ -17,17 +18,16 @@ class Logger:
         if self.logger and today == self.current_day:
             return
         self.current_day = today
-        log_path = "./log"
+        log_path = LOG_DIR
         if not os.path.exists(log_path):
             os.makedirs(log_path)
-        # 创建按天滚动的FileHandler
+        # 按天滚动的 FileHandler
         log_file = os.path.join(log_path, f'{today}.log')
-        # 每天0点切换 日志保留90天
         file_handler = TimedRotatingFileHandler(
             filename=log_file,
             when="midnight",
             interval=1,
-            backupCount=90,
+            backupCount=LOG_RETENTION_DAYS,
             encoding="utf8"
         )
         file_handler.suffix = "%Y-%m-%d.log"

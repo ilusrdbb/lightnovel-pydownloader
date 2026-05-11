@@ -16,7 +16,7 @@ from src.db.create import init_db
 from src.utils.config import load_config, read_config
 from src.utils.log import log
 
-VERSION = "3.3.1"
+from src.core.constants import VERSION, TIMEZONE, MISFIRE_GRACE_TIME, MAX_SCHEDULER_INSTANCES
 
 # 退出标记
 shutdown_event = asyncio.Event()
@@ -44,16 +44,16 @@ async def main_async():
         if scheduler_config["enabled"]:
             scheduler = AsyncIOScheduler(
                 event_loop=loop,
-                timezone=ZoneInfo("Asia/Shanghai")
+                timezone=ZoneInfo(TIMEZONE)
             )
             scheduler.add_job(
                 task_runner,
                 "cron",
                 hour=scheduler_config["hour"],
                 minute=scheduler_config["minute"],
-                misfire_grace_time=600,
+                misfire_grace_time=MISFIRE_GRACE_TIME,
                 coalesce=False,
-                max_instances=1
+                max_instances=MAX_SCHEDULER_INSTANCES
             )
             log.info("已注册定时任务")
             scheduler.start()

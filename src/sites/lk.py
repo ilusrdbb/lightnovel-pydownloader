@@ -3,6 +3,8 @@ import os
 import random
 from typing import Dict, List, Any
 
+from src.core.constants import LK_IGNORE_IDS, LK_SERIES_THRESHOLD
+
 from aiohttp import ClientSession
 
 from src.db.book import update_book
@@ -131,7 +133,7 @@ class LK(BaseSite):
                 if book.book_id in common.handle_url_list(read_config("black_list"), "lk"):
                     continue
                 # 官方置顶
-                if book.book_id in ["969547", "1113228", "1099310", "1048596"]:
+                if book.book_id in LK_IGNORE_IDS:
                     continue
                 self.books.append(book)
         # 收藏合集
@@ -158,7 +160,7 @@ class LK(BaseSite):
 
     async def build_book_info(self, book: Book):
         book_param = copy.deepcopy(self.param)
-        if int(book.book_id) < 100000:
+        if int(book.book_id) < LK_SERIES_THRESHOLD:
             # 合集
             url = f"{self.domain}/api/series/get-info"
             book_param["d"]["sid"] = book.book_id

@@ -24,7 +24,7 @@ jobs:
         id: version
         shell: bash
         run: |
-          VERSION=$(python -c "import re; print(re.search(r'VERSION = \"(.+?)\"', open('lightnovel.py', encoding='utf-8').read()).group(1))")
+          VERSION=$(python -c "from src.core.constants import VERSION; print(VERSION)")
           echo "value=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Extract commit message

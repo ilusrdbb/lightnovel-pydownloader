@@ -1,3 +1,5 @@
+from src.core.constants import SITES
+
 LOGIN_SITE_FIELDS = {
     'esj':    ['username', 'password', 'cookie'],
     'masiro': ['username', 'password', 'cookie'],
@@ -9,7 +11,7 @@ LOGIN_SITE_FIELDS = {
 
 CONFIG_FIELDS = [
     ('field', 'sites', '站点', 'multiselect', {
-        'options': ['esj', 'masiro', 'lk', 'yuri', 'fish', 'hameln'],
+        'options': SITES,
         'tooltip': '配置需要爬取的站点，支持多选',
     }),
     ('field', 'white_list', '白名单', 'text_list', {

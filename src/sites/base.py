@@ -6,6 +6,7 @@ from typing import List, Dict
 
 from aiohttp import ClientSession
 
+from src.core.constants import MAX_THREAD
 from src.db import cookie
 from src.epub.epub import build_epub
 from src.epub.txt import build_txt
@@ -24,7 +25,7 @@ class BaseSite(ABC):
         self.cookie: Cookie = None
         self.books: List[Book] = []
         # 默认线程 最大写死8线程别把网站玩崩了
-        thread_counts = 8 if read_config("max_thread") > 8 else read_config("max_thread")
+        thread_counts = MAX_THREAD if read_config("max_thread") > MAX_THREAD else read_config("max_thread")
         if read_config("push_calibre")["enabled"] or read_config("max_thread") < 1:
             thread_counts = 1
         self.threads: Semaphore = asyncio.Semaphore(thread_counts)

@@ -27,7 +27,7 @@ from ui.widgets import (
     make_text_dict_widget,
 )
 
-VERSION = '3.3.1'
+from src.core.constants import VERSION, GUI_POLL_INTERVAL, SITES
 
 if getattr(sys, 'frozen', False):
     _PROJECT_ROOT = os.path.dirname(sys.executable)
@@ -220,7 +220,7 @@ class ConfigForm:
 
     def _make_domain(self, parent: ttk.Frame):
         section = make_section(parent, '站点域名')
-        for site in ['esj', 'masiro', 'lk', 'yuri', 'fish', 'hameln']:
+        for site in SITES:
             row = make_field_row(section, site, '')
             cur = self._get_value(('domain', site)) or ''
             var = make_str_widget(row, cur)
@@ -438,7 +438,7 @@ class MainApp:
                     break
 
         if self.runner and self.runner.is_running():
-            self.root.after(250, self._poll_log)
+            self.root.after(GUI_POLL_INTERVAL, self._poll_log)
         else:
             # 读取完剩余日志行再标记完成
             if self._log_queue:
