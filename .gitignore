@@ -4,7 +4,6 @@ __pycache__/
 *.egg-info/
 dist/
 build/
-*.spec
 
 # Virtual environment
 .venv/
@@ -22,8 +21,3 @@ epub/
 txt/
 images/
 
-# Binary
-upx.exe
-
-# Chrome
-chrome/
