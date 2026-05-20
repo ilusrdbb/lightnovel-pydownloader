@@ -231,7 +231,7 @@ class Masiro(BaseSite):
         pics = await get_pic_list(chapter.id)
         for pic_url in pic_urls:
             if not pic_url.startswith("http"):
-                return
+                continue
             save_path = f"{read_config('image_dir')}/masiro/{chapter.book_id}/{chapter.chapter_id}"
             # 匹配数据库
             pic = common.find(pics, "pic_url", pic_url)

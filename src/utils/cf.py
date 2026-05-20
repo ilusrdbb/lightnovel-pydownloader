@@ -1,7 +1,6 @@
 import asyncio
 import platform
 import time
-from distutils.command.config import config
 from typing import Optional, Dict
 
 from DrissionPage import Chromium, ChromiumOptions

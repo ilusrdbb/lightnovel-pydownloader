@@ -249,7 +249,12 @@ class ConfigForm:
                     line = line.strip()
                     if ':' in line:
                         k, v = line.split(':', 1)
-                        d[k.strip()] = v.strip()
+                        k = k.strip()
+                        try:
+                            k = int(k)
+                        except ValueError:
+                            pass
+                        d[k] = v.strip()
                 self._set_value(path, d)
 
 

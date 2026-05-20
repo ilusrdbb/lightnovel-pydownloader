@@ -1,16 +1,16 @@
 import aiohttp
 
-from src.core.constants import SITES
-from src.db.book import get_book_by_id, get_all_book, get_books_by_ids
-from src.db.chapter import get_chapter, get_chapter_list, get_nopay_chapters
+from src.core.constants import SITES, SSL_VERIFY
+from src.db.book import get_book_by_id, get_all_book
+from src.db.chapter import get_chapter, get_chapter_list
 from src.db.pic import clear_all_pic, fail_pic_list, update_pic, get_pic_list
 from src.epub.epub import build_epub
 from src.epub.txt import build_txt
 from src.sites.esj import Esj
 from src.sites.fish import Fish
+from src.sites.hameln import Hameln
 from src.sites.lk import LK
 from src.sites.masiro import Masiro
-from src.sites.hameln import Hameln
 from src.sites.yuri import Yuri
 from src.utils import request
 from src.utils.config import read_config
@@ -38,7 +38,7 @@ class Process(object):
         site_map = dict(zip(SITES, [Esj, Masiro, LK, Yuri, Fish, Hameln]))
         for site in read_config("sites"):
             jar = aiohttp.CookieJar()
-            conn = aiohttp.TCPConnector(ssl=False)
+            conn = aiohttp.TCPConnector(ssl=SSL_VERIFY)
             async with aiohttp.ClientSession(connector=conn, cookie_jar=jar) as session:
                 if site in site_map:
                     await site_map[site](session).run()
@@ -63,7 +63,7 @@ class Process(object):
             "User-Agent": read_config("ua")
         }
         jar = aiohttp.CookieJar()
-        conn = aiohttp.TCPConnector(ssl=False)
+        conn = aiohttp.TCPConnector(ssl=SSL_VERIFY)
         async with aiohttp.ClientSession(connector=conn, cookie_jar=jar) as session:
             for pic in pic_list:
                 # 获取章节

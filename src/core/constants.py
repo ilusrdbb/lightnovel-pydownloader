@@ -1,5 +1,5 @@
 # 版本号
-VERSION = "3.3.1"
+VERSION = "3.3.2"
 
 # 站点
 SITES = ["esj", "masiro", "lk", "yuri", "fish", "hameln"]
@@ -22,10 +22,15 @@ TIMEZONE = "Asia/Shanghai"
 MISFIRE_GRACE_TIME = 600
 MAX_SCHEDULER_INSTANCES = 1
 
+# 验证SSL
+SSL_VERIFY = True
 # 最大线程数上限
 MAX_THREAD = 8
 # 请求重试次数
 RETRY_COUNT = 3
+
+# docker调用命令超时时间（秒）
+SUBPROCESS_TIMEOUT = 60
 
 # Windows文件名非法字符替换
 CHAR_MAP = {

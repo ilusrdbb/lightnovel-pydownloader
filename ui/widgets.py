@@ -75,12 +75,24 @@ def make_int_widget(row: ttk.Frame, value: int = 0,
     entry.pack(side='left', padx=(0, 8))
 
     def validate(P):
-        if P == '' or P == '-':
+        if P == '':
             return True
         return P.isdigit()
 
+    def on_focus_out(event):
+        v = var.get()
+        if not v or not v.isdigit():
+            var.set(str(min_val))
+            return
+        n = int(v)
+        if n < min_val:
+            var.set(str(min_val))
+        elif n > max_val:
+            var.set(str(max_val))
+
     vcmd = entry.register(validate)
     entry.configure(validate='key', validatecommand=(vcmd, '%P'))
+    entry.bind('<FocusOut>', on_focus_out)
     return var
 
 

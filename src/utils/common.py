@@ -7,7 +7,6 @@ import zlib
 # 加载avif插件，不要删
 import pillow_avif
 from datetime import datetime
-from os.path import basename
 from typing import List, Optional, Dict, Any
 from urllib.parse import urlparse
 
