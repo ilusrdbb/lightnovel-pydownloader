@@ -38,7 +38,7 @@ Linux下暂时只能从源代码运行
 ~~~bash
 git clone https://github.com/ilusrdbb/lightnovel-pydownloader.git
 ~~~
-安装requirements.txt下依赖（注意如果在windows下需要删掉uvloop这行）  
+安装requirements.txt下依赖  
 ~~~bash
 pip install -r requirements.txt
 ~~~

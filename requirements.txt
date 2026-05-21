@@ -13,4 +13,4 @@ APScheduler
 PyExecJS
 requests
 DrissionPage
-uvloop
+uvloop; sys_platform != "win32"
