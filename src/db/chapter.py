@@ -10,7 +10,7 @@ from src.utils.log import log
 
 async def get_chapter_list(book_table_id: str) -> List[Chapter]:
     async with session_scope() as session:
-        stmt = select(Chapter).where(Chapter.book_table_id == book_table_id)
+        stmt = select(Chapter).where(Chapter.book_table_id == book_table_id).order_by(Chapter.chapter_order)
         result = await session.execute(stmt)
         return result.scalars().all()
 

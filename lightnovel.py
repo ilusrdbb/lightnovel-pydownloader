@@ -26,6 +26,8 @@ def handle_sigterm():
     shutdown_event.set()
 
 async def task_runner():
+    # 每次触发前刷新配置 用于定时任务的配置热加载
+    load_config()
     await Process().run()
 
 async def main_async():

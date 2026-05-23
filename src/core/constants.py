@@ -1,5 +1,5 @@
 # 版本号
-VERSION = "3.3.2"
+VERSION = "3.3.3"
 
 # 站点
 SITES = ["esj", "masiro", "lk", "yuri", "fish", "hameln"]
