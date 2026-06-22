@@ -1,11 +1,18 @@
 import logging
 import os
 import time
+import sys
+import io
 from logging.handlers import TimedRotatingFileHandler
 
 from src.core.constants import LOG_DIR, LOG_RETENTION_DAYS
 from src.utils.config import read_config
 
+# 将Buffer包装为UTF-8
+if hasattr(sys.stdout, 'buffer') and getattr(sys.stdout, 'encoding', '').lower() != 'utf-8':
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace', line_buffering=True)
+if hasattr(sys.stderr, 'buffer') and getattr(sys.stderr, 'encoding', '').lower() != 'utf-8':
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace', line_buffering=True)
 
 class Logger:
     def __init__(self):
@@ -32,7 +39,7 @@ class Logger:
         )
         file_handler.suffix = "%Y-%m-%d.log"
         # 控制台Handler
-        console_handler = logging.StreamHandler()
+        console_handler = logging.StreamHandler(sys.stdout)
         formatter = logging.Formatter("%(asctime)s - %(message)s")
         file_handler.setFormatter(formatter)
         console_handler.setFormatter(formatter)
