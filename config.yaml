@@ -20,8 +20,6 @@ login_info:
   fish:
     username: ''
     password: ''
-  hameln:
-    cookie: ''
 # 开始页
 start_page: 1
 # 结束页 不建议一次抓取过多

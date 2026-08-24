@@ -1,8 +1,8 @@
 # 版本号
-VERSION = "3.3.4"
+VERSION = "3.4.0"
 
 # 站点
-SITES = ["esj", "masiro", "lk", "yuri", "fish", "hameln"]
+SITES = ["esj", "masiro", "lk", "yuri", "fish"]
 
 # 配置文件名称
 CONFIG_FILE = "config.yaml"
@@ -48,11 +48,5 @@ CHAR_MAP = {
 NAME_TRIM_LENGTH = 80
 # 触发截断的书名长度阈值
 NAME_TRIM_THRESHOLD = 85
-
-# 轻国跳过爬取置顶书籍id
-LK_IGNORE_IDS = ["969547", "1113228", "1099310", "1048596"]
-# 轻国单本/合集分界值 小于此值为合集大于为单本
-LK_SERIES_THRESHOLD = 100000
-
 # GUI日志轮询间隔（毫秒）
 GUI_POLL_INTERVAL = 250

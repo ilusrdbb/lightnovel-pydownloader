@@ -39,6 +39,8 @@ class Book(BaseDB):
         self.page_text: str = None
         # 轻国缓存章节列表内容
         self.chapter_datas: List[Dict[str, Any]] = []
+        # 新版轻国缓存卷列表内容
+        self.volume_datas: List[Dict[str, Any]] = []
         # 章节列表
         self.chapters: List[Chapter] = []
 

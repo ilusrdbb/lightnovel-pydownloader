@@ -102,7 +102,7 @@ def build_epub_metadata(epub_book, book):
 def handle_source(code: str):
     if code == "masiro":
         return "真白萌"
-    if code == "lk":
+    if code == "lk" or code == "lk2":
         return "轻之国度"
     if code == "yuri":
         return "百合会"

@@ -6,7 +6,6 @@ LOGIN_SITE_FIELDS = {
     'lk':     ['username', 'password'],
     'yuri':   ['cookie'],
     'fish':   ['username', 'password'],
-    'hameln': ['cookie'],
 }
 
 CONFIG_FIELDS = [
@@ -53,7 +52,7 @@ ADVANCE_FIELDS = [
 
     ('field', 'max_thread', '线程数', 'int', {
         'default': 1, 'min': 1, 'max': 8,
-        'tooltip': '不要设置过大，建议1，真白萌/hameln强制单线程',
+        'tooltip': '不要设置过大，建议1，真白萌强制单线程',
     }),
     ('field', 'get_collection', '仅爬取收藏', 'bool', {
         'default': True, 'tooltip': '关闭后会爬取全站，不建议关闭',
@@ -62,7 +61,7 @@ ADVANCE_FIELDS = [
         'default': 15, 'min': 1, 'max': 300,
     }),
     ('field', 'sleep_time', '请求间隔(秒)', 'int', {
-        'default': 1, 'tooltip': '每次请求前随机睡0~N秒，0不睡眠，真白萌/hameln强制6秒',
+        'default': 1, 'tooltip': '每次请求前随机睡0~N秒，0不睡眠，真白萌强制6秒',
     }),
     ('field', 'least_words', '最少字数', 'int', {
         'default': 0, 'tooltip': '字数小于此值且无图片的章节不生成epub章节，0无限制',

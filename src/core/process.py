@@ -8,8 +8,7 @@ from src.epub.epub import build_epub
 from src.epub.txt import build_txt
 from src.sites.esj import Esj
 from src.sites.fish import Fish
-from src.sites.hameln import Hameln
-from src.sites.lk import LK
+from src.sites.lk2 import LK2
 from src.sites.masiro import Masiro
 from src.sites.yuri import Yuri
 from src.utils import request
@@ -35,7 +34,7 @@ class Process(object):
             flag = False
         if not flag:
             return
-        site_map = dict(zip(SITES, [Esj, Masiro, LK, Yuri, Fish, Hameln]))
+        site_map = dict(zip(SITES, [Esj, Masiro, LK2, Yuri, Fish]))
         for site in read_config("sites"):
             jar = aiohttp.CookieJar()
             conn = aiohttp.TCPConnector(ssl=SSL_VERIFY)
