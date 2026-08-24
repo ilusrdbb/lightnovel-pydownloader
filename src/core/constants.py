@@ -50,3 +50,9 @@ NAME_TRIM_LENGTH = 80
 NAME_TRIM_THRESHOLD = 85
 # GUI日志轮询间隔（毫秒）
 GUI_POLL_INTERVAL = 250
+
+# 下面是作废的配置项 防止报错先留着
+# 轻国跳过爬取置顶书籍id
+LK_IGNORE_IDS = ["969547", "1113228", "1099310", "1048596"]
+# 轻国单本/合集分界值 小于此值为合集大于为单本
+LK_SERIES_THRESHOLD = 100000
