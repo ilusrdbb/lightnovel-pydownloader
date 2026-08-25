@@ -89,7 +89,7 @@ class LK2(BaseSite):
         # 目前轻国全部为合集 没有单本
         for page in range(self.start_page, self.end_page + 1):
             log.info(f"轻国开始爬取第{page}页...")
-            page_param["d"]["pageSize"] = 2
+            page_param["d"]["pageSize"] = 20
             if read_config("get_collection"):
                 page_param["d"]["page"] = page
                 url = f"{self.domain}/api/bff/bookshelf-v1"
