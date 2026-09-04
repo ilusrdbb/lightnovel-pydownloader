@@ -1,7 +1,11 @@
 import copy
 import json
 import os
-from typing import Dict, Any
+import secrets
+import hmac
+import hashlib
+import time
+from typing import Dict, Any, Optional
 
 from aiohttp import ClientSession
 
@@ -27,9 +31,13 @@ class LK2(BaseSite):
         self.domain: str = read_config("domain")["lk"]
         self.header = {
             "content-type": "application/json",
-            "user-agent": read_config("ua")
+            "user-agent": "Dart/3.11 (dart:io)"
         }
         self.param: Dict[str, Any] = {
+            "is_encrypted": 0,
+            "platform": "android",
+            "client": "app",
+            "gz": 0,
             "d": {
                 "security_key": ""
             }
@@ -38,7 +46,7 @@ class LK2(BaseSite):
         self.user_info: Dict[str, int] = {}
 
     async def valid_cookie(self) -> bool:
-        url = f"{self.domain}/api/bff/auth-session-v1"
+        url = f"{self.domain}/proxy/api/bff/auth-session-v1"
         self.param["d"]["security_key"] = self.cookie.token
         res = await request.post_json(url, self.header, self.param, self.session)
         if res and json.loads(res).get("code") == 0:
@@ -56,7 +64,7 @@ class LK2(BaseSite):
                 or not read_config("login_info")["lk"]["password"]):
             raise Exception("轻国未配置登录信息")
         else:
-            url = f"{self.domain}/api/bff/auth-password-login-v1"
+            url = f"{self.domain}/proxy/api/bff/auth-password-login-v1"
             login_data = {"d": {
                 "username": read_config("login_info")["lk"]["username"],
                 "password": read_config("login_info")["lk"]["password"]
@@ -89,17 +97,14 @@ class LK2(BaseSite):
         # 目前轻国全部为合集 没有单本
         for page in range(self.start_page, self.end_page + 1):
             log.info(f"轻国开始爬取第{page}页...")
-            page_param["d"]["pageSize"] = 20
+            page_param["d"]["page_size"] = 20
             if read_config("get_collection"):
                 page_param["d"]["page"] = page
-                url = f"{self.domain}/api/bff/bookshelf-v1"
+                url = f"{self.domain}/proxy/api/bff/bookshelf-v1"
             else:
-                url = f"{self.domain}/api/bff/home-lightnovel-feed-v1"
+                url = f"{self.domain}/proxy/api/bff/home-lightnovel-feed-v1"
                 # 怎么从0开始 迷惑
                 page_param["d"]["page"] = page - 1
-                page_param["d"]["category_filter"] = "all"
-                page_param["d"]["read_filter"] = "all"
-                page_param["d"]["status_filter"] = "all"
             res = await request.post_json(url, self.header, page_param, self.session)
             if not res or json.loads(res)["code"] != 0:
                 log.debug(page_param)
@@ -117,7 +122,7 @@ class LK2(BaseSite):
 
     async def build_book_info(self, book: Book):
         book_param = copy.deepcopy(self.param)
-        url = f"{self.domain}/api/new-content-read/get-book-detail"
+        url = f"{self.domain}/proxy/api/new-content-read/get-book-detail"
         book_param["d"]["book_id"] = book.book_id
         res = await request.post_json(url, self.header, book_param, self.session)
         if not res or json.loads(res)["code"] != 0:
@@ -155,7 +160,7 @@ class LK2(BaseSite):
         for volume_data in book.volume_datas:
             # 新轻国结构 书籍-卷-章节 先遍历卷再获取章节
             volume_param = copy.deepcopy(self.param)
-            volume_url = f"{self.domain}/api/new-content-read/get-volume-chapters"
+            volume_url = f"{self.domain}/proxy/api/new-content-read/get-volume-chapters"
             volume_param["d"]["book_id"] = book.book_id
             volume_param["d"]["volume_id"] = volume_data["volume_id"]
             volume_param["d"]["page"] = 1
@@ -222,9 +227,10 @@ class LK2(BaseSite):
         log.info(f"{chapter.chapter_name} 轻国开始获取章节内容...")
         # 构造图片列表
         chapter_param = copy.deepcopy(self.param)
-        url = f"{self.domain}/api/new-content-read/get-chapter-detail"
+        url = f"{self.domain}/proxy/api/new-content-read/get-chapter-detail"
         chapter_param["d"]["book_id"] = chapter.book_id
         chapter_param["d"]["chapter_id"] = chapter.chapter_id
+        chapter_param["d"]["with_body"] = 1
         res = await request.post_json(url, self.header, chapter_param, self.session)
         if not res or json.loads(res)["code"] != 0:
             log.debug(chapter_param)
@@ -270,5 +276,153 @@ class LK2(BaseSite):
             chapter.pics.append(pic)
 
     async def sign(self):
-        # todo 现在暂无签到
-        pass
+        log.info("轻国开始签到...")
+        log.info(f"轻币：{self.user_info['coin']} 经验：{self.user_info['exp']}")
+        # 任务列表
+        task_url = f"{self.domain}/proxy/api/bff/welfare-home-v1"
+        task_res = await request.post_json(task_url, self.header, self.param, self.session)
+        if not task_res or json.loads(task_res)["code"] != 0:
+            log.info("轻国获取任务列表失败！")
+            return
+        task_list = json.loads(task_res)["data"]
+        log.debug(task_list)
+        # 每日签到
+        if task_list["sign_in"]["enabled"] == 1 and task_list["sign_in"]["claimed"] == 0:
+            await self.complete_sign()
+        # 浏览任务
+        view_task = next((item for item in task_list["tasks"]["items_preview"] if item["task_id"] == 300001), None)
+        if view_task and (view_task["status"] == "in_progress" or view_task["status"] == "claimable"):
+            # 新增浏览
+            view_path = "/api/new-content-read/save-book-history"
+            view_url = f"{self.domain}/proxy{view_path}"
+            view_param = copy.deepcopy(self.param)
+            view_param["d"]["book_id"] = 31605
+            view_param["d"]["chapter_id"] = 317935
+            view_param["d"]["last_position"] = 0
+            view_param["d"]["progress_percent"] = 3
+            view_param["d"]["volume_id"] = 46120
+            fill_param_sign(view_param, view_path, True)
+            view_res = await request.post_json(view_url, self.header, view_param, self.session)
+            log.debug(view_res)
+            # 完成浏览任务
+            await self.complete_task(300001)
+        # 收藏任务
+        collect_task = next((item for item in task_list["tasks"]["items_preview"] if item["task_id"] == 300002), None)
+        if collect_task and (collect_task["status"] == "in_progress" or collect_task["status"] == "claimable"):
+            # 新增收藏
+            await self.handle_collection(101, True)
+            # 完成收藏任务
+            await self.complete_task(300002)
+            # 删除收藏
+            await self.handle_collection(101, False)
+        # 睡觉任务
+        sleep_task = next((item for item in task_list["tasks"]["items_preview"] if item["task_id"] == 300003), None)
+        if sleep_task:
+            if sleep_task["status"] == "in_progress" and sleep_task["button_text"] != "明晚领取":
+                # 接睡觉任务
+                await self.start_sleep()
+            if sleep_task["status"] == "claimable":
+                # 完成睡觉任务
+                await self.complete_task(300003)
+
+    async def handle_collection(self, book_id: int, is_add: bool):
+        param = copy.deepcopy(self.param)
+        path = "/api/new-content-read/toggle-book-shelf"
+        url = f"{self.domain}/proxy{path}"
+        param["d"]["book_id"] = book_id
+        if is_add:
+            # 新增收藏
+            param["d"]["action"] = "add"
+        else:
+            # 删除收藏
+            param["d"]["action"] = "remove"
+        fill_param_sign(param, path, True)
+        await request.post_json(url, self.header, param, self.session)
+
+    async def start_sleep(self):
+        param = copy.deepcopy(self.param)
+        path = "/api/bff/start-welfare-sleep-v1"
+        url = f"{self.domain}/proxy{path}"
+        fill_param_sign(param, path, False)
+        res = await request.post_json(url, self.header, param, self.session)
+        if res and json.loads(res)["code"] == 0:
+            log.info(f"轻国接受睡觉任务")
+        else:
+            if res:
+                log.debug(json.loads(res))
+            log.info(f"轻国接受睡觉任务失败")
+
+    async def complete_sign(self):
+        param = copy.deepcopy(self.param)
+        path = "/api/bff/claim-welfare-sign-v1"
+        url = f"{self.domain}/proxy{path}"
+        fill_param_sign(param, path, True)
+        res = await request.post_json(url, self.header, param, self.session)
+        if res and json.loads(res)["code"] == 0:
+            log.info(f"轻国每日签到完成")
+            # 刷新
+            await self.valid_cookie()
+            log.info(f"轻币：{self.user_info['coin']} 经验：{self.user_info['exp']}")
+        else:
+            if res:
+                log.debug(json.loads(res))
+            log.info(f"轻国每日签到失败")
+
+    async def complete_task(self, task_id: int):
+        param = copy.deepcopy(self.param)
+        path = "/api/bff/claim-welfare-task-v1"
+        url = f"{self.domain}/proxy{path}"
+        param["d"]["task_id"] = task_id
+        fill_param_sign(param, path, True)
+        res = await request.post_json(url, self.header, param, self.session)
+        if res and json.loads(res)["code"] == 0:
+            log.info(f"轻国{json.loads(res)['data']['task']['title']}任务完成")
+            # 刷新
+            await self.valid_cookie()
+            log.info(f"轻币：{self.user_info['coin']} 经验：{self.user_info['exp']}")
+        else:
+            if res:
+                log.debug(json.loads(res))
+            log.info(f"轻国完成任务失败，任务id：{task_id}")
+
+
+# 解包apk的合法请求算法 禁止外传
+SIGN_KEY = "ln_stage_read_api_v1_20260408"
+NONCE_ALPHABET = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-"
+
+
+def gen_nonce(length: int = 12) -> str:
+    return "".join(secrets.choice(NONCE_ALPHABET) for _ in range(length))
+
+
+def normalize_dict(value: Any) -> Any:
+    # 递归按字典序排序
+    if isinstance(value, dict):
+        return {str(k): normalize_dict(value[k]) for k in sorted(value.keys())}
+    if isinstance(value, list):
+        return [normalize_dict(v) for v in value]
+    return value
+
+
+def gen_sign(path: str, ts: int, nonce: str, d: Dict[str, Any]) -> str:
+    # HMAC-SHA256
+    trimmed = path[1:] if path.startswith("/") else path
+    canon = json.dumps(normalize_dict(d), separators=(",", ":"), ensure_ascii=False)
+    msg = "\n".join([trimmed, "app", "android", str(ts), nonce, canon])
+    return hmac.new(SIGN_KEY.encode(), msg.encode(), hashlib.sha256).hexdigest()
+
+
+def fill_param_sign(param: Dict[str, Any], path: str, fill_inner_nonce: bool):
+    # 外层时间戳
+    ts = int(time.time())
+    param["ts"] = ts
+    # 外层nonce
+    outer_nonce = gen_nonce(12)
+    # 部分接口内层也要填充
+    if fill_inner_nonce:
+        # 内层nonce
+        param["d"]["nonce"] = gen_nonce(16)
+        # 内层时间戳
+        param["d"]["ts"] = ts
+    # sign
+    param["sign"] = gen_sign(path, ts, outer_nonce, param["d"])

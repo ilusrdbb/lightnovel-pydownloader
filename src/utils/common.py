@@ -1,9 +1,6 @@
-import base64
-import json
 import os
 import re
 import traceback
-import zlib
 # 加载avif插件，不要删
 import pillow_avif
 from datetime import datetime
@@ -64,9 +61,6 @@ def filename_from_url(url: str) -> str:
     # 一部分cdn带@的特殊处理
     return filename.split('@')[0]
 
-def unzip(text: str) -> Dict:
-    return json.loads(zlib.decompress(base64.b64decode(text)).decode()) if text else None
-
 def get_timestamp(time_str: str) -> int:
     time_format = "%Y-%m-%d %H:%M:%S"
     return int(datetime.strptime(time_str, time_format).timestamp())
@@ -94,38 +88,3 @@ def handle_title(book: Book):
         book.book_name = book.book_name.replace(char, replacement)
     if len(book.book_name) > NAME_TRIM_THRESHOLD:
         book.book_name = book.book_name[:NAME_TRIM_LENGTH] + "..."
-
-def bbcode_to_html(text: str, lk_res: Dict[str, str], pic_datas: List[Dict[str, str]]) -> str:
-    text = lk_bbcode_handler(text, lk_res, pic_datas)
-    # 换行符处理
-    text = text.replace("\n", "<br>")
-    # 移除全部bbcode
-    text = [re.sub(r"\[.*?\]", "", text)][0]
-    return text
-
-def lk_bbcode_handler(text: str, lk_res: Dict[str, str], pic_datas: List[Dict[str, str]]) -> str:
-    # 文本中剔除插图
-    result = text
-    # bbcode img 轻国较旧的小说使用的图床
-    img_list = re.findall(r"\[img\](.*?)\[/img\]", result)
-    if img_list:
-        for img_url in img_list:
-            if img_url.startswith("http"):
-                result = result.replace("[img]" + img_url + "[/img]", "<img src=\"" + img_url + "\">")
-                pic_datas.append({"id": "", "url": img_url})
-    # bbcode res 轻国较新的小说使用的图床
-    if lk_res and lk_res.get("res") and lk_res["res"]["res_info"]:
-        for key, value in lk_res["res"]["res_info"].items():
-            result = result.replace("[res]" + key + "[/res]", "<img src=\"" + key + "\">")
-            pic_datas.append({"id": key, "url": value["url"]})
-    # bbcode attach 轻国较旧的小说引用图片类型的附件
-    if lk_res and lk_res.get("attaches") and lk_res["attaches"]["res_info"]:
-        for key, value in lk_res["attaches"]["res_info"].items():
-            if value.get("isimage") == 1:
-                result = result.replace("[attach]" + key + "[/attach]", "<img src=\"" + key + "\">")
-                pic_datas.append({"id": key, "url": value["url"]})
-    # 移除不符合的图片类型bbcode
-    result = re.sub(r"\[res\].*?\[/res\]", "", result)
-    result = re.sub(r"\[attach\].*?\[/attach\]", "", result)
-    result = re.sub(r"\[img\].*?\[/img\]", "", result)
-    return result

@@ -14,6 +14,11 @@ if hasattr(sys.stdout, 'buffer') and getattr(sys.stdout, 'encoding', '').lower()
 if hasattr(sys.stderr, 'buffer') and getattr(sys.stderr, 'encoding', '').lower() != 'utf-8':
     sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace', line_buffering=True)
 
+# 日志过滤器
+class LogFilter(logging.Filter):
+    def filter(self, record):
+        return "Error while closing connector" not in record.getMessage()
+
 class Logger:
     def __init__(self):
         self.logger = None
@@ -52,6 +57,10 @@ class Logger:
                 self.logger.removeHandler(handler)
         self.logger.addHandler(file_handler)
         self.logger.addHandler(console_handler)
+        # 屏蔽aiohttp关闭连接池时因服务端断开keep-alive连接的脏日志
+        root_logger = logging.getLogger()
+        if not any(isinstance(f, LogFilter) for f in root_logger.filters):
+            root_logger.addFilter(LogFilter())
 
     def info(self, message):
         # 每次记录前检查日期
@@ -63,7 +72,6 @@ class Logger:
         if read_config("log_level") == "DEBUG":
             self.init_log()
             self.logger.info(message)
-
 
 # 全局单例日志对象
 log = Logger()
