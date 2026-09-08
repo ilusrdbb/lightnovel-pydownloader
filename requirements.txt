@@ -10,7 +10,7 @@ sqlalchemy
 aiosqlite
 tenacity
 APScheduler
-PyExecJS
 requests
 DrissionPage
+quickjs
 uvloop; sys_platform != "win32"

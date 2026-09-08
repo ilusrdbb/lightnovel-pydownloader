@@ -1,7 +1,7 @@
 import re
 import traceback
 
-import execjs
+import quickjs
 
 from src.utils.log import log
 
@@ -65,8 +65,8 @@ def js_dsign(js: str) -> str:
 def get_dsign(js_code: str) -> str:
     processed_js = js_dsign(js_code)
     try:
-        ctx = execjs.compile(processed_js)
-        result = ctx.eval("tempfunction")
+        ctx = quickjs.Context()
+        result = ctx.eval(processed_js + ";tempfunction")
     except Exception as e:
         log.info(f"dsign解析失败 {str(e)}")
         log.debug(traceback.format_exc())

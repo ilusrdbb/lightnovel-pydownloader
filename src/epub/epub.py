@@ -5,6 +5,7 @@ from typing import List
 from ebooklib import epub
 from ebooklib.epub import EpubBook
 from zhconv import zhconv
+from lxml import html
 
 from src.epub.calibre import push_calibre
 from src.models.book import Book
@@ -52,7 +53,7 @@ def build_epub(book: Book):
         # 字体反爬处理
         css.build_epub_css(content, epub_book, epub_chapter)
         # 标准html
-        epub_chapter.content = f"<html><body>{content}</body></html>"
+        epub_chapter.content = f"<html><body>{safe_content(content)}</body></html>"
         epub_chapters.append(epub_chapter)
         epub_book.add_item(epub_chapter)
     # 目录和书脊
@@ -62,7 +63,7 @@ def build_epub(book: Book):
     epub_book.add_item(epub.EpubNav())
     # 保存
     try:
-        path = f"{read_config('epub_dir')}/{book.source}/{book.book_name}.epub"
+        path = f"{read_config('epub_dir')}/{book.source}/{common.safe_filename(book.book_name)}.epub"
         os.makedirs(os.path.dirname(path), exist_ok=True)
         epub.write_epub(path, epub_book)
         log.info(f"{book.book_name} epub导出成功!")
@@ -136,3 +137,30 @@ def replace_pics(chapter: Chapter, pics: List[Pic], epub_book: EpubBook):
         content = content.replace("src=\"static/image/common/none.gif\"", "")
         content = content.replace('file="Image/', 'src="Image/')
     chapter.content = content
+
+def safe_content(content: str) -> str:
+    if not content or "<" not in content:
+        return content
+    # 安全方面考量 导出前清洗html
+    try:
+        root = html.fromstring(content)
+    except Exception as e:
+        log.debug(traceback.format_exc())
+        return content
+    for link in root.xpath("//link"):
+        href = link.attrib.get("href", "")
+        if href.lower().startswith("data:text/css"):
+            # 规避字体反爬的处理
+            continue
+        link.getparent().remove(link)
+    for tag in root.xpath("//script | //iframe | //object | //embed"):
+        tag.getparent().remove(tag)
+    for el in root.xpath("//*[@*]") + [root]:
+        for attr in [a for a in el.attrib if a.lower().startswith("on")]:
+            del el.attrib[attr]
+        for attr in ("href", "src", "xlink:href"):
+            val = el.attrib.get(attr, "")
+            if val.lower().startswith(("javascript:", "data:text/html")):
+                del el.attrib[attr]
+    return html.tostring(root, encoding="unicode")
+

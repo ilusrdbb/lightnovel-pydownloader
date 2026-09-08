@@ -34,7 +34,7 @@ def build_txt(book: Book):
         content_list = [s for s in temp_list if s]
         if read_config("convert_txt_chapter"):
             # 按照章节分割保存
-            path = f"{read_config('txt_dir')}/{book.source}/{book.book_name}/{chapter.chapter_name}.txt"
+            path = f"{read_config('txt_dir')}/{book.source}/{book.book_name}/{common.safe_filename(chapter.chapter_name)}.txt"
             os.makedirs(os.path.dirname(path), exist_ok=True)
             with open(path, 'w', encoding='utf-8') as f:
                 f.write("\n".join(content_list))

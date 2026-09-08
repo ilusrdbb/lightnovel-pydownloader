@@ -88,3 +88,8 @@ def handle_title(book: Book):
         book.book_name = book.book_name.replace(char, replacement)
     if len(book.book_name) > NAME_TRIM_THRESHOLD:
         book.book_name = book.book_name[:NAME_TRIM_LENGTH] + "..."
+
+def safe_filename(name: str) -> str:
+    for char, replacement in CHAR_MAP.items():
+        name = name.replace(char, replacement)
+    return name.strip(" .")

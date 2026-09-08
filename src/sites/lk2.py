@@ -1,11 +1,11 @@
 import copy
+import hashlib
+import hmac
 import json
 import os
 import secrets
-import hmac
-import hashlib
 import time
-from typing import Dict, Any, Optional
+from typing import Dict, Any
 
 from aiohttp import ClientSession
 
@@ -49,7 +49,7 @@ class LK2(BaseSite):
         url = f"{self.domain}/proxy/api/bff/auth-session-v1"
         self.param["d"]["security_key"] = self.cookie.token
         res = await request.post_json(url, self.header, self.param, self.session)
-        if res and json.loads(res).get("code") == 0:
+        if res and json.loads(res).get("code") == 0 and json.loads(res)["data"]["logged_in"] == 1:
             self.user_info["coin"] = json.loads(res)["data"]["user"]["balance"]["coin"]
             self.user_info["exp"] = json.loads(res)["data"]["user"]["level"]["exp"]
             return True
@@ -134,6 +134,7 @@ class LK2(BaseSite):
         book.book_name = book_dict["title"]
         book.author = book_dict["author_name"]
         book.cover_url = book_dict["cover_url"]
+        book.tags = common.join(book_dict["tags"])
         book.describe = book_dict["summary"]
         book.volume_datas = book_dict["volumes"]
         # 更新数据库
@@ -318,7 +319,7 @@ class LK2(BaseSite):
         # 睡觉任务
         sleep_task = next((item for item in task_list["tasks"]["items_preview"] if item["task_id"] == 300003), None)
         if sleep_task:
-            if sleep_task["status"] == "in_progress" and sleep_task["button_text"] != "明晚领取":
+            if sleep_task["status"] == "in_progress" and sleep_task.get("button_text") == "开始睡觉":
                 # 接睡觉任务
                 await self.start_sleep()
             if sleep_task["status"] == "claimable":
