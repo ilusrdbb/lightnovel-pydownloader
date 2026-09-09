@@ -14,7 +14,7 @@ from src.models.cookie import Cookie
 from src.models.pic import Pic
 from src.sites.base import BaseSite
 from src.utils import request, common
-from src.utils.cf import bypass_cf
+from src.utils.chrome import bypass_cf
 from src.utils.config import read_config
 from src.utils.log import log
 
@@ -33,7 +33,8 @@ class Masiro(BaseSite):
 
     async def valid_cookie(self) -> bool:
         url = f"{self.domain}/admin/userCenterShow"
-        self.header["User-Agent"] = self.cookie.uid
+        if self.cookie.uid:
+            self.header["User-Agent"] = self.cookie.uid
         res = await request.get(url, self.header, self.session)
         if res and "csrf-token" in res:
             log.info("真白萌校验cookie成功")

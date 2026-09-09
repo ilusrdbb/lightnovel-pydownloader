@@ -15,6 +15,7 @@ from src.models.cookie import Cookie
 from src.models.pic import Pic
 from src.sites.base import BaseSite
 from src.utils import request, common
+from src.utils.chrome import bypass_waf
 from src.utils.config import read_config
 from src.utils.dsign import get_dsign
 from src.utils.log import log
@@ -26,11 +27,15 @@ class Yuri(BaseSite):
         super().__init__(session)
         self.site: str = "yuri"
         self.domain: str = read_config("domain")["yuri"]
+        self.form_hash: str = None
+        self.login_hash: str = None
         # 容易触发discuz反爬强制单线程
         self.threads = asyncio.Semaphore(1)
 
     async def valid_cookie(self) -> bool:
         url = f"{self.domain}/home.php?mod=spacecp&ac=usergroup"
+        if self.cookie.uid:
+            self.header["User-Agent"] = self.cookie.uid
         res = await request.get(url, self.header, self.session)
         if res and "<title>用户组" in res:
             log.info("百合会校验cookie成功")
@@ -42,12 +47,38 @@ class Yuri(BaseSite):
     async def login(self):
         cookie = Cookie()
         cookie.source = "yuri"
-        if not read_config("login_info")["yuri"]["cookie"]:
-            raise Exception("百合会未配置登录信息")
-        cookie.cookie = read_config("login_info")["yuri"]["cookie"]
+        yuri_login = read_config("login_info").get("yuri", {})
+        if not yuri_login.get("username") or not yuri_login.get("password"):
+            raise Exception("百合会未配置登录信息或未更新最新config.yaml，请在config.yaml的login_info.yuri下填写username和password")
+        waf_url = f"{self.domain}/member.php?mod=logging&action=login"
+        # 绕waf
+        result = await bypass_waf(waf_url)
+        if not result:
+            raise Exception("百合会绕过WAF失败")
+        self.header["User-Agent"] = result["user_agent"]
+        self.header["Cookie"] = result["cookie"]
+        self.form_hash = result["formhash"]
+        self.login_hash = result["loginhash"]
+        # 登录
+        login_url = f"{waf_url}&loginsubmit=yes&loginhash={self.login_hash}&inajax=1"
+        login_data = {
+            "username": read_config("login_info")["yuri"]["username"],
+            "password": read_config("login_info")["yuri"]["password"],
+            "formhash": self.form_hash,
+            "referer": f"{self.domain}/./",
+            "questionid": "0",
+            "answer": "",
+            "cookietime": "2592000"
+        }
+        res = await request.post_data(login_url, self.header, login_data, self.session)
+        if res:
+            self.header["Cookie"] = self.header["Cookie"] + "; ".join(res["headers"].getall("Set-Cookie"))
+        else:
+            raise Exception("百合会登录失败")
         # 再校验一次cookie
         self.cookie = cookie
-        self.header["Cookie"] = cookie.cookie
+        cookie.cookie = self.header["Cookie"]
+        cookie.uid = self.header["User-Agent"]
         is_effective_cookie = await self.valid_cookie()
         if not is_effective_cookie:
             raise Exception("百合会登录失败 cookie失效")
@@ -182,23 +213,28 @@ class Yuri(BaseSite):
 
     async def sign(self):
         log.info("百合会开始签到...")
-        hash_url = f"{self.domain}/plugin.php?id=zqlj_sign"
-        hash_res = await request.get(hash_url, headers=self.header, session=self.session)
-        if not hash_res:
-            log.info("百合会签到失败！")
-            return
-        form_hash = common.first(common.get_xpath(hash_res, "yuri", "sign"))
-        if not form_hash:
-            log.debug(hash_res)
-            log.info("百合会签到失败！")
-            return
-        sign_url = f"{self.domain}/plugin.php?id=zqlj_sign&sign={form_hash}"
+        # 刷新form hash
+        await self.refresh_form_hash()
+        sign_url = f"{self.domain}/plugin.php?id=zqlj_sign&sign={self.form_hash}"
         sign_res = await request.get(sign_url, self.header, self.session)
         if not sign_res:
             log.info("百合会签到失败！")
             return
         log.debug(sign_res)
         log.info("百合会签到成功！")
+
+    async def refresh_form_hash(self) -> str:
+        url = f"{self.domain}"
+        res = await request.get(url, headers=self.header, session=self.session)
+        if not res:
+            log.info("百合会获取formhash失败")
+            return
+        form_hash = common.first(common.get_xpath(res, "yuri", "sign"))
+        if not form_hash:
+            log.debug(res)
+            log.info("百合会获取formhash失败")
+            return
+        self.form_hash = form_hash
 
     async def handle_dsign(self, url: str) -> str:
         _url = url

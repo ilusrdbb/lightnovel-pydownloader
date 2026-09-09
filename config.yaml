@@ -16,7 +16,8 @@ login_info:
     username: ''
     password: ''
   yuri:
-    cookie: ''
+    username: ''
+    password: ''
   fish:
     username: ''
     password: ''

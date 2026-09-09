@@ -4,7 +4,7 @@ LOGIN_SITE_FIELDS = {
     'esj':    ['username', 'password', 'cookie'],
     'masiro': ['username', 'password', 'cookie'],
     'lk':     ['username', 'password'],
-    'yuri':   ['cookie'],
+    'yuri':   ['username', 'password'],
     'fish':   ['username', 'password'],
 }
 
