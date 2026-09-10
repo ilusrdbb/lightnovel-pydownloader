@@ -12,7 +12,7 @@ from src.utils import common
 from src.utils.log import log
 
 
-def get_font_url(text: str) -> str:
+def get_font_url(text: str) -> str | None:
     try:
         # 提取css的地址
         css_pattern = r'https?://[^\s"\']+\.css'

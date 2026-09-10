@@ -1,8 +1,8 @@
+import io
 import logging
 import os
-import time
 import sys
-import io
+import time
 from logging.handlers import TimedRotatingFileHandler
 
 from src.core.constants import LOG_DIR, LOG_RETENTION_DAYS
@@ -16,7 +16,7 @@ if hasattr(sys.stderr, 'buffer') and getattr(sys.stderr, 'encoding', '').lower()
 
 # 日志过滤器
 class LogFilter(logging.Filter):
-    def filter(self, record):
+    def filter(self, record) -> bool:
         return "Error while closing connector" not in record.getMessage()
 
 class Logger:

@@ -1,6 +1,6 @@
 import uuid
 
-from sqlalchemy import select, delete, update
+from sqlalchemy import delete, select, update
 
 from src.db import session_scope
 from src.models.cookie import Cookie

@@ -1,4 +1,3 @@
-from typing import Optional
 
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column
@@ -13,12 +12,12 @@ class Cookie(BaseDB):
     # 站点
     source: Mapped[str] = mapped_column(String)
     # 除轻国外使用cookie登录
-    cookie: Mapped[Optional[str]] = mapped_column(String)
+    cookie: Mapped[str | None] = mapped_column(String)
     # 轻国登录token 真白萌校验token
-    token: Mapped[Optional[str]] = mapped_column(String)
+    token: Mapped[str | None] = mapped_column(String)
     # 轻国用户id 真白萌ua
-    uid: Mapped[Optional[str]] = mapped_column(String)
+    uid: Mapped[str | None] = mapped_column(String)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return (f"<Cookie(id={self.id}, source={self.source}, cookie={self.cookie}, "
                 f"token={self.token}, uid={self.uid})>")

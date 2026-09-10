@@ -1,5 +1,4 @@
 import uuid
-from typing import List
 
 from sqlalchemy import select, update
 
@@ -49,13 +48,13 @@ async def get_book_by_id(id: str) -> Book:
         result = await session.execute(stmt)
         return result.scalars().first()
 
-async def get_all_book() -> List[Book]:
+async def get_all_book() -> list[Book]:
     async with session_scope() as session:
         stmt = select(Book)
         result = await session.execute(stmt)
         return result.scalars().all()
 
-async def get_books_by_ids(ids: List[str]) -> List[Book]:
+async def get_books_by_ids(ids: list[str]) -> list[Book]:
     async with session_scope() as session:
         stmt = select(Book).where(Book.id.in_(ids))
         result = await session.execute(stmt)

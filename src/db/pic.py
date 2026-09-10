@@ -1,14 +1,13 @@
 import uuid
-from typing import List
 
-from sqlalchemy import select, update, delete
+from sqlalchemy import delete, select, update
 
 from src.db import session_scope
 from src.models.pic import Pic
 from src.utils.log import log
 
 
-async def get_pic_list(chapter_table_id: str) -> List[Pic]:
+async def get_pic_list(chapter_table_id: str) -> list[Pic]:
     async with session_scope() as session:
         stmt = select(Pic).where(Pic.chapter_table_id == chapter_table_id)
         result = await session.execute(stmt)
@@ -34,7 +33,7 @@ async def clear_all_pic():
         stmt = delete(Pic)
         await session.execute(stmt)
 
-async def fail_pic_list() -> List[Pic]:
+async def fail_pic_list() -> list[Pic]:
     async with session_scope() as session:
         stmt = select(Pic).where(Pic.pic_path.is_(None))
         result = await session.execute(stmt)

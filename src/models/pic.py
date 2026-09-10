@@ -1,6 +1,5 @@
-from typing import Optional
 
-from sqlalchemy import String, Index
+from sqlalchemy import Index, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from src.db import BaseDB
@@ -20,10 +19,10 @@ class Pic(BaseDB):
     # 图片原始地址
     pic_url: Mapped[str] = mapped_column(String)
     # 爬取后图片存放相对路径
-    pic_path: Mapped[Optional[str]] = mapped_column(String)
+    pic_path: Mapped[str | None] = mapped_column(String)
     # 图片id 仅轻国需要
-    pic_id: Mapped[Optional[str]] = mapped_column(String)
+    pic_id: Mapped[str | None] = mapped_column(String)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return (f"<Pic(id={self.id}, chapter_table_id={self.chapter_table_id}, pic_url={self.pic_url}, "
                 f"pic_path={self.pic_path}, pic_id={self.pic_id})>")

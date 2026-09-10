@@ -100,7 +100,7 @@ def build_epub_metadata(epub_book, book):
                     epub_book.set_cover(file_name, f.read())
                 break
 
-def handle_source(code: str):
+def handle_source(code: str) -> str:
     if code == "masiro":
         return "真白萌"
     if code == "lk" or code == "lk2":

@@ -1,0 +1,10 @@
+line-length = 120
+target-version = "py311"
+
+[lint]
+select = ["E", "W", "F", "I", "UP", "B"]
+ignore = ["E501", "E402"]
+
+[lint.per-file-ignores]
+# pillow_avif用于注册avif解码插件，不能删
+"src/utils/common.py" = ["F401"]

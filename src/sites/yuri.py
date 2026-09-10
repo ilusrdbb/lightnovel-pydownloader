@@ -1,6 +1,5 @@
 import asyncio
 import re
-from typing import List
 
 from aiohttp import ClientSession
 from lxml import html
@@ -8,13 +7,13 @@ from lxml import html
 from src.db.book import update_book
 from src.db.chapter import get_chapter_list, update_chapter
 from src.db.cookie import update_cookie
-from src.db.pic import get_pic_list, update_pic, insert_pic
+from src.db.pic import get_pic_list, insert_pic, update_pic
 from src.models.book import Book
 from src.models.chapter import Chapter
 from src.models.cookie import Cookie
 from src.models.pic import Pic
 from src.sites.base import BaseSite
-from src.utils import request, common
+from src.utils import common, request
 from src.utils.chrome import bypass_waf
 from src.utils.config import read_config
 from src.utils.dsign import get_dsign
@@ -27,8 +26,8 @@ class Yuri(BaseSite):
         super().__init__(session)
         self.site: str = "yuri"
         self.domain: str = read_config("domain")["yuri"]
-        self.form_hash: str = None
-        self.login_hash: str = None
+        self.form_hash: str | None = None
+        self.login_hash: str | None = None
         # 容易触发discuz反爬强制单线程
         self.threads = asyncio.Semaphore(1)
 
@@ -223,7 +222,7 @@ class Yuri(BaseSite):
         log.debug(sign_res)
         log.info("百合会签到成功！")
 
-    async def refresh_form_hash(self) -> str:
+    async def refresh_form_hash(self) -> None:
         url = f"{self.domain}"
         res = await request.get(url, headers=self.header, session=self.session)
         if not res:
@@ -245,7 +244,7 @@ class Yuri(BaseSite):
             res = await request.get(_url, self.header, self.session)
         return res
 
-    async def get_content_list(self, book: Book) -> List[str]:
+    async def get_content_list(self, book: Book) -> list[str] | None:
         # 只看楼主
         first_page_url = f"{self.domain}/forum.php?mod=viewthread&tid={book.book_id}&page=1&authorid={book.author}"
         first_page_res = await self.handle_dsign(first_page_url)
@@ -258,7 +257,7 @@ class Yuri(BaseSite):
         if not page_size_xpath:
             page_size = 1
         else:
-            page_size = int(re.findall("\d+", page_size_xpath)[0])
+            page_size = int(re.findall(r"\d+", page_size_xpath)[0])
         if page_size == 1:
             log.info(f"{book.book_name} 百合会已获取书籍内容")
             return content_list
@@ -272,7 +271,7 @@ class Yuri(BaseSite):
         return content_list
 
     @staticmethod
-    def get_contents_from_res(res: str) -> List[str]:
+    def get_contents_from_res(res: str) -> list[str]:
         result_list = []
         content_xpaths = common.get_xpath(res, "yuri", "chapter")
         if not content_xpaths:

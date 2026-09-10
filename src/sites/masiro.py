@@ -7,13 +7,13 @@ from aiohttp import ClientSession
 from src.db.book import update_book
 from src.db.chapter import get_chapter_list, update_chapter
 from src.db.cookie import update_cookie, update_token
-from src.db.pic import get_pic_list, update_pic, insert_pic
+from src.db.pic import get_pic_list, insert_pic, update_pic
 from src.models.book import Book
 from src.models.chapter import Chapter
 from src.models.cookie import Cookie
 from src.models.pic import Pic
 from src.sites.base import BaseSite
-from src.utils import request, common
+from src.utils import common, request
 from src.utils.chrome import bypass_cf
 from src.utils.config import read_config
 from src.utils.log import log
@@ -25,7 +25,7 @@ class Masiro(BaseSite):
         super().__init__(session)
         self.site: str = "masiro"
         self.domain: str = read_config("domain")["masiro"]
-        self.token:str = None
+        self.token: str | None = None
         self.header["Referer"] = f"{self.domain}/admin"
         self.header["Origin"] = self.domain
         # 真白萌防ban号强制单线程
@@ -277,7 +277,7 @@ class Masiro(BaseSite):
             self.token = common.first(common.get_xpath(res, "masiro", "token"))
             log.debug(f"token:{self.token}")
 
-    async def pay(self, chapter: Chapter) -> str:
+    async def pay(self, chapter: Chapter) -> str | None:
         log.info(f"真白萌开始打钱..花费:{chapter.cost}金币")
         url = f"{self.domain}/admin/novelReading?cid={chapter.chapter_id}"
         # 刷新token

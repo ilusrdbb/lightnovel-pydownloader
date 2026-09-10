@@ -1,5 +1,5 @@
 import json
-from typing import List, Dict
+import traceback
 from urllib.parse import quote
 
 from aiohttp import ClientSession
@@ -9,7 +9,7 @@ from src.db.book import update_book
 from src.db.cookie import update_cookie
 from src.models.book import Book
 from src.models.cookie import Cookie
-from src.utils import request, common
+from src.utils import common, request
 from src.utils.config import read_config
 from src.utils.log import log
 
@@ -20,10 +20,10 @@ class Fish:
         self.session = session
         self.site: str = "fish"
         self.domain: str = read_config("domain")["fish"]
-        self.cookie: Cookie = None
-        self.books: List[Book] = []
+        self.cookie: Cookie | None = None
+        self.books: list[Book] = []
         # 默认请求头
-        self.header: Dict[str, str] = {
+        self.header: dict[str, str] = {
             "Accept": "application/json",
             "User-Agent": read_config("ua")
         }
@@ -43,13 +43,14 @@ class Fish:
             # 获取书籍列表
             await self.get_book_list()
             if not self.books:
-                log.info(f"轻小说机翻站未获取到书籍")
+                log.info("轻小说机翻站未获取到书籍")
                 return
             # 下载
             for book in self.books:
                 await self.download(book)
         except Exception as e:
-            log.info(str(e))
+            log.info(f'{self.site} 运行异常: {type(e).__name__}: {e}')
+            log.debug(traceback.format_exc())
 
     async def valid_cookie(self) -> bool:
         url = f"{self.domain}/api/user/favored"

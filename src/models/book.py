@@ -1,6 +1,6 @@
-from typing import List, Dict, Any, Optional
+from typing import Any
 
-from sqlalchemy import String, Index
+from sqlalchemy import Index, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from src.db import BaseDB
@@ -20,30 +20,30 @@ class Book(BaseDB):
     # 站点
     source: Mapped[str] = mapped_column(String)
     # 书籍名称
-    book_name: Mapped[Optional[str]] = mapped_column(String)
+    book_name: Mapped[str | None] = mapped_column(String)
     # 书籍作者
-    author: Mapped[Optional[str]] = mapped_column(String)
+    author: Mapped[str | None] = mapped_column(String)
     # 书籍标签 英文逗号分隔
-    tags: Mapped[Optional[str]] = mapped_column(String)
+    tags: Mapped[str | None] = mapped_column(String)
     # 书籍描述
-    describe: Mapped[Optional[str]] = mapped_column(String)
+    describe: Mapped[str | None] = mapped_column(String)
     # 封面图片原始地址
-    cover_url: Mapped[Optional[str]] = mapped_column(String)
+    cover_url: Mapped[str | None] = mapped_column(String)
 
     def __init__(self, **kwargs):
         # SQLAlchemy的默认初始化方法
         super().__init__(**kwargs)
         # esj缓存章节xpath列表
-        self.chapter_xpaths: List = []
+        self.chapter_xpaths: list = []
         # 真白萌缓存章节列表内容
-        self.page_text: str = None
+        self.page_text: str | None = None
         # 轻国缓存章节列表内容
-        self.chapter_datas: List[Dict[str, Any]] = []
+        self.chapter_datas: list[dict[str, Any]] = []
         # 新版轻国缓存卷列表内容
-        self.volume_datas: List[Dict[str, Any]] = []
+        self.volume_datas: list[dict[str, Any]] = []
         # 章节列表
-        self.chapters: List[Chapter] = []
+        self.chapters: list[Chapter] = []
 
-    def __str__(self):
+    def __str__(self) -> str:
         return (f"<Book(id={self.id}, book_id={self.book_id}, source={self.source}, book_name={self.book_name}, "
                 f"author={self.author}, tags={self.tags}, cover_url={self.cover_url})>")

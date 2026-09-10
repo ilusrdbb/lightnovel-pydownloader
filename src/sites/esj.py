@@ -8,13 +8,13 @@ from lxml import html
 from src.db.book import update_book
 from src.db.chapter import get_chapter_list, update_chapter
 from src.db.cookie import update_cookie
-from src.db.pic import update_pic, insert_pic, get_pic_list
+from src.db.pic import get_pic_list, insert_pic, update_pic
 from src.models.book import Book
 from src.models.chapter import Chapter
 from src.models.cookie import Cookie
 from src.models.pic import Pic
 from src.sites.base import BaseSite
-from src.utils import request, common
+from src.utils import common, request
 from src.utils.config import read_config
 from src.utils.log import log
 

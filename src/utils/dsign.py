@@ -32,7 +32,7 @@ def js_dsign(js: str) -> str:
     js = js[JS_SLICE_START:JS_SLICE_END]
     # 去混淆循环 替换被混淆的变量赋值
     for keyword_str in KEYWORDS:
-        assignment_pattern = re.compile(r"(\b[_A-Za-z]\w*\b\s*=\s*%s\s*;)" % re.escape(keyword_str))
+        assignment_pattern = re.compile(rf"(\b[_A-Za-z]\w*\b\s*=\s*{re.escape(keyword_str)}\s*;)")
         match = assignment_pattern.search(js)
         if match:
             full_assignment = match.group(0)
@@ -62,7 +62,7 @@ def js_dsign(js: str) -> str:
         js = js.replace(old, new)
     return js
 
-def get_dsign(js_code: str) -> str:
+def get_dsign(js_code: str) -> str | None:
     processed_js = js_dsign(js_code)
     try:
         ctx = quickjs.Context()

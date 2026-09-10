@@ -6,6 +6,7 @@ import sys
 import threading
 import tkinter as tk
 from tkinter import ttk
+from typing import Any
 
 from ruamel.yaml import YAML
 
@@ -13,21 +14,20 @@ _yaml = YAML()
 _yaml.preserve_quotes = True
 _yaml.width = 4096
 
-from ui.fields import CONFIG_FIELDS, ADVANCE_FIELDS, LOGIN_SITE_FIELDS
+from src.core.constants import GUI_POLL_INTERVAL, SITES, VERSION
+from ui.fields import ADVANCE_FIELDS, CONFIG_FIELDS, LOGIN_SITE_FIELDS
 from ui.widgets import (
     ScrolledFrame,
-    make_section,
-    make_field_row,
-    make_str_widget,
-    make_int_widget,
     make_bool_widget,
-    make_select_widget,
+    make_field_row,
+    make_int_widget,
     make_multiselect_widget,
-    make_text_list_widget,
+    make_section,
+    make_select_widget,
+    make_str_widget,
     make_text_dict_widget,
+    make_text_list_widget,
 )
-
-from src.core.constants import VERSION, GUI_POLL_INTERVAL, SITES
 
 if getattr(sys, 'frozen', False):
     _PROJECT_ROOT = os.path.dirname(sys.executable)
@@ -55,20 +55,21 @@ class ConfigForm:
             bundled = os.path.join(sys._MEIPASS, os.path.basename(src))
             if os.path.exists(bundled):
                 shutil.copy2(bundled, src)
-        with open(src, 'r', encoding='utf-8') as f:
+        with open(src, encoding='utf-8') as f:
             self.data = _yaml.load(f) or {}
 
-    def save(self):
-        self._collect()
+    def save(self) -> list[str]:
+        invalid = self._collect()
         with open(self.yaml_path, 'w', encoding='utf-8') as f:
             _yaml.dump(self.data, f)
+        return invalid
 
     def reload(self):
         self._load()
         self._update_vars()
 
     def _update_vars(self):
-        for entry_key, (kind, path, ref) in self._vars.items():
+        for _entry_key, (kind, path, ref) in self._vars.items():
             cur = self._get_value(path)
             if kind == 'str':
                 ref.set(str(cur) if cur else '')
@@ -90,7 +91,7 @@ class ConfigForm:
                     lines = [f'{k}: {v}' for k, v in cur.items()]
                     ref.insert('1.0', '\n'.join(lines))
 
-    def _get_value(self, path: tuple):
+    def _get_value(self, path: tuple) -> Any | None:
         cur = self.data
         for key in path:
             if isinstance(cur, dict):
@@ -226,7 +227,9 @@ class ConfigForm:
             var = make_str_widget(row, cur)
             self._vars[f'domain._{site}'] = ('str', ('domain', site), var)
 
-    def _collect(self):
+    def _collect(self) -> list[str]:
+        """把控件值写回 self.data，返回解析失败的字段名（供界面提示，不静默丢弃）。"""
+        invalid: list[str] = []
         for _entry_key, (kind, path, ref) in self._vars.items():
             if kind == 'str':
                 self._set_value(path, ref.get())
@@ -234,15 +237,16 @@ class ConfigForm:
                 try:
                     self._set_value(path, int(ref.get()))
                 except (ValueError, TypeError):
-                    pass
+                    # 保留配置中的原值，并回传字段名由界面提示用户
+                    invalid.append('.'.join(str(p) for p in path))
             elif kind == 'bool':
                 self._set_value(path, ref.get())
             elif kind == 'multiselect':
                 self._set_value(path, [label for label, bv in ref if bv.get()])
             elif kind == 'text_list':
                 content = ref.get('1.0', 'end-1c')
-                self._set_value(path, [l.strip() for l in content.splitlines()
-                                       if l.strip()])
+                self._set_value(path, [line.strip() for line in content.splitlines()
+                                       if line.strip()])
             elif kind == 'text_dict':
                 d = {}
                 for line in ref.get('1.0', 'end-1c').splitlines():
@@ -256,6 +260,7 @@ class ConfigForm:
                             pass
                         d[k] = v.strip()
                 self._set_value(path, d)
+        return invalid
 
 
 class LogPanel(ttk.Frame):
@@ -399,9 +404,12 @@ class MainApp:
             dst = os.path.join(_PROJECT_ROOT, yaml_file + '.bak')
             if os.path.exists(src):
                 shutil.copy2(src, dst)
-        self.config_form.save()
-        self.advance_form.save()
-        self.status_lbl.config(text='配置已保存')
+        invalid = self.config_form.save() + self.advance_form.save()
+        if invalid:
+            self.status_lbl.config(text=f'已保存，但 {len(invalid)} 个数字项无效已保留原值：{"、".join(invalid)}')
+        else:
+            self.status_lbl.config(text='配置已保存')
+        return invalid
 
     def _reset(self):
         restored = False
@@ -420,8 +428,10 @@ class MainApp:
 
     def _run(self):
         # 运行前始终先保存
-        self._save()
+        invalid = self._save()
         self.log_panel.clear()
+        if invalid:
+            self.log_panel.append(f'[配置警告] 以下数字项无效，已保留原值：{"、".join(invalid)}\n')
         # 切换到日志标签页
         self.notebook.select(2)
         self.run_btn.config(state='disabled')

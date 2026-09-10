@@ -1,14 +1,14 @@
 import os
 import re
-import sys
 import shutil
-from typing import Dict, Any, List, Tuple
+import sys
+from typing import Any
 
 import yaml
 
-from src.core.constants import CONFIG_FILE, ADVANCE_FILE
+from src.core.constants import ADVANCE_FILE, CONFIG_FILE
 
-_CONFIG_DATA: Dict[str, Any] = {}
+_CONFIG_DATA: dict[str, Any] = {}
 
 _MAIN_CONFIG_FILE = CONFIG_FILE
 _ADVANCE_CONFIG_FILE = ADVANCE_FILE
@@ -29,21 +29,21 @@ def load_config():
     _ensure_config_file(_MAIN_CONFIG_FILE)
     _ensure_config_file(_ADVANCE_CONFIG_FILE)
     # 一般配置
-    with open(_MAIN_CONFIG_FILE, "r", encoding="utf-8") as f:
+    with open(_MAIN_CONFIG_FILE, encoding="utf-8") as f:
         _CONFIG_DATA.update(yaml.safe_load(f))
     # 高级配置
-    with open(_ADVANCE_CONFIG_FILE, "r", encoding="utf-8") as f:
+    with open(_ADVANCE_CONFIG_FILE, encoding="utf-8") as f:
         _CONFIG_DATA.update(yaml.safe_load(f))
 
 
-def read_config(key: str):
+def read_config(key: str) -> Any:
     return _CONFIG_DATA[key]
 
 
-def _parse_key_blocks(text: str) -> List[Tuple[str, str]]:
+def _parse_key_blocks(text: str) -> list[tuple[str, str]]:
     # 将yaml文本按key拆分 包含该key上方紧邻的注释行
     lines = text.splitlines(keepends=True)
-    blocks: List[Tuple[str, str]] = []
+    blocks: list[tuple[str, str]] = []
     comment_buf: list = []
     key_pattern = re.compile(r'^([a-zA-Z_]\w*)\s*:')
     for line in lines:
@@ -63,14 +63,14 @@ def _parse_key_blocks(text: str) -> List[Tuple[str, str]]:
 def _ensure_config_file(filename: str):
     # 确保配置文件存在且包含所有必要的配置项
     bundled_path = _get_bundled_path(os.path.basename(filename))
-    with open(bundled_path, "r", encoding="utf-8") as f:
+    with open(bundled_path, encoding="utf-8") as f:
         default_content = f.read()
     if not os.path.exists(filename):
         # 文件不存在，直接复制默认配置
         shutil.copy2(bundled_path, filename)
         return
     # 文件存在，检查是否缺少配置项
-    with open(filename, "r", encoding="utf-8") as f:
+    with open(filename, encoding="utf-8") as f:
         content = f.read()
     existing_data = yaml.safe_load(content)
     if existing_data is None:

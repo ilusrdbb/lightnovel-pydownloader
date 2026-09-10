@@ -2,10 +2,9 @@ import asyncio
 import os
 import random
 import traceback
-from typing import Dict
 
-from aiohttp import ClientSession, ClientConnectionError, ServerDisconnectedError, ClientPayloadError
-from tenacity import retry, stop_after_attempt, retry_if_exception_type
+from aiohttp import ClientConnectionError, ClientPayloadError, ClientSession, ServerDisconnectedError
+from tenacity import retry, retry_if_exception_type, stop_after_attempt
 
 from src.core.constants import RETRY_COUNT
 from src.utils import common
@@ -25,7 +24,7 @@ RETRYABLE_EXCEPTIONS = (
     stop=stop_after_attempt(RETRY_COUNT),
     retry=retry_if_exception_type(RETRYABLE_EXCEPTIONS)
 )
-async def get(url: str, headers: Dict, session: ClientSession) -> str:
+async def get(url: str, headers: dict, session: ClientSession) -> str | None:
     await sleep(url)
     proxy = read_config("proxy_url") if read_config("proxy_url") else None
     if read_config("domain")["yuri"] in url:
@@ -48,7 +47,7 @@ async def get(url: str, headers: Dict, session: ClientSession) -> str:
     stop=stop_after_attempt(RETRY_COUNT),
     retry=retry_if_exception_type(RETRYABLE_EXCEPTIONS)
 )
-async def post_data(url: str, headers: Dict, data: Dict, session: ClientSession) -> Dict:
+async def post_data(url: str, headers: dict, data: dict, session: ClientSession) -> dict | None:
     await sleep(url)
     proxy = read_config("proxy_url") if read_config("proxy_url") else None
     timeout = read_config("time_out")
@@ -71,7 +70,7 @@ async def post_data(url: str, headers: Dict, data: Dict, session: ClientSession)
     stop=stop_after_attempt(RETRY_COUNT),
     retry=retry_if_exception_type(RETRYABLE_EXCEPTIONS)
 )
-async def post_json(url: str, headers: Dict, json: Dict, session: ClientSession) -> str:
+async def post_json(url: str, headers: dict, json: dict, session: ClientSession) -> str | None:
     await sleep(url)
     proxy = read_config("proxy_url") if read_config("proxy_url") else None
     timeout = read_config("time_out")
@@ -94,7 +93,7 @@ async def sleep(url: str):
         await asyncio.sleep(random.random() * read_config("sleep_time"))
 
 
-async def download_pic(url: str, headers: Dict, path: str, session: ClientSession, json: Dict = None) -> str:
+async def download_pic(url: str, headers: dict, path: str, session: ClientSession, json: dict = None) -> str | None:
     if "i.noire.cc:332" in url:
         url = url.replace("i.noire.cc:332", "i.noire.cc")
     file_name = common.filename_from_url(url)
@@ -109,8 +108,8 @@ async def download_pic(url: str, headers: Dict, path: str, session: ClientSessio
     try:
         async with session.get(url=url, proxy=proxy, headers=headers, json=json, timeout=timeout) as res:
             if res.status != 200:
-                # 图片下载失败不做重试
-                raise Exception(res.status)
+                log.info(f"{url} 图片下载失败 HTTP {res.status}")
+                return None
             image_data = await res.read()
             # 写入图片
             full_path = f"{path}/{file_name}"
@@ -120,7 +119,7 @@ async def download_pic(url: str, headers: Dict, path: str, session: ClientSessio
                 log.debug(f"{url}图片下载成功 保存路径{full_path}")
             # 轻国avif处理
             if file_name.endswith(".avif"):
-                return common.handle_avif(full_path)
+                return await asyncio.to_thread(common.handle_avif, full_path)
             return full_path
     except Exception as e:
         log.info(f"{url}图片下载失败 {str(e)}")
@@ -128,7 +127,7 @@ async def download_pic(url: str, headers: Dict, path: str, session: ClientSessio
         return None
 
 
-async def download_file(url: str, headers: Dict, path: str, session: ClientSession):
+async def download_file(url: str, headers: dict, path: str, session: ClientSession):
     proxy = read_config("proxy_url") if read_config("proxy_url") else None
     timeout = read_config("time_out")
     try:

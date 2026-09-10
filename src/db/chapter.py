@@ -1,5 +1,4 @@
 import uuid
-from typing import List
 
 from sqlalchemy import select, update
 
@@ -8,7 +7,7 @@ from src.models.chapter import Chapter
 from src.utils.log import log
 
 
-async def get_chapter_list(book_table_id: str) -> List[Chapter]:
+async def get_chapter_list(book_table_id: str) -> list[Chapter]:
     async with session_scope() as session:
         stmt = select(Chapter).where(Chapter.book_table_id == book_table_id).order_by(Chapter.chapter_order)
         result = await session.execute(stmt)
@@ -39,7 +38,7 @@ async def get_chapter(id: str) -> Chapter:
         result = await session.execute(stmt)
         return result.scalars().first()
 
-async def get_nopay_chapters() -> List[Chapter]:
+async def get_nopay_chapters() -> list[Chapter]:
     async with session_scope() as session:
         stmt = select(Chapter).where(Chapter.purchase_fail_flag == 1)
         result = await session.execute(stmt)

@@ -1,6 +1,5 @@
 import tkinter as tk
 from tkinter import ttk
-from typing import Dict, List, Optional
 
 
 class ScrolledFrame(ttk.Frame):
@@ -74,7 +73,7 @@ def make_int_widget(row: ttk.Frame, value: int = 0,
     entry = ttk.Entry(row, textvariable=var, width=10)
     entry.pack(side='left', padx=(0, 8))
 
-    def validate(P):
+    def validate(P) -> bool:
         if P == '':
             return True
         return P.isdigit()
@@ -104,7 +103,7 @@ def make_bool_widget(row: ttk.Frame, value: bool = False) -> tk.BooleanVar:
     return var
 
 
-def make_select_widget(row: ttk.Frame, options: List[str],
+def make_select_widget(row: ttk.Frame, options: list[str],
                        value: str = '') -> tk.StringVar:
     """下拉选择框。"""
     var = tk.StringVar(value=str(value) if value else '')
@@ -115,8 +114,8 @@ def make_select_widget(row: ttk.Frame, options: List[str],
     return var
 
 
-def make_multiselect_widget(row: ttk.Frame, options: List[str],
-                            selected: List[str]) -> List[tuple]:
+def make_multiselect_widget(row: ttk.Frame, options: list[str],
+                            selected: list[str]) -> list[tuple]:
     """多选复选框组。返回 [(label, BooleanVar), ...]。"""
     vars_list = []
     selected_set = set(selected) if selected else set()
@@ -130,14 +129,14 @@ def make_multiselect_widget(row: ttk.Frame, options: List[str],
     return vars_list
 
 
-def make_text_list_widget(row: ttk.Frame, items: List[str]) -> tk.Text:
+def make_text_list_widget(row: ttk.Frame, items: list[str]) -> tk.Text:
     """列表值的多行文本输入（每行一个）。"""
     return _make_text_area(row,
                            '\n'.join(str(i) for i in items) if items else '',
                            height=4)
 
 
-def make_text_dict_widget(row: ttk.Frame, data: Dict) -> tk.Text:
+def make_text_dict_widget(row: ttk.Frame, data: dict) -> tk.Text:
     """字典值的多行文本输入（每行 key: value）。"""
     lines = []
     if data:
@@ -176,7 +175,7 @@ def _make_text_area(row: ttk.Frame, content: str,
 
 def _set_tooltip(widget: ttk.Label, text: str):
     """鼠标悬停时显示简单提示。"""
-    tip: Optional[tk.Toplevel] = None
+    tip: tk.Toplevel | None = None
 
     def show(event):
         nonlocal tip

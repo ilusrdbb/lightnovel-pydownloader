@@ -5,20 +5,20 @@ import json
 import os
 import secrets
 import time
-from typing import Dict, Any
+from typing import Any
 
 from aiohttp import ClientSession
 
 from src.db.book import update_book
 from src.db.chapter import get_chapter_list, update_chapter
 from src.db.cookie import update_cookie
-from src.db.pic import get_pic_list, update_pic, insert_pic
+from src.db.pic import get_pic_list, insert_pic, update_pic
 from src.models.book import Book
 from src.models.chapter import Chapter
 from src.models.cookie import Cookie
 from src.models.pic import Pic
 from src.sites.base import BaseSite
-from src.utils import request, common
+from src.utils import common, request
 from src.utils.config import read_config
 from src.utils.log import log
 
@@ -33,7 +33,7 @@ class LK2(BaseSite):
             "content-type": "application/json",
             "user-agent": "Dart/3.11 (dart:io)"
         }
-        self.param: Dict[str, Any] = {
+        self.param: dict[str, Any] = {
             "is_encrypted": 0,
             "platform": "android",
             "client": "app",
@@ -43,7 +43,7 @@ class LK2(BaseSite):
             }
         }
         # 记录轻币和经验
-        self.user_info: Dict[str, int] = {}
+        self.user_info: dict[str, int] = {}
 
     async def valid_cookie(self) -> bool:
         url = f"{self.domain}/proxy/api/bff/auth-session-v1"
@@ -347,11 +347,11 @@ class LK2(BaseSite):
         fill_param_sign(param, path, False)
         res = await request.post_json(url, self.header, param, self.session)
         if res and json.loads(res)["code"] == 0:
-            log.info(f"轻国接受睡觉任务")
+            log.info("轻国接受睡觉任务")
         else:
             if res:
                 log.debug(json.loads(res))
-            log.info(f"轻国接受睡觉任务失败")
+            log.info("轻国接受睡觉任务失败")
 
     async def complete_sign(self):
         param = copy.deepcopy(self.param)
@@ -360,14 +360,14 @@ class LK2(BaseSite):
         fill_param_sign(param, path, True)
         res = await request.post_json(url, self.header, param, self.session)
         if res and json.loads(res)["code"] == 0:
-            log.info(f"轻国每日签到完成")
+            log.info("轻国每日签到完成")
             # 刷新
             await self.valid_cookie()
             log.info(f"轻币：{self.user_info['coin']} 经验：{self.user_info['exp']}")
         else:
             if res:
                 log.debug(json.loads(res))
-            log.info(f"轻国每日签到失败")
+            log.info("轻国每日签到失败")
 
     async def complete_task(self, task_id: int):
         param = copy.deepcopy(self.param)
@@ -405,7 +405,7 @@ def normalize_dict(value: Any) -> Any:
     return value
 
 
-def gen_sign(path: str, ts: int, nonce: str, d: Dict[str, Any]) -> str:
+def gen_sign(path: str, ts: int, nonce: str, d: dict[str, Any]) -> str:
     # HMAC-SHA256
     trimmed = path[1:] if path.startswith("/") else path
     canon = json.dumps(normalize_dict(d), separators=(",", ":"), ensure_ascii=False)
@@ -413,7 +413,7 @@ def gen_sign(path: str, ts: int, nonce: str, d: Dict[str, Any]) -> str:
     return hmac.new(SIGN_KEY.encode(), msg.encode(), hashlib.sha256).hexdigest()
 
 
-def fill_param_sign(param: Dict[str, Any], path: str, fill_inner_nonce: bool):
+def fill_param_sign(param: dict[str, Any], path: str, fill_inner_nonce: bool):
     # 外层时间戳
     ts = int(time.time())
     param["ts"] = ts

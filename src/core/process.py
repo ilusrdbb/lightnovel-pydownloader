@@ -1,9 +1,9 @@
 import aiohttp
 
 from src.core.constants import SITES, SSL_VERIFY
-from src.db.book import get_book_by_id, get_all_book
+from src.db.book import get_all_book, get_book_by_id
 from src.db.chapter import get_chapter, get_chapter_list
-from src.db.pic import clear_all_pic, fail_pic_list, update_pic, get_pic_list
+from src.db.pic import clear_all_pic, fail_pic_list, get_pic_list, update_pic
 from src.epub.epub import build_epub
 from src.epub.txt import build_txt
 from src.sites.esj import Esj
@@ -16,7 +16,7 @@ from src.utils.config import read_config
 from src.utils.log import log
 
 
-class Process(object):
+class Process:
 
     async def run(self):
         flag = True
@@ -34,7 +34,7 @@ class Process(object):
             flag = False
         if not flag:
             return
-        site_map = dict(zip(SITES, [Esj, Masiro, LK2, Yuri, Fish]))
+        site_map = dict(zip(SITES, [Esj, Masiro, LK2, Yuri, Fish], strict=True))
         for site in read_config("sites"):
             jar = aiohttp.CookieJar()
             conn = aiohttp.TCPConnector(ssl=SSL_VERIFY)

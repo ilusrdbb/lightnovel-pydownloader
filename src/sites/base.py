@@ -2,7 +2,6 @@ import asyncio
 import traceback
 from abc import ABC, abstractmethod
 from asyncio import Semaphore
-from typing import List, Dict
 
 from aiohttp import ClientSession
 
@@ -20,26 +19,26 @@ from src.utils.log import log
 class BaseSite(ABC):
 
     def __init__(self, session: ClientSession):
-        self.site: str = None
+        self.site: str | None = None
         self.session: ClientSession = session
-        self.cookie: Cookie = None
-        self.books: List[Book] = []
+        self.cookie: Cookie | None = None
+        self.books: list[Book] = []
         # 默认线程 最大写死8线程别把网站玩崩了
         thread_counts = MAX_THREAD if read_config("max_thread") > MAX_THREAD else read_config("max_thread")
         if read_config("push_calibre")["enabled"] or read_config("max_thread") < 1:
             thread_counts = 1
         self.threads: Semaphore = asyncio.Semaphore(thread_counts)
         # 白名单
-        self.white_list: List[str] = [] if len(read_config("sites")) > 1 else read_config("white_list")
+        self.white_list: list[str] = [] if len(read_config("sites")) > 1 else read_config("white_list")
         # 默认请求头
-        self.header: Dict[str, str] = {
+        self.header: dict[str, str] = {
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
             "Accept-Encoding": "gzip, deflate",
             "Accept-Language": "zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7",
             "User-Agent": read_config("ua")
         }
         # 图片下载请求头
-        self.pic_header: Dict[str, str] = {
+        self.pic_header: dict[str, str] = {
             "Accept": "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8",
             "Accept-Encoding": "gzip, deflate, zstd",
             "Accept-Language": "zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7",
@@ -78,7 +77,7 @@ class BaseSite(ABC):
             if read_config("sign"):
                 await self.sign()
         except Exception as e:
-            log.info(str(e))
+            log.info(f"{self.site} 运行异常: {type(e).__name__}: {e}")
             log.debug(traceback.format_exc())
 
     async def start_task(self, book: Book):
@@ -105,7 +104,7 @@ class BaseSite(ABC):
                 if read_config("convert_txt"):
                     await loop.run_in_executor(None, build_txt, book)
         except Exception as e:
-            log.info(str(e))
+            log.info(f'{self.site} 运行异常: {type(e).__name__}: {e}')
             log.debug(traceback.format_exc())
 
     @abstractmethod

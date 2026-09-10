@@ -2,11 +2,11 @@ import asyncio
 import platform
 import re
 import time
-from typing import Optional, Dict
+import traceback
+from typing import Any
 
 from DrissionPage import Chromium, ChromiumOptions
 
-from src.utils.config import read_config
 from src.utils.log import log
 
 _MAX_RETRIES = 3
@@ -14,7 +14,7 @@ _SLEEP_TIME = 5
 _MAX_WAIT_TIME = 240
 _TRY_CF_TIME = 240
 
-def _locate_cf_button(tab):
+def _locate_cf_button(tab) -> Any | None:
     # 尝试通过turnstile hidden input定位
     try:
         eles = tab.eles("tag:input")
@@ -26,7 +26,7 @@ def _locate_cf_button(tab):
                 if button:
                     return button
     except Exception:
-        pass
+        log.debug(traceback.format_exc())
     # 尝试递归查找shadow root中的iframe
     try:
         body = tab.ele("tag:body")
@@ -36,10 +36,10 @@ def _locate_cf_button(tab):
             if button:
                 return button
     except Exception:
-        pass
+        log.debug(traceback.format_exc())
     return None
 
-def _search_shadow_root_iframe(ele):
+def _search_shadow_root_iframe(ele) -> Any | None:
     # 递归查找包含iframe的shadow root
     try:
         if ele.shadow_root:
@@ -51,10 +51,10 @@ def _search_shadow_root_iframe(ele):
             if result:
                 return result
     except Exception:
-        pass
+        log.debug(traceback.format_exc())
     return None
 
-def _search_shadow_root_input(ele):
+def _search_shadow_root_input(ele) -> Any | None:
     # 递归查找shadow root中的input元素
     try:
         if ele.shadow_root:
@@ -66,10 +66,10 @@ def _search_shadow_root_input(ele):
             if result:
                 return result
     except Exception:
-        pass
+        log.debug(traceback.format_exc())
     return None
 
-async def bypass_cf(url: str) -> Optional[Dict[str, str]]:
+async def bypass_cf(url: str) -> dict[str, str] | None:
     log.info("开始破cf盾...")
     try:
         result = await asyncio.to_thread(_bypass_cf_sync, url)
@@ -78,7 +78,7 @@ async def bypass_cf(url: str) -> Optional[Dict[str, str]]:
         log.info(f"破cf盾失败: {e}")
         return None
 
-def _build_chrome_options():
+def _build_chrome_options() -> ChromiumOptions:
     co = ChromiumOptions()
     co.auto_port()
     co.headless(True)
@@ -87,7 +87,7 @@ def _build_chrome_options():
         co.set_argument('--no-sandbox')
     return co
 
-def _bypass_cf_sync(url: str) -> Optional[Dict[str, str]]:
+def _bypass_cf_sync(url: str) -> dict[str, str] | None:
     co = _build_chrome_options()
     browser = None
     try:
@@ -130,7 +130,7 @@ def _bypass_cf_sync(url: str) -> Optional[Dict[str, str]]:
         if browser:
             browser.quit()
 
-def _waf_page_ready(tab, ready_keywords):
+def _waf_page_ready(tab, ready_keywords) -> bool:
     # 判断是否出现真实页面
     try:
         title = (tab.title or "").strip()
@@ -142,9 +142,10 @@ def _waf_page_ready(tab, ready_keywords):
             return True
         return any(k in title for k in ready_keywords)
     except Exception:
+        log.debug(traceback.format_exc())
         return False
 
-async def bypass_waf(url: str) -> Optional[Dict[str, str]]:
+async def bypass_waf(url: str) -> dict[str, str] | None:
     log.info("开始绕过WAF...")
     try:
         result = await asyncio.to_thread(_bypass_waf_sync, url, ("百合会", "Discuz"))
@@ -153,7 +154,7 @@ async def bypass_waf(url: str) -> Optional[Dict[str, str]]:
         log.info(f"绕过WAF失败: {e}")
         return None
 
-def _get_discuz_hash(tab):
+def _get_discuz_hash(tab) -> dict:
     # discuz论坛formhash和loginhash顺便从页面里拿了
     try:
         formhash = tab.run_js(
@@ -169,7 +170,7 @@ def _get_discuz_hash(tab):
         log.info(f"获取hash失败: {e}")
         return {}
 
-def _bypass_waf_sync(url: str, ready_keywords: Optional[tuple] = None) -> Optional[Dict[str, str]]:
+def _bypass_waf_sync(url: str, ready_keywords: tuple | None = None) -> dict[str, str] | None:
     co = _build_chrome_options()
     browser = None
     try:
