@@ -47,7 +47,7 @@ jobs:
       - name: Build GUI with PyInstaller
         shell: bash
         run: |
-          pyinstaller --onefile --noupx --noconsole --name lightnovel-gui --add-data "config.yaml;." --add-data "advance.yaml;." lightnovel_gui.py
+          pyinstaller --onefile --noupx --noconsole --name lightnovel-gui --add-data "config.yaml;." --add-data "advance.yaml;." --exclude-module doctest --exclude-module pydoc --exclude-module test --exclude-module lib2to3 --exclude-module unittest lightnovel_gui.py
 
       - name: Create release zip
         shell: pwsh
