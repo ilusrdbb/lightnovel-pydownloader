@@ -39,11 +39,6 @@ jobs:
           python -m pip install pyinstaller
           python -m pip install -r requirements.txt
 
-      - name: Install UPX
-        shell: bash
-        run: |
-          choco install upx -y
-
       - name: Build CLI with PyInstaller
         shell: bash
         run: |
@@ -52,7 +47,7 @@ jobs:
       - name: Build GUI with PyInstaller
         shell: bash
         run: |
-          pyinstaller --onefile --noconsole --name lightnovel-gui --add-data "config.yaml;." --add-data "advance.yaml;." lightnovel_gui.py
+          pyinstaller --onefile --noupx --noconsole --name lightnovel-gui --add-data "config.yaml;." --add-data "advance.yaml;." lightnovel_gui.py
 
       - name: Create release zip
         shell: pwsh
