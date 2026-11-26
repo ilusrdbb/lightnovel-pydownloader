@@ -43,6 +43,10 @@ class Book(BaseDB):
         self.volume_datas: list[dict[str, Any]] = []
         # 章节列表
         self.chapters: list[Chapter] = []
+        # 轻国按卷导出标识 防止递归死循环
+        self.column_export_flag: bool = False
+        # 轻国按卷导出时缓存书籍名称
+        self.cache_book_name: str | None = None
 
     def __str__(self) -> str:
         return (f"<Book(id={self.id}, book_id={self.book_id}, source={self.source}, book_name={self.book_name}, "

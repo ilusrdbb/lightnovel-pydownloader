@@ -1,5 +1,6 @@
 import os
 import traceback
+from html import escape
 from typing import List
 
 from ebooklib import epub
@@ -22,6 +23,32 @@ def build_epub(book: Book):
     if not chapters:
         return
     log.info(f"{book.book_name} 开始生成epub...")
+    if book.source == "lk2" and read_config("lk_export_column") and not book.column_export_flag:
+        # 按卷分组
+        column_map: dict[str, list[Chapter]] = {}
+        for chapter in chapters:
+            if not chapter.lk_column_name:
+                continue
+            column_map.setdefault(chapter.lk_column_name, []).append(chapter)
+        if not column_map:
+            log.info(f"{book.book_name} 空卷未导出epub")
+            return
+        for lk_column_name, column_chapter_list in column_map.items():
+            # 按照卷构造book
+            column_book = Book()
+            column_book.chapters = column_chapter_list
+            column_book.cache_book_name = book.book_name
+            column_book.book_name = lk_column_name
+            column_book.source = book.source
+            column_book.id = book.id
+            column_book.book_id = book.book_id
+            column_book.author = book.author
+            column_book.describe = book.describe
+            column_book.tags = book.tags
+            column_book.cover_url = book.cover_url
+            column_book.column_export_flag = True
+            build_epub(column_book)
+        return
     # 处理标题
     common.handle_title(book)
     epub_book = epub.EpubBook()
@@ -56,6 +83,9 @@ def build_epub(book: Book):
         epub_chapter.content = f"<html><body>{safe_content(content)}</body></html>"
         epub_chapters.append(epub_chapter)
         epub_book.add_item(epub_chapter)
+    if not epub_chapters:
+        log.info(f"{book.book_name} 空章节未导出epub")
+        return
     # 目录和书脊
     epub_book.toc = epub_chapters
     epub_book.spine = epub_chapters
@@ -63,7 +93,10 @@ def build_epub(book: Book):
     epub_book.add_item(epub.EpubNav())
     # 保存
     try:
-        path = f"{read_config('epub_dir')}/{book.source}/{common.safe_filename(book.book_name)}.epub"
+        if read_config("lk_export_column"):
+            path = f"{read_config('epub_dir')}/{book.source}/{common.safe_filename(book.cache_book_name)}/{common.safe_filename(book.book_name)}.epub"
+        else:
+            path = f"{read_config('epub_dir')}/{book.source}/{common.safe_filename(book.book_name)}.epub"
         os.makedirs(os.path.dirname(path), exist_ok=True)
         epub.write_epub(path, epub_book)
         log.info(f"{book.book_name} epub导出成功!")
@@ -124,11 +157,15 @@ def replace_pics(chapter: Chapter, pics: List[Pic], epub_book: EpubBook):
             image = epub.EpubImage(uid=image_name, file_name=f"Image/{chapter.chapter_id}/{image_name}",
                                    media_type=f"image/{image_type}", content=image_data)
             epub_book.add_item(image)
+            image_src = f"Image/{chapter.chapter_id}/{image_name}"
             if pic.pic_id:
-                # 轻国特殊处理
-                content = content.replace(pic.pic_id, f"Image/{chapter.chapter_id}/{image_name}")
+                # 旧轻国特殊处理
+                content = content.replace(pic.pic_id, image_src)
             else:
-                content = content.replace(pic.pic_url, f"Image/{chapter.chapter_id}/{image_name}")
+                escaped_url = escape(pic.pic_url, quote=False)
+                if escaped_url != pic.pic_url:
+                    content = content.replace(escaped_url, image_src)
+                content = content.replace(pic.pic_url, image_src)
         except Exception as e:
             log.debug(f"{pic.pic_path} 替换图片失败 {str(e)}")
             log.debug(traceback.format_exc())

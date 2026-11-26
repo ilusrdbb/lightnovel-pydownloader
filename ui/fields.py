@@ -69,6 +69,9 @@ ADVANCE_FIELDS = [
 
     ('field', 'convert_txt', '导出TXT', 'bool', {'default': False}),
     ('field', 'convert_txt_chapter', '分章节导出TXT', 'bool', {'default': False}),
+    ('field', 'lk_export_column', '轻国按卷导出EPUB', 'bool', {
+        'default': False, 'tooltip': '轻国强制按照卷而不是整本书籍导出epub，轻国部分老web会有兼容性问题',
+    }),
 
     ('calibre', 'push_calibre', '', '', {}),
 

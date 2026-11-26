@@ -112,7 +112,7 @@ class Yuri(BaseSite):
                 log.debug(res)
                 return
             for book_url in book_urls:
-                if "javascript" in book_url or "thread-535989-" in book_url:
+                if "javascript" in book_url or "thread-504464-" in book_url or "thread-535989-" in book_url:
                     # 排除置顶专楼
                     continue
                 book = Book()

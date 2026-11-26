@@ -105,6 +105,7 @@ V3 版本将一部分一般用户不需要更改的配置移至高级配置文�
 |     least_words     |               字数小于此值且无图片的章节不生成 epub 章节               |        0 不限制         |
 |     convert_txt     |                            是否同时导出 txt                            |          false          |
 | convert_txt_chapter |                  是否同时导出 txt 且按照章节分割 txt                   |          false          |
+|  lk_export_column   |                轻国是否强制按照卷而不是整本书籍导出epub                |          false          |
 |    push_calibre     |                         推送 calibre-web 设置                          |  见配置文件内注释说明   |
 |        sign         |  是否开启签到，仅适配轻国和百合会，真白萌由于 ban 号风险过高不做适配   |          false          |
 | download_pic_again  |                是否重新下载全部之前爬取失败的图片，慎用                |          false          |

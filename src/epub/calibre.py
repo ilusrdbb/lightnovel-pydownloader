@@ -3,6 +3,7 @@ import traceback
 
 from src.core.constants import SUBPROCESS_TIMEOUT
 from src.models.book import Book
+from src.utils import common
 from src.utils.config import read_config
 from src.utils.log import log
 
@@ -13,7 +14,10 @@ def push_calibre(book: Book):
     library_path = read_config("push_calibre")["library_path"]
     if not container_name or not abs_path or not library_path:
         return
-    full_path = abs_path + "/" + book.source + "/" + book.book_name + ".epub"
+    if book.source == "lk2" and read_config("lk_export_column"):
+        full_path = f"{abs_path}/{book.source}/{common.safe_filename(book.cache_book_name)}/{common.safe_filename(book.book_name)}.epub"
+    else:
+        full_path = f"{abs_path}/{book.source}/{common.safe_filename(book.book_name)}.epub"
     log.info(f"{book.book_name} 开始推送calibre...")
     docker_command = ["docker", "exec", container_name]
     try:

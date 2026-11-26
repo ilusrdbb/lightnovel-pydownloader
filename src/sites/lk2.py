@@ -193,6 +193,7 @@ class LK2(BaseSite):
                         chapter.book_id = book.book_id
                         chapter.pics = []
                         chapter.pic_datas = []
+                        chapter.lk_column_name = volume_data["title"]
                         if chapter.chapter_order != order or chapter.chapter_name != chapter_name:
                             # 标题或顺序改变 更新数据库
                             chapter.chapter_order = order
@@ -216,6 +217,7 @@ class LK2(BaseSite):
                         chapter.chapter_name = chapter_name
                         chapter.last_update_time = last_update_time
                         chapter.book_id = book.book_id
+                        chapter.lk_column_name = volume_data["title"]
                         # 获取内容
                         await self.build_content(chapter)
                         # 更新数据库

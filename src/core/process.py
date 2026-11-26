@@ -85,6 +85,7 @@ class Process:
             return
         log.info("开始重新导出epub...")
         for book in books:
+            book.column_export_flag = False
             # 查询对应章节
             chapters = await get_chapter_list(book.id)
             if not chapters:

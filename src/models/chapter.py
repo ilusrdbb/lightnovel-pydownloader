@@ -40,6 +40,8 @@ class Chapter(BaseDB):
         self.pics: list[Pic] = []
         # 轻国缓存图片信息
         self.pic_datas: list[dict[str, str]] = []
+        # 轻国卷名称
+        self.lk_column_name: str | None = None
 
     def __str__(self) -> str:
         return (f"<Chapter(id={self.id}, book_table_id={self.book_table_id}, chapter_id={self.chapter_id}, "

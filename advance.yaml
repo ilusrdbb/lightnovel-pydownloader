@@ -19,6 +19,9 @@ least_words: 0
 convert_txt: false
 # 是否同时导出txt且按照章节分割txt
 convert_txt_chapter: false
+# 轻国是否强制按照卷而不是整本书籍导出epub
+# 轻国部分老web会有兼容性问题
+lk_export_column: false
 # 推送calibre-web设置 下方默认配置仅做示例请根据自身docker的calibre-web填写
 push_calibre:
   enabled: false
